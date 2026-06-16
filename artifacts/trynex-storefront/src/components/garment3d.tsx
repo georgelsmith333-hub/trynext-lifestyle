@@ -348,7 +348,7 @@ export function RealisticShirt({
     </group>
   );
 }
-useGLTF.preload("/models/tshirt.glb");
+// useGLTF.preload("/models/tshirt.glb"); // GLB not bundled — T-shirt uses PhotoMockupMesh
 
 /* ─── Shared garment body (hoodie / longsleeve) ────────── */
 function GarmentGLB({
@@ -447,7 +447,7 @@ export function LongSleeveBody({
     />
   );
 }
-useGLTF.preload("/models/longsleeve.glb");
+// useGLTF.preload("/models/longsleeve.glb"); // GLB not bundled — CartViewer3D uses PhotoMockupMesh
 
 /* ─────────────────────── HOODIE ──────────────────────── */
 export function HoodieBody({
@@ -467,7 +467,7 @@ export function HoodieBody({
     />
   );
 }
-useGLTF.preload("/models/hoodie.glb");
+// useGLTF.preload("/models/hoodie.glb"); // GLB not bundled — CartViewer3D uses PhotoMockupMesh
 
 /* ─────────────────────── CAP ─────────────────────────── */
 export function CapBody({
@@ -511,7 +511,7 @@ export function CapBody({
     </group>
   );
 }
-useGLTF.preload("/models/cap.glb");
+// useGLTF.preload("/models/cap.glb"); // GLB not bundled — CartViewer3D uses PhotoMockupMesh
 
 /* ─────────────────────── MUG ─────────────────────────── */
 export function MugBody({

@@ -273,12 +273,15 @@ export default function ProductViewer3D({
             />
           )}
 
-          {/* ── T-SHIRT — procedural GLB mesh with physical material ── */}
+          {/* ── T-SHIRT — real photo plane + colour tint (same as hoodie/longsleeve) ── */}
           {product.category === "tshirt" && (
-            <RealisticShirt
+            <PhotoMockupMesh
+              frontPhotoSrc={resolvedFrontPhoto}
+              backPhotoSrc={resolvedBackPhoto}
               frontTex={frontTex}
               backTex={backTex}
-              garmentColor={garmentColor}
+              garmentColor={photoTint}
+              activeFace={activeFace}
             />
           )}
 

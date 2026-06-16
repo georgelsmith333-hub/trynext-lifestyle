@@ -9,10 +9,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { ContactShadows, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import {
-  RealisticShirt,
-  LongSleeveBody,
-  HoodieBody,
-  CapBody,
+  PhotoMockupMesh,
   MugBody,
   WaterBottleBody,
   useUrlTexture,
@@ -29,9 +26,25 @@ import {
 const tshirtSrc      = "/mockups/white-tshirt-front-cutout.png";
 const longsleeveSrc  = "/mockups/white-longsleeve-front-cutout.png";
 const hoodieSrc      = "/mockups/white-hoodie-front-cutout.png";
-const capSrc         = "/mockups/white-cap-front.png";
+const capSrc         = "/mockups/white-cap-front-cutout.png";
 const mugSrc         = "/mockups/white-mug-front-cutout.png";
-const waterBottleSrc = "/mockups/white-waterbottle-cutout.png";
+const waterBottleSrc = "/mockups/white-waterbottle-front-cutout.png";
+
+/** Front photo used by the 3D photo-billboard for each garment category. */
+const GARMENT_FRONT_PHOTO: Record<GarmentCategory, string> = {
+  tshirt:      "/mockups/white-tshirt-front-cutout.png",
+  longsleeve:  "/mockups/white-longsleeve-front-cutout.png",
+  hoodie:      "/mockups/white-hoodie-front-cutout.png",
+  cap:         "/mockups/white-cap-front-cutout.png",
+  mug:         "/mockups/white-mug-front-cutout.png",
+  waterbottle: "/mockups/white-waterbottle-front-cutout.png",
+};
+/** Back photo for garments that have a printable back face. */
+const GARMENT_BACK_PHOTO: Partial<Record<GarmentCategory, string>> = {
+  tshirt:     "/mockups/white-tshirt-back-cutout.png",
+  longsleeve: "/mockups/white-longsleeve-back-cutout.png",
+  hoodie:     "/mockups/white-hoodie-back-cutout.png",
+};
 
 type GarmentCategory = "tshirt" | "longsleeve" | "hoodie" | "mug" | "cap" | "waterbottle";
 
@@ -205,17 +218,17 @@ export default function CartViewer3D({
           {category === "waterbottle" && (
             <WaterBottleBody wrapTex={bottleTex} garmentColor={garmentColor} />
           )}
-          {category === "tshirt" && (
-            <RealisticShirt frontTex={frontTex} backTex={backTex} garmentColor={garmentColor} />
-          )}
-          {category === "longsleeve" && (
-            <LongSleeveBody frontTex={frontTex} backTex={backTex} garmentColor={garmentColor} />
-          )}
-          {category === "hoodie" && (
-            <HoodieBody frontTex={frontTex} backTex={backTex} garmentColor={garmentColor} />
-          )}
-          {category === "cap" && (
-            <CapBody frontTex={frontTex} garmentColor={garmentColor} />
+          {/* Garments — photo billboard (same approach as Design Studio). */}
+          {(category === "tshirt" || category === "longsleeve" ||
+            category === "hoodie" || category === "cap") && (
+            <PhotoMockupMesh
+              frontPhotoSrc={GARMENT_FRONT_PHOTO[category]}
+              backPhotoSrc={GARMENT_BACK_PHOTO[category]}
+              frontTex={frontTex}
+              backTex={backTex}
+              garmentColor={garmentColor}
+              activeFace={face}
+            />
           )}
 
           <ContactShadows

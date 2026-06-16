@@ -28,7 +28,7 @@ const capFront             = "/mockups/white-cap-front.png";
 const capFrontDark         = "/mockups/black-cap-front.png";
 const capFrontCutout       = "/mockups/white-cap-front-cutout.png";
 const waterBottleFront     = "/mockups/white-waterbottle-front.png";
-const waterBottleCutout    = "/mockups/white-waterbottle-cutout.png";
+const waterBottleCutout    = "/mockups/white-waterbottle-front-cutout.png";
 
 /** A single available garment colour (name + hex). */
 export interface ProductColor { name: string; hex: string }
