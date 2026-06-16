@@ -62,6 +62,7 @@ app.use(
 // silently fall back to a permissive policy.
 const DEFAULT_DEV_ORIGINS = [
   "https://trynexshop.com",
+  "https://www.trynexshop.com",
   "http://localhost:5173",
   "http://localhost:8080",
   "http://localhost:8081",
@@ -109,6 +110,10 @@ app.use(
       }
       // Allow Vercel preview and production deployments for TryNex storefront.
       if (/^https:\/\/trynex[^.]*\.vercel\.app$/.test(origin)) {
+        return callback(null, true);
+      }
+      // Allow Cloudflare Pages preview deployments for TryNex.
+      if (/^https:\/\/[^/]*\.trynex-lifestyle-shop\.pages\.dev$/.test(origin)) {
         return callback(null, true);
       }
       return callback(new Error(`CORS: origin ${origin} not allowed`));

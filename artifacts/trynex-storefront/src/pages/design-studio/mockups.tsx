@@ -367,8 +367,20 @@ export function GarmentSVG({
   // SVG filter only affects actual garment pixels — never the white rectangle
   // that surrounds the garment in the regular photo.  Non-tinted views (white or
   // near-black garments that use a dedicated dark photo) keep the full photo as-is.
+  //
+  // Special case — cylinders (mug / waterbottle): always prefer the cutout even for
+  // white / light colours so the product shape has a transparent background and the
+  // shadow filter follows the actual mug / bottle outline rather than shading an
+  // invisible white square.
+  const isCylUnderImageSrc = product.category === "mug" || product.category === "waterbottle";
   const imageSrc = (() => {
-    if (!applyTint || !base) return src;
+    if (!applyTint || !base) {
+      if (isCylUnderImageSrc && base && !useBlackPhoto) {
+        if (face === "back" && base.backCutout) return base.backCutout;
+        if (base.frontCutout) return base.frontCutout;
+      }
+      return src;
+    }
     if (face === "back" && base.backCutout) return base.backCutout;
     return base.frontCutout ?? src;
   })();
@@ -403,10 +415,12 @@ export function GarmentSVG({
 
       <defs>
         {/* Garment drop-shadow — lifts the garment off the background so
-            white/light shirts are clearly visible on the off-white canvas */}
-        <filter id={`shadow-${filterId}`} x="-8%" y="-8%" width="116%" height="116%" colorInterpolationFilters="sRGB">
-          <feDropShadow dx="0" dy="6" stdDeviation="18" floodColor="rgba(0,0,0,0.18)" />
-          <feDropShadow dx="0" dy="2" stdDeviation="6"  floodColor="rgba(0,0,0,0.10)" />
+            white/light shirts are clearly visible on the off-white canvas.
+            Three-layer shadow: wide ambient + mid diffuse + tight contact. */}
+        <filter id={`shadow-${filterId}`} x="-12%" y="-12%" width="124%" height="124%" colorInterpolationFilters="sRGB">
+          <feDropShadow dx="0" dy="12" stdDeviation="32" floodColor="rgba(0,0,0,0.22)" />
+          <feDropShadow dx="0" dy="5"  stdDeviation="14" floodColor="rgba(0,0,0,0.18)" />
+          <feDropShadow dx="0" dy="2"  stdDeviation="5"  floodColor="rgba(0,0,0,0.14)" />
         </filter>
 
         {/* Radial edge vignette — subtle depth around garment edges */}
@@ -430,22 +444,23 @@ export function GarmentSVG({
           <stop offset="100%" stopColor="rgba(0,0,0,0.10)" />
         </linearGradient>
 
-        {/* Cylinder shadows for mug/waterbottle — gradients span the FULL canvas
-            width (0→1000) so the darkest parts sit at the canvas edges and fade
-            to transparent well before reaching the print zone, never shading the design */}
+        {/* Cylinder shadows for mug/waterbottle — steep fade so the dark edge
+            reaches ZERO before the print zone starts.
+            Mug print zone left edge ≈ x=188 (18.8%). Gradient is fully transparent
+            by 17% so no shading ever reaches the design area. */}
         <linearGradient id={`cyl-l-${filterId}`} gradientUnits="userSpaceOnUse"
           x1={0} y1={0} x2={1000} y2={0}>
-          <stop offset="0%"   stopColor="rgba(0,0,0,0.34)" />
-          <stop offset="20%"  stopColor="rgba(0,0,0,0.10)" />
-          <stop offset="40%"  stopColor="rgba(0,0,0,0.02)" />
+          <stop offset="0%"   stopColor="rgba(0,0,0,0.45)" />
+          <stop offset="10%"  stopColor="rgba(0,0,0,0.18)" />
+          <stop offset="17%"  stopColor="rgba(0,0,0,0.00)" />
           <stop offset="100%" stopColor="rgba(0,0,0,0)" />
         </linearGradient>
         <linearGradient id={`cyl-r-${filterId}`} gradientUnits="userSpaceOnUse"
           x1={0} y1={0} x2={1000} y2={0}>
           <stop offset="0%"   stopColor="rgba(0,0,0,0)" />
-          <stop offset="60%"  stopColor="rgba(0,0,0,0.02)" />
-          <stop offset="80%"  stopColor="rgba(0,0,0,0.10)" />
-          <stop offset="100%" stopColor="rgba(0,0,0,0.34)" />
+          <stop offset="83%"  stopColor="rgba(0,0,0,0.00)" />
+          <stop offset="90%"  stopColor="rgba(0,0,0,0.18)" />
+          <stop offset="100%" stopColor="rgba(0,0,0,0.45)" />
         </linearGradient>
         <linearGradient id={`cyl-hi-${filterId}`} gradientUnits="userSpaceOnUse"
           x1={0} y1={0} x2={1000} y2={0}>
@@ -468,8 +483,9 @@ export function GarmentSVG({
         )}
       </defs>
 
-      {/* Warm neutral background — slightly darker to contrast white garments */}
-      <rect width={1000} height={1000} fill="#edeae6" style={{ pointerEvents: "none" }} />
+      {/* Studio neutral background — warm medium-gray so white/light garments
+          have clear contrast and the product photo pops cleanly */}
+      <rect width={1000} height={1000} fill="#c9c4bc" style={{ pointerEvents: "none" }} />
 
       {/* Garment photo — shadow applied to the <g> wrapper so it works with
           both plain AND tinted images (colored shirts). The shadow follows
