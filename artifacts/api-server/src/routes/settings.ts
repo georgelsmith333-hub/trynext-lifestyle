@@ -1,0 +1,475 @@
+import { Router, type IRouter } from "express";
+import { db, settingsTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
+import { requireAdmin } from "../middlewares/adminAuth";
+import { logActivity, getAdminId } from "../lib/activityLog";
+import { testEmailConnection } from "../lib/email";
+import { redisCacheGet, redisCacheSet, redisCacheDel } from "../lib/redis";
+
+const router: IRouter = Router();
+
+// ── Redis-backed cache for public settings (30 seconds TTL) ──────────────────
+// /api/settings is called on EVERY page load (Navbar, Footer, SiteSettingsContext,
+// plus SEOHead on every route). Redis survives Render restarts; the in-process
+// fallback inside redis.ts covers the case where Redis isn't configured.
+const SETTINGS_CACHE_KEY = "trynex:settings:public";
+const SETTINGS_TTL_S = 30;
+
+async function invalidatePublicSettingsCache() {
+  await redisCacheDel(SETTINGS_CACHE_KEY);
+}
+
+// Keys allowed to be written via PUT /settings (admin-only write)
+const SETTINGS_KEYS = [
+  "siteName", "tagline", "phone", "email", "address",
+  "facebookUrl", "instagramUrl", "youtubeUrl",
+  "heroTitle", "heroSubtitle",
+  "announcementBar", "freeShippingThreshold",
+  "bkashNumber", "nagadNumber", "rocketNumber", "upayNumber",
+  "whatsappNumber", "shippingCost",
+  "googleAnalyticsId", "facebookPixelId", "googleAdsId",
+  "siteIcon", "facebookAppId", "googleClientId", "googleSiteVerification",
+  "promoBannerTitle", "promoBannerSubtitle", "promoBannerDiscount", "promoBannerCTA", "promoBannerEnabled",
+  // Design Studio keys — removeBgApiKey is secret (write-only via admin, NEVER in public response)
+  "removeBgApiKey", "studioTshirtColors", "studioMugColors",
+  "studioTshirtPrice", "studioMugPrice",
+  "studioHoodieColors", "studioHoodiePrice",
+  "studioLongsleeveColors", "studioLongsleevePrice",
+  "studioCapColors", "studioCapPrice",
+  "studioWaterbottleColors", "studioWaterbottlePrice",
+  // Visual Designer keys (Task #7)
+  "heroImageUrl", "heroGradient", "heroCTAText", "heroCTALink",
+  "primaryColor", "announcementColor",
+  "trustBadge1Title", "trustBadge1Desc",
+  "trustBadge2Title", "trustBadge2Desc",
+  "trustBadge3Title", "trustBadge3Desc",
+  "trustBadge4Title", "trustBadge4Desc",
+  "sectionFeaturedEnabled", "sectionCategoriesEnabled",
+  "sectionFlashSaleEnabled", "sectionTestimonialsEnabled",
+  "sectionStatsEnabled",
+  // Per-category visibility
+  "categoryTshirtsEnabled", "categoryHoodiesEnabled",
+  "categoryCapsEnabled", "categoryMugsEnabled", "categoryCustomEnabled",
+  // Trust badge icons
+  "trustBadge1Icon", "trustBadge2Icon", "trustBadge3Icon", "trustBadge4Icon",
+  // Announcement bar toggle + auto-hide
+  "announcementEnabled", "announcementAutoHide",
+  // Facebook Ads Conversion Suite (Task #9)
+  "flashSaleEnabled", "flashSaleEndTime", "flashSaleMessage",
+  "scarcityThreshold", "metaCapiToken",
+  "exitIntentPromoEnabled", "exitIntentPromoCode", "exitIntentPromoDiscount",
+  "salePageTitle", "salePageSubtitle", "salePageBadge",
+  // Spin-the-Wheel settings
+  "spinWheelEnabled", "spinWheelDelay", "spinWheelTitle", "spinWheelSubtitle",
+  "spinWheelResetAt", "spinWheelCooldownHours",
+  // SEO defaults
+  "seoDefaultTitle", "seoDefaultDescription", "seoDefaultKeywords", "seoOgImage", "seoTwitterHandle",
+  // Hero typewriter phrases (newline-separated string; blank = use frontend defaults)
+  "heroTypewriterPhrases",
+  // Blog categories (JSON array stored as string)
+  "blogCategories",
+  "homepage_layout",
+];
+
+// Trim-aware fallback: treats null, undefined, or empty/whitespace-only strings as "missing"
+// so blank DB values fall through to the default instead of leaking through.
+function fallback(value: string | null | undefined, def: string): string {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : def;
+}
+
+async function buildSettings(map: Record<string, string | null>) {
+  return {
+    siteName: fallback(map["siteName"], "TryNex Lifestyle"),
+    tagline: fallback(map["tagline"], "You imagine, we craft."),
+    phone: map["phone"] ?? "+880 1700-000000",
+    email: map["email"] ?? "hello@trynex.com",
+    address: map["address"] ?? "Banani, Dhaka-1213, Bangladesh",
+    facebookUrl: map["facebookUrl"] ?? "",
+    instagramUrl: map["instagramUrl"] ?? "",
+    youtubeUrl: map["youtubeUrl"] ?? "",
+    heroTitle: map["heroTitle"] ?? "",
+    heroSubtitle: map["heroSubtitle"] ?? "",
+    announcementBar: map["announcementBar"] ?? "🚚 Free delivery on orders above ৳1,500!",
+    freeShippingThreshold: parseFloat(map["freeShippingThreshold"] ?? "1500"),
+    bkashNumber: map["bkashNumber"] ?? "01712-345678",
+    nagadNumber: map["nagadNumber"] ?? "01811-234567",
+    rocketNumber: map["rocketNumber"] ?? "01611-234567",
+    upayNumber: map["upayNumber"] ?? "",
+    whatsappNumber: map["whatsappNumber"] ?? "01700-000000",
+    shippingCost: parseFloat(map["shippingCost"] ?? "100"),
+    googleAnalyticsId: map["googleAnalyticsId"] ?? "",
+    facebookPixelId: map["facebookPixelId"] ?? "",
+    googleAdsId: map["googleAdsId"] ?? "",
+    siteIcon: map["siteIcon"] ?? "",
+    facebookAppId: map["facebookAppId"] ?? "",
+    // Fallback to GOOGLE_CLIENT_ID env when the settings row is absent so
+    // one-tap login keeps working under partial misconfig (env set, DB key
+    // not yet added).
+    googleClientId: map["googleClientId"] || process.env.GOOGLE_CLIENT_ID || "",
+    googleSiteVerification: map["googleSiteVerification"] ?? "",
+    promoBannerTitle: map["promoBannerTitle"] ?? "",
+    promoBannerSubtitle: map["promoBannerSubtitle"] ?? "",
+    promoBannerDiscount: map["promoBannerDiscount"] ?? "",
+    promoBannerCTA: map["promoBannerCTA"] ?? "",
+    promoBannerEnabled: (map["promoBannerEnabled"] ?? "true") !== "false",
+    // Public Design Studio settings (safe to expose) — per product type
+    studioTshirtColors: map["studioTshirtColors"] ?? "",
+    studioMugColors: map["studioMugColors"] ?? "",
+    studioHoodieColors: map["studioHoodieColors"] ?? "",
+    studioLongsleeveColors: map["studioLongsleeveColors"] ?? "",
+    studioCapColors: map["studioCapColors"] ?? "",
+    studioWaterbottleColors: map["studioWaterbottleColors"] ?? "",
+    // Admin-configured prices for custom studio orders (BDT)
+    studioTshirtPrice: parseFloat(map["studioTshirtPrice"] ?? "1099"),
+    studioMugPrice: parseFloat(map["studioMugPrice"] ?? "799"),
+    studioHoodiePrice: parseFloat(map["studioHoodiePrice"] ?? "1699"),
+    studioLongsleevePrice: parseFloat(map["studioLongsleevePrice"] ?? "1299"),
+    studioCapPrice: parseFloat(map["studioCapPrice"] ?? "699"),
+    studioWaterbottlePrice: parseFloat(map["studioWaterbottlePrice"] ?? "899"),
+    // Visual Designer settings (Task #7)
+    heroImageUrl: map["heroImageUrl"] ?? "",
+    heroGradient: map["heroGradient"] ?? "",
+    heroCTAText: map["heroCTAText"] ?? "Shop Now",
+    heroCTALink: map["heroCTALink"] ?? "/shop",
+    primaryColor: map["primaryColor"] ?? "#E85D04",
+    announcementColor: map["announcementColor"] ?? "#E85D04",
+    trustBadge1Title: map["trustBadge1Title"] ?? "100% Secure Payments",
+    trustBadge1Desc: map["trustBadge1Desc"] ?? "bKash, Nagad, Rocket & COD",
+    trustBadge2Title: map["trustBadge2Title"] ?? "Nationwide Delivery",
+    trustBadge2Desc: map["trustBadge2Desc"] ?? "All 64 districts of Bangladesh",
+    trustBadge3Title: map["trustBadge3Title"] ?? "Quality Guarantee",
+    trustBadge3Desc: map["trustBadge3Desc"] ?? "230-320GSM premium fabric",
+    trustBadge4Title: map["trustBadge4Title"] ?? "5,000+ Happy Customers",
+    trustBadge4Desc: map["trustBadge4Desc"] ?? "98% satisfaction rate",
+    sectionFeaturedEnabled: (map["sectionFeaturedEnabled"] ?? "true") !== "false",
+    sectionCategoriesEnabled: (map["sectionCategoriesEnabled"] ?? "true") !== "false",
+    sectionFlashSaleEnabled: (map["sectionFlashSaleEnabled"] ?? "true") !== "false",
+    sectionTestimonialsEnabled: (map["sectionTestimonialsEnabled"] ?? "true") !== "false",
+    sectionStatsEnabled: (map["sectionStatsEnabled"] ?? "true") !== "false",
+    // Per-category visibility
+    categoryTshirtsEnabled: (map["categoryTshirtsEnabled"] ?? "true") !== "false",
+    categoryHoodiesEnabled: (map["categoryHoodiesEnabled"] ?? "true") !== "false",
+    categoryCapsEnabled: (map["categoryCapsEnabled"] ?? "true") !== "false",
+    categoryMugsEnabled: (map["categoryMugsEnabled"] ?? "true") !== "false",
+    categoryCustomEnabled: (map["categoryCustomEnabled"] ?? "true") !== "false",
+    // Trust badge icons (default icon keys)
+    trustBadge1Icon: map["trustBadge1Icon"] ?? "shield",
+    trustBadge2Icon: map["trustBadge2Icon"] ?? "truck",
+    trustBadge3Icon: map["trustBadge3Icon"] ?? "award",
+    trustBadge4Icon: map["trustBadge4Icon"] ?? "users",
+    announcementEnabled: (map["announcementEnabled"] ?? "true") !== "false",
+    announcementAutoHide: (map["announcementAutoHide"] ?? "false") === "true",
+    // Facebook Ads Conversion Suite (Task #9)
+    flashSaleEnabled: (map["flashSaleEnabled"] ?? "false") !== "false",
+    flashSaleEndTime: map["flashSaleEndTime"] ?? "",
+    flashSaleMessage: map["flashSaleMessage"] ?? "⚡ FLASH SALE — Limited Stock!",
+    scarcityThreshold: parseInt(map["scarcityThreshold"] ?? "5", 10),
+    exitIntentPromoEnabled: (map["exitIntentPromoEnabled"] ?? "true") !== "false",
+    exitIntentPromoCode: map["exitIntentPromoCode"] ?? "",
+    exitIntentPromoDiscount: map["exitIntentPromoDiscount"] ?? "10%",
+    salePageTitle: map["salePageTitle"] ?? "Mega Sale — Up to 50% Off!",
+    salePageSubtitle: map["salePageSubtitle"] ?? "Bangladesh's best custom apparel at unbeatable prices.",
+    salePageBadge: map["salePageBadge"] ?? "LIMITED TIME",
+    // Spin-the-Wheel
+    spinWheelEnabled: (map["spinWheelEnabled"] ?? "true") !== "false",
+    spinWheelDelay: parseInt(map["spinWheelDelay"] ?? "4", 10),
+    spinWheelTitle: map["spinWheelTitle"] ?? "Spin & Win an Offer!",
+    spinWheelSubtitle: map["spinWheelSubtitle"] ?? "One free spin — no purchase needed.",
+    spinWheelResetAt: parseInt(map["spinWheelResetAt"] ?? "0", 10),
+    spinWheelCooldownHours: parseInt(map["spinWheelCooldownHours"] ?? "24", 10),
+    // SEO defaults (used as fallback when page has no override)
+    seoDefaultTitle: map["seoDefaultTitle"] ?? "TryNex Lifestyle — Custom Apparel & Gifts in Bangladesh",
+    seoDefaultDescription: map["seoDefaultDescription"] ?? "Design and order custom T-shirts, hoodies, mugs, caps, and gift hampers in Bangladesh. Premium quality, nationwide delivery, cash on delivery.",
+    seoDefaultKeywords: map["seoDefaultKeywords"] ?? "custom t-shirt bangladesh, personalized mug, gift hamper, custom hoodie, design studio, trynex",
+    seoOgImage: map["seoOgImage"] ?? "",
+    seoTwitterHandle: map["seoTwitterHandle"] ?? "",
+    // Hero typewriter phrases — newline-separated string; blank means use frontend defaults
+    heroTypewriterPhrases: map["heroTypewriterPhrases"] ?? "",
+    homepage_layout: map["homepage_layout"] ?? "[]",
+    // NOTE: removeBgApiKey is intentionally NOT included here — it is server-only secret
+    // NOTE: metaCapiToken is intentionally NOT included — server-only
+    // Safe boolean flag: tells admin UI whether the token is configured (no secret exposed)
+    metaCapiTokenConfigured: !!(map["metaCapiToken"]?.trim()),
+  };
+}
+
+async function getPublicSettings() {
+  const rows = await db.select().from(settingsTable);
+  const map: Record<string, string | null> = {};
+  for (const row of rows) { map[row.key] = row.value; }
+  return buildSettings(map);
+}
+
+async function getAdminSettings() {
+  const rows = await db.select().from(settingsTable);
+  const map: Record<string, string | null> = {};
+  for (const row of rows) { map[row.key] = row.value; }
+  const base = await buildSettings(map);
+  return {
+    ...base,
+    // Admin-only: include whether a remove.bg API key is configured (masked, not the actual value)
+    removeBgApiKeyConfigured: !!(map["removeBgApiKey"]?.trim()),
+  };
+}
+
+/** Public endpoint — announcement bar data (subset of /settings). */
+router.get("/announcement", async (req, res) => {
+  try {
+    const cached = await redisCacheGet<Record<string, unknown>>(SETTINGS_CACHE_KEY);
+    const data = cached ?? await getPublicSettings();
+    res.json({
+      enabled: data.announcementEnabled !== false,
+      text: data.announcementBar ?? "",
+      color: data.announcementColor ?? "#E85D04",
+      autoHide: data.announcementAutoHide === true,
+    });
+  } catch (err) {
+    req.log.error({ err }, "Failed to get announcement");
+    res.json({ enabled: false, text: "", color: "#E85D04", autoHide: false });
+  }
+});
+
+/** Public endpoint — NO secrets. Also aliased at /settings/public for compatibility. */
+router.get(["/settings", "/settings/public"], async (req, res) => {
+  try {
+    const cached = await redisCacheGet<Record<string, unknown>>(SETTINGS_CACHE_KEY);
+    if (cached) {
+      res.set("X-Cache-Status", "HIT");
+      res.json(cached);
+      return;
+    }
+    const data = await getPublicSettings();
+    await redisCacheSet(SETTINGS_CACHE_KEY, data, SETTINGS_TTL_S);
+    res.set("X-Cache-Status", "MISS");
+    res.json(data);
+  } catch (err) {
+    req.log.error({ err }, "Failed to get settings");
+    // Best-effort: try cache even if it's stale
+    const stale = await redisCacheGet<Record<string, unknown>>(SETTINGS_CACHE_KEY).catch(() => null);
+    if (stale) {
+      res.set("X-Cache-Status", "STALE");
+      res.json(stale);
+      return;
+    }
+    res.status(500).json({ error: "internal_error", message: "Failed to get settings" });
+  }
+});
+
+/** Public endpoint — Get single setting by key */
+router.get("/settings/:key", async (req, res) => {
+  try {
+    const { key } = req.params;
+    // Don't expose secrets via this endpoint
+    if (key === "removeBgApiKey" || key === "metaCapiToken") {
+      res.status(403).json({ error: "forbidden", message: "Cannot access secret keys" });
+      return;
+    }
+    const [row] = await db.select().from(settingsTable).where(eq(settingsTable.key, key));
+    if (!row) {
+      res.status(404).json({ error: "not_found", message: "Setting not found" });
+      return;
+    }
+    res.json({ key: row.key, value: row.value });
+  } catch (err) {
+    req.log.error({ err }, "Failed to get setting");
+    res.status(500).json({ error: "internal_error", message: "Failed to get setting" });
+  }
+});
+
+/** Admin-only: returns masked metadata (NOT the actual API key value) */
+router.get("/admin/studio-settings", requireAdmin, async (req, res) => {
+  try {
+    res.json(await getAdminSettings());
+  } catch (err) {
+    req.log.error({ err }, "Failed to get admin settings");
+    res.status(500).json({ error: "internal_error", message: "Failed to get settings" });
+  }
+});
+
+router.put("/settings", requireAdmin, async (req, res) => {
+  try {
+    const changedKeys = SETTINGS_KEYS.filter(k => req.body[k] !== undefined);
+    const beforeRows = changedKeys.length > 0 ? await db.select().from(settingsTable) : [];
+    const beforeMap: Record<string, string | null> = {};
+    for (const row of beforeRows) beforeMap[row.key] = row.value;
+    const afterMap: Record<string, string | null> = {};
+    for (const key of SETTINGS_KEYS) {
+      if (req.body[key] !== undefined) {
+        const value = req.body[key]?.toString() ?? null;
+        // For removeBgApiKey/metaCapiToken: only write if a non-empty value is provided (don't overwrite with blank)
+        if (key === "removeBgApiKey" && !value?.trim()) continue;
+        if (key === "metaCapiToken" && !value?.trim()) continue;
+        await db.insert(settingsTable).values({ key, value }).onConflictDoUpdate({
+          target: settingsTable.key,
+          set: { value, updatedAt: new Date() },
+        });
+        afterMap[key] = value;
+      }
+    }
+    if (changedKeys.length > 0) {
+      const before: Record<string, string | null> = {};
+      for (const k of Object.keys(afterMap)) before[k] = beforeMap[k] ?? null;
+      logActivity({ action: "update", entity: "setting", entityId: 0, entityName: "Site Settings", before: before as unknown as Record<string, unknown>, after: afterMap as unknown as Record<string, unknown>, adminId: getAdminId(req) });
+    }
+    // Bust and repopulate the cache so the next GET reflects changes immediately.
+    await invalidatePublicSettingsCache();
+    const fresh = await getPublicSettings();
+    await redisCacheSet(SETTINGS_CACHE_KEY, fresh, SETTINGS_TTL_S);
+    res.json(fresh);
+  } catch (err) {
+    req.log.error({ err }, "Failed to update settings");
+    res.status(500).json({ error: "internal_error", message: "Failed to update settings" });
+  }
+});
+
+/** Admin Visual Designer: read all designer-specific settings */
+router.get("/admin/designer-settings", requireAdmin, async (req, res) => {
+  try {
+    const all = await getAdminSettings();
+    const s = all as Record<string, unknown>;
+    res.json({
+      primaryColor: s["primaryColor"] ?? "#E85D04",
+      announcementColor: s["announcementColor"] ?? "#E85D04",
+      heroImageUrl: s["heroImageUrl"] ?? "",
+      heroGradient: s["heroGradient"] ?? "",
+      heroCTAText: s["heroCTAText"] ?? "Shop Now",
+      heroCTALink: s["heroCTALink"] ?? "/products",
+      heroTitle: s["heroTitle"] ?? "",
+      heroSubtitle: s["heroSubtitle"] ?? "",
+      announcementBar: s["announcementBar"] ?? "",
+      promoBannerTitle: s["promoBannerTitle"] ?? "",
+      promoBannerSubtitle: s["promoBannerSubtitle"] ?? "",
+      promoBannerDiscount: s["promoBannerDiscount"] ?? "",
+      promoBannerCTA: s["promoBannerCTA"] ?? "",
+      trustBadge1Title: s["trustBadge1Title"] ?? "",
+      trustBadge1Desc: s["trustBadge1Desc"] ?? "",
+      trustBadge2Title: s["trustBadge2Title"] ?? "",
+      trustBadge2Desc: s["trustBadge2Desc"] ?? "",
+      trustBadge3Title: s["trustBadge3Title"] ?? "",
+      trustBadge3Desc: s["trustBadge3Desc"] ?? "",
+      trustBadge4Title: s["trustBadge4Title"] ?? "",
+      trustBadge4Desc: s["trustBadge4Desc"] ?? "",
+      trustBadge1Icon: s["trustBadge1Icon"] ?? "shield",
+      trustBadge2Icon: s["trustBadge2Icon"] ?? "truck",
+      trustBadge3Icon: s["trustBadge3Icon"] ?? "award",
+      trustBadge4Icon: s["trustBadge4Icon"] ?? "users",
+      sectionFeaturedEnabled: s["sectionFeaturedEnabled"] ?? true,
+      sectionCategoriesEnabled: s["sectionCategoriesEnabled"] ?? true,
+      sectionFlashSaleEnabled: s["sectionFlashSaleEnabled"] ?? true,
+      sectionTestimonialsEnabled: s["sectionTestimonialsEnabled"] ?? true,
+      sectionStatsEnabled: s["sectionStatsEnabled"] ?? true,
+      categoryTshirtsEnabled: s["categoryTshirtsEnabled"] ?? true,
+      categoryHoodiesEnabled: s["categoryHoodiesEnabled"] ?? true,
+      categoryCapsEnabled: s["categoryCapsEnabled"] ?? true,
+      categoryMugsEnabled: s["categoryMugsEnabled"] ?? true,
+      categoryCustomEnabled: s["categoryCustomEnabled"] ?? true,
+      announcementEnabled: s["announcementEnabled"] ?? true,
+      announcementAutoHide: s["announcementAutoHide"] ?? false,
+    });
+  } catch (err) {
+    req.log.error({ err }, "Failed to get designer settings");
+    res.status(500).json({ error: "internal_error", message: "Failed to get designer settings" });
+  }
+});
+
+/** Admin Visual Designer: partial update of designer-specific settings */
+router.patch("/admin/designer-settings", requireAdmin, async (req, res) => {
+  const DESIGNER_KEYS = [
+    "primaryColor", "announcementColor",
+    "heroImageUrl", "heroGradient", "heroCTAText", "heroCTALink",
+    "heroTitle", "heroSubtitle", "announcementBar",
+    "promoBannerTitle", "promoBannerSubtitle", "promoBannerDiscount", "promoBannerCTA",
+    "trustBadge1Title", "trustBadge1Desc", "trustBadge1Icon",
+    "trustBadge2Title", "trustBadge2Desc", "trustBadge2Icon",
+    "trustBadge3Title", "trustBadge3Desc", "trustBadge3Icon",
+    "trustBadge4Title", "trustBadge4Desc", "trustBadge4Icon",
+    "sectionFeaturedEnabled", "sectionCategoriesEnabled",
+    "sectionFlashSaleEnabled", "sectionTestimonialsEnabled", "sectionStatsEnabled",
+    "categoryTshirtsEnabled", "categoryHoodiesEnabled",
+    "categoryCapsEnabled", "categoryMugsEnabled", "categoryCustomEnabled",
+    "announcementEnabled", "announcementAutoHide",
+  ];
+  try {
+    for (const key of DESIGNER_KEYS) {
+      if (req.body[key] !== undefined) {
+        const value = req.body[key]?.toString() ?? null;
+        await db.insert(settingsTable).values({ key, value }).onConflictDoUpdate({
+          target: settingsTable.key,
+          set: { value, updatedAt: new Date() },
+        });
+      }
+    }
+    // Bust public settings cache so the next GET /settings reflects changes immediately
+    await invalidatePublicSettingsCache();
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, "Failed to update designer settings");
+    res.status(500).json({ error: "internal_error", message: "Failed to update designer settings" });
+  }
+});
+
+/** Admin: test SMTP email connection */
+router.post("/admin/test-email", requireAdmin, async (req, res) => {
+  try {
+    const result = await testEmailConnection();
+    if (result.ok) {
+      res.json({ success: true, message: "SMTP connection verified successfully" });
+    } else {
+      res.status(400).json({ success: false, error: result.error });
+    }
+  } catch (err) {
+    req.log.error({ err }, "Email connection test failed");
+    res.status(500).json({ success: false, error: "Internal error testing email" });
+  }
+});
+
+/** Admin: partial update of any settings */
+router.patch("/admin/settings", requireAdmin, async (req, res) => {
+  try {
+    const changedKeys = Object.keys(req.body).filter(k => SETTINGS_KEYS.includes(k));
+    if (changedKeys.length === 0) {
+      res.status(400).json({ error: "validation_error", message: "No valid settings provided" });
+      return;
+    }
+    
+    const beforeRows = await db.select().from(settingsTable);
+    const beforeMap: Record<string, string | null> = {};
+    for (const row of beforeRows) beforeMap[row.key] = row.value;
+    
+    const afterMap: Record<string, string | null> = {};
+    for (const key of changedKeys) {
+      const value = req.body[key]?.toString() ?? null;
+      if (key === "removeBgApiKey" && !value?.trim()) continue;
+      if (key === "metaCapiToken" && !value?.trim()) continue;
+      
+      await db.insert(settingsTable).values({ key, value }).onConflictDoUpdate({
+        target: settingsTable.key,
+        set: { value, updatedAt: new Date() },
+      });
+      afterMap[key] = value;
+    }
+    
+    if (Object.keys(afterMap).length > 0) {
+      const before: Record<string, string | null> = {};
+      for (const k of Object.keys(afterMap)) before[k] = beforeMap[k] ?? null;
+      logActivity({ 
+        action: "update", 
+        entity: "setting", 
+        entityId: 0, 
+        entityName: "Site Settings (Partial)", 
+        before: before as unknown as Record<string, unknown>, 
+        after: afterMap as unknown as Record<string, unknown>, 
+        adminId: getAdminId(req) 
+      });
+      await invalidatePublicSettingsCache();
+    }
+    
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, "Failed to update settings");
+    res.status(500).json({ error: "internal_error", message: "Failed to update settings" });
+  }
+});
+
+export default router;
