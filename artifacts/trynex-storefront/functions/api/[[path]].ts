@@ -7,16 +7,12 @@
    stripping the host/origin so CORS works correctly.
 ═══════════════════════════════════════════════════════ */
 
+const RENDER_BACKEND = "https://trynex-api.onrender.com";
+
 export const onRequest: PagesFunction<{
   API_URL: string;
 }> = async ({ request, env, params }) => {
-  const apiUrl = env.API_URL;
-  if (!apiUrl) {
-    return new Response(JSON.stringify({ error: "API_URL not configured" }), {
-      status: 503,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  const apiUrl = env.API_URL || RENDER_BACKEND;
 
   // Reconstruct the path from wildcard params
   const pathSegments = (params["path"] as string[] | string) ?? [];
