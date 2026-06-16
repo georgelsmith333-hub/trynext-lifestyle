@@ -694,35 +694,6 @@ export default function ProductDetail() {
                 )}
               </motion.div>
 
-              {/* Mobile Image Stack */}
-              <div className="flex flex-col md:hidden gap-4">
-                {(() => {
-                  const rawImages = [product.imageUrl, ...(product.images || [])].filter(Boolean) as string[];
-                  const allImages = [...new Set(rawImages)];
-                  return (
-                    <>
-                      <div className="aspect-square rounded-3xl overflow-hidden bg-white border border-gray-100">
-                         <img src={displayImage} className="w-full h-full object-cover" alt={product.name} />
-                      </div>
-                      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                        {allImages.map((img, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setActiveImage(img)}
-                            className={cn(
-                              "relative w-20 h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all snap-start",
-                              activeImage === img || (!activeImage && i === 0) ? "border-orange-500 scale-95" : "border-transparent"
-                            )}
-                          >
-                            <img src={img} className="w-full h-full object-cover" alt="" />
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-
               {(() => {
                 const rawImages = [product.imageUrl, ...(product.images || [])].filter(Boolean) as string[];
                 const allImages = [...new Set(rawImages)];

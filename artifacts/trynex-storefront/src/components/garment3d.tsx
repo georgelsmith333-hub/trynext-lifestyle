@@ -723,11 +723,24 @@ export function PhotoMockupMesh({
   const backPhotoTex  = useUrlTexture(backPhotoSrc ?? frontPhotoSrc);
 
   // Three.js material colour × photo texture = colour-tinted photo.
-  // adjustGarmentColor nudges extreme white/black so they show 3-D depth.
-  const renderColor = useMemo(
-    () => garmentColor ? adjustGarmentColor(garmentColor) : "#ffffff",
-    [garmentColor]
-  );
+  // IMPORTANT: Do NOT use adjustGarmentColor here. That function was designed for
+  // procedural 3D meshes (RealisticShirt/GarmentGLB) where pure-white geometry
+  // looks flat. Photo planes already have the correct tonal rendering baked in.
+  // Applying adjustGarmentColor makes near-white garments look grey/faded (#D2CFC9)
+  // and near-black garments look washed out (#2e2e2e instead of the dark photo).
+  // Rule: near-white (luminance > 0.88) → "#ffffff" (no tinting, photo as-is);
+  //       coloured / dark → use the exact garmentColor for multiply-tint.
+  const renderColor = useMemo(() => {
+    if (!garmentColor) return "#ffffff";
+    const h = garmentColor.replace("#", "");
+    if (h.length === 6) {
+      const r = parseInt(h.slice(0, 2), 16);
+      const g = parseInt(h.slice(2, 4), 16);
+      const b = parseInt(h.slice(4, 6), 16);
+      if ((0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.88) return "#ffffff";
+    }
+    return garmentColor;
+  }, [garmentColor]);
 
   const planeGeo = useMemo(
     () => new THREE.PlaneGeometry(planeW, planeH),
