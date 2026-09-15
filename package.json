@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "mockups:audit-sources": "python scripts/audit_trynext_mockups.py",
+    "mockups:prepare": "python tools/extract-photoreal-face-templates.py dist-mockups/staging/smart-v1/templates",
+    "mockups:build": "node tools/build-smartobject-mockups.mjs",
+    "mockups:audit-psd": "python tools/audit_psd_masters.py",
+    "mockups:validate-matrix": "node tools/validate-smart-matrix.mjs",
+    "validate:mockups": "node scripts/validate-mockup-matrix.mjs",
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
@@ -10,13 +16,12 @@
   },
   "private": true,
   "devDependencies": {
+    "ag-psd": "^31.0.2",
+    "pngjs": "^7.0.0",
     "prettier": "^3.8.3",
     "typescript": "~5.9.3"
   },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "^19.2.0",
-      "@types/react-dom": "^19.2.0"
-    }
+  "dependencies": {
+    "sharp": "^0.35.3"
   }
 }

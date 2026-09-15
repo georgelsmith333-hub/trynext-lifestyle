@@ -32,7 +32,7 @@ export function ScrollProgressBar() {
         left: 0,
         right: 0,
         height: "3px",
-        zIndex: 9999,
+        zIndex: 9995,
         background: "linear-gradient(90deg, #E85D04, #FB8500, #FFC947)",
         scaleX: spring,
         transformOrigin: "0%",

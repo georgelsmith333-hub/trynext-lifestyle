@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "tshirt:red:front",
+  "category": "tshirt",
+  "colorSlug": "red",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/tshirt-red-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/tshirt/red/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/tshirt-red-front.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    43,
+    66,
+    980,
+    957
+  ],
+  "sha256": "2843267253ca36bd0440fec627f17aaf51dc9fddb2d6772ff2310dc3bf6d2425",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

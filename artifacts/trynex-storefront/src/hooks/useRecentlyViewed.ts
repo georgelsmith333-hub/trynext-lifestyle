@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-const STORAGE_KEY = "trynex_recently_viewed";
+const STORAGE_KEY = "trynext_recently_viewed";
 const MAX_ITEMS = 8;
 
 interface RecentProduct {

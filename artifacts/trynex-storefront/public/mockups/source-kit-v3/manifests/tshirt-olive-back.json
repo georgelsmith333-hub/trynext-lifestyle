@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "tshirt:olive:back",
+  "category": "tshirt",
+  "colorSlug": "olive",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/tshirt-olive-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/tshirt/olive/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/tshirt-olive-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    43,
+    66,
+    980,
+    957
+  ],
+  "sha256": "797c3258d93288faaa8517d8a8d49594073069492e54f89a95bc41d689b184a0",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

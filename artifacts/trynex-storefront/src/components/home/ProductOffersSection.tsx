@@ -169,7 +169,7 @@ export function ProductOffersSection({ fullPage = false }: { fullPage?: boolean 
           if (pct >= 30) return "#16a34a";
           return "#2563eb";
         })(),
-        href: `/product/${p.id}`,
+        href: `/product/${p.slug || p.id}`,
       };
     });
   })();
@@ -367,19 +367,37 @@ export function ProductOffersSection({ fullPage = false }: { fullPage?: boolean 
                         </div>
                       )}
 
-                      <Link
-                        href={product.href}
-                        className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-black text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
-                        style={{
-                          background: isHighlight
-                            ? "linear-gradient(135deg,#E85D04,#FB8500)"
-                            : "linear-gradient(135deg,#f3f4f6,#e9eaec)",
-                          color: isHighlight ? "white" : "#374151",
-                          boxShadow: isHighlight ? "0 4px 14px rgba(232,93,4,0.35)" : "none",
-                        }}
-                      >
-                        <ShoppingCart className="w-4 h-4" /> Order Now
-                      </Link>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <Link
+                          href="/design-studio"
+                          className="flex items-center justify-center gap-2 min-h-11 py-3 px-3 rounded-xl font-black text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                          style={{
+                            background: isHighlight
+                              ? "linear-gradient(135deg,#E85D04,#FB8500)"
+                              : "#fff4ee",
+                            color: "#E85D04",
+                            border: "1px solid #fdd5b4",
+                            boxShadow: isHighlight ? "0 4px 14px rgba(232,93,4,0.22)" : "none",
+                          }}
+                          aria-label={`Customize ${product.name}`}
+                        >
+                          <Paintbrush className="w-4 h-4" /> Customize
+                        </Link>
+                        <Link
+                          href={product.href}
+                          className="flex items-center justify-center gap-2 min-h-11 py-3 px-3 rounded-xl font-black text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                          style={{
+                            background: isHighlight
+                              ? "rgba(255,255,255,0.96)"
+                              : "linear-gradient(135deg,#f3f4f6,#e9eaec)",
+                            color: isHighlight ? "#E85D04" : "#374151",
+                            border: isHighlight ? "1px solid #fdd5b4" : "1px solid #e5e7eb",
+                          }}
+                          aria-label={`Order ${product.name}`}
+                        >
+                          <ShoppingCart className="w-4 h-4" /> Order
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </motion.div>

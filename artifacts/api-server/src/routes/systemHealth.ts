@@ -6,6 +6,10 @@ import { ObjectStorageService } from "../lib/objectStorage";
 import { tgIsConfigured, tgSend } from "../lib/telegram";
 import { db } from "@workspace/db";
 import { sql } from "drizzle-orm";
+import os from "os";
+function osLoadAvg(): number[] {
+  try { return os.loadavg(); } catch { return [0, 0, 0]; }
+}
 
 const router = Router();
 const storageService = new ObjectStorageService();
@@ -85,11 +89,18 @@ router.get("/admin/system/health", requireAdmin, async (_req, res) => {
       apiPublicUrl,
       nodeEnv: process.env.NODE_ENV || "development",
     },
+    performance: {
+      uptime: Math.floor(process.uptime()),
+      memoryMB: Math.round(process.memoryUsage().rss / 1024 / 1024),
+      memoryHeapMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+      cpuLoad: osLoadAvg(),
+      nodeVersion: process.version,
+    },
   });
 });
 
 // ── POST /api/admin/system/flush-cache ───────────────────────────────────────
-// Clears the known Redis cache keys used by TryNex API.
+// Clears the known Redis cache keys used by Trynext API.
 router.post("/admin/system/flush-cache", requireAdmin, async (_req, res) => {
   const cacheKeys = [
     "admin_stats",
@@ -101,7 +112,7 @@ router.post("/admin/system/flush-cache", requireAdmin, async (_req, res) => {
     "flash_sale",
     "featured_products",
     "referral_stats",
-    "_trynex_health",
+    "_trynext_health",
   ];
 
   try {
@@ -184,7 +195,7 @@ router.post("/admin/system/test-telegram", requireAdmin, async (_req, res) => {
   }
 
   try {
-    const sent = await tgSend("🔔 <b>TryNex Admin Test</b>\n\nTelegram notifications are working correctly! ✅");
+    const sent = await tgSend("🔔 <b>Trynext Admin Test</b>\n\nTelegram notifications are working correctly! ✅");
     if (sent) {
       res.json({ success: true, message: "Test message sent to Telegram successfully." });
     } else {

@@ -1,0 +1,34 @@
+{
+  "seed_definition_count": 67,
+  "live_api_count": 70,
+  "missing_seed_slugs": [
+    "t-shirts",
+    "hoodies",
+    "mugs",
+    "caps",
+    "long-sleeves",
+    "water-bottles",
+    "custom-orders"
+  ],
+  "missing_seed_names": [
+    "T-Shirts",
+    "Hoodies",
+    "Mugs",
+    "Caps",
+    "Long Sleeves",
+    "Water Bottles",
+    "Custom Orders"
+  ],
+  "live_duplicate_slugs": {},
+  "live_duplicate_names": {},
+  "shared_image_references": {},
+  "live_categories": {
+    "T-Shirts": 13,
+    "Water Bottles": 10,
+    "Long Sleeves": 10,
+    "Caps": 12,
+    "Mugs": 12,
+    "Hoodies": 12,
+    "Custom Orders": 1
+  }
+}

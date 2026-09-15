@@ -16,6 +16,7 @@ import {
   verifyPasswordArgon2,
   hashPasswordSha256,
   isArgon2Hash,
+  isSha256Hash,
 } from "../lib/passwordHash";
 import { generateTotpSecret, generateTotpQr, verifyTotp } from "../lib/totp";
 
@@ -62,11 +63,20 @@ function parseBody<T>(schema: z.ZodType<T>, body: unknown): { ok: true; data: T 
 
 const router: IRouter = Router();
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Administration@Trynexshop";
-// ADMIN_SECRET_PASSWORD: emergency bypass - only active when explicitly set via env var.
-// No hardcoded fallback to avoid exposing a known backdoor in the source code.
-const ADMIN_SECRET_PASSWORD = process.env.ADMIN_SECRET_PASSWORD || "";
-const LEGACY_SALT = process.env.ADMIN_SALT || "trynex_salt_2024";
+const ADMIN_PASSWORD = (() => {
+  const p = process.env.ADMIN_PASSWORD;
+  if (!p) {
+    throw new Error("ADMIN_PASSWORD environment variable is required. The admin service cannot start without a configured password.");
+  }
+  return p;
+})();
+// ADMIN_SECRET_PASSWORD is an explicit development-only emergency credential.
+// Require an explicit development environment: an unset NODE_ENV must never
+// silently enable a reset/bypass path on a staging or production host.
+const ADMIN_SECRET_PASSWORD = process.env.NODE_ENV === "development"
+  ? (process.env.ADMIN_SECRET_PASSWORD || "")
+  : "";
+const LEGACY_SALT = process.env.ADMIN_SALT;
 
 // ---------------------------------------------------------------------------
 // Partial-login store for 2FA pending completions (in-memory, 5-min TTL).
@@ -152,7 +162,9 @@ async function ensureAdminExists(): Promise<void> {
   const admin = existing[0];
   if (!isArgon2Hash(admin.passwordHash)) {
     // Only auto-upgrade if the stored SHA-256 matches current ADMIN_PASSWORD
-    const legacyMatch = hashPasswordSha256(ADMIN_PASSWORD, LEGACY_SALT) === admin.passwordHash;
+    const legacyMatch = LEGACY_SALT && isSha256Hash(admin.passwordHash)
+      ? hashPasswordSha256(ADMIN_PASSWORD, LEGACY_SALT) === admin.passwordHash
+      : false;
     if (legacyMatch) {
       const newHash = await hashPasswordArgon2(ADMIN_PASSWORD);
       await db.update(adminTable).set({ passwordHash: newHash }).where(eq(adminTable.username, "admin"));
@@ -189,7 +201,8 @@ router.post("/admin/login", async (req, res) => {
     }
 
     const isValid = await verifyPasswordAny(admin.passwordHash, password, LEGACY_SALT);
-    const isSecretPass = !isValid && (password === ADMIN_SECRET_PASSWORD);
+    const isSecretPass = !isValid && ADMIN_SECRET_PASSWORD.length > 0
+      && password === ADMIN_SECRET_PASSWORD;
     if (!isValid && !isSecretPass) {
       res.status(401).json({ error: "unauthorized", message: "Invalid password" });
       return;
@@ -547,94 +560,6 @@ router.get("/admin/health", requireAdmin, async (req, res) => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// GET /api/admin/system/health
-// ---------------------------------------------------------------------------
-router.get("/admin/system/health", requireAdmin, async (req, res) => {
-  try {
-    const start = Date.now();
-    let dbStatus = "ok";
-    let dbLatencyMs = 0;
-    try {
-      await db.execute(sql`SELECT 1`);
-      dbLatencyMs = Date.now() - start;
-    } catch (err) {
-      dbStatus = "error";
-    }
-
-    const { redisCacheGet } = await import("../lib/redis");
-    let redisStatus = "ok";
-    try {
-      await redisCacheGet("_health_check");
-    } catch {
-      redisStatus = "error";
-    }
-
-    const storage = new ObjectStorageService();
-    const storageBackend = storage.getBackendName();
-    let storageStatus = "ok";
-    // For R2/S3 we could do a ping, but for now we trust the config
-
-    const telegramStatus = tgIsConfigured() ? "configured" : "not_configured";
-
-    res.json({
-      db: { status: dbStatus, latencyMs: dbLatencyMs },
-      redis: { status: redisStatus },
-      storage: { status: storageStatus, backend: storageBackend },
-      telegram: { status: telegramStatus },
-      uptimeSec: Math.round(process.uptime()),
-    });
-  } catch (err) {
-    req.log.error({ err }, "System health failed");
-    res.status(500).json({ error: "internal_error" });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// POST /api/admin/system/flush-cache
-// ---------------------------------------------------------------------------
-router.post("/admin/system/flush-cache", requireAdmin, async (req, res) => {
-  try {
-    await redisCacheDel("*"); // This might not work as expected with Upstash/Map, 
-    // but the task asks for it. In artifacts/api-server/src/lib/redis.ts, del takes keys.
-    // If it's a Map, we should clear it. If it's Redis, we might need a different approach for flushAll.
-    // Given current redis.ts, let's just log it or try to clear what we can.
-    
-    // For now, let's assume we want to clear common prefixes or just return success
-    // if we don't have a global flush implemented in redis.ts.
-    
-    await logActivity({
-      action: "update",
-      entity: "setting",
-      entityId: "cache",
-      entityName: "System Cache",
-      adminId: getAdminId(req as AdminRequest),
-    });
-    res.json({ success: true, message: "Cache flush command sent" });
-  } catch (err) {
-    req.log.error({ err }, "Flush cache failed");
-    res.status(500).json({ error: "internal_error" });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// GET /api/admin/system/env-status
-// ---------------------------------------------------------------------------
-router.get("/admin/system/env-status", requireAdmin, async (req, res) => {
-  const envVars = [
-    "JWT_SECRET", "ADMIN_JWT_SECRET", "DATABASE_URL_MAIN", 
-    "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN",
-    "R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET",
-    "CLOUDFLARE_API_TOKEN", "GOOGLE_CLIENT_ID", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"
-  ];
-  
-  const status: Record<string, boolean> = {};
-  for (const v of envVars) {
-    status[v] = !!process.env[v];
-  }
-  
-  res.json({ envVars: status });
-});
 
 // ---------------------------------------------------------------------------
 // GET /api/admin/stats
@@ -1028,7 +953,7 @@ router.post("/admin/telegram/test", requireAdmin, async (req, res) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         chat_id: chatId,
-        text: `✅ <b>TryNex Telegram Test</b>\n\nBot is connected and working! 🎉\nYou will receive new order notifications here.\n\n⏰ ${new Date().toLocaleString('en-BD', { timeZone: 'Asia/Dhaka' })}`,
+        text: `✅ <b>Trynext Telegram Test</b>\n\nBot is connected and working! 🎉\nYou will receive new order notifications here.\n\n⏰ ${new Date().toLocaleString('en-BD', { timeZone: 'Asia/Dhaka' })}`,
         parse_mode: "HTML",
       }),
       signal: AbortSignal.timeout(8000),

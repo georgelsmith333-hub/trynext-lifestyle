@@ -6,8 +6,39 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const port = Number(process.env.PORT ?? "5173");
 const basePath = process.env.BASE_PATH ?? "/";
-// API_PORT must point to the API server (default 5001, not 8080 which is this dev server).
-const apiPort = process.env.API_PORT ?? "5001";
+// API_PORT must point to the API server. In this monorepo the API server runs on 8082.
+// Override with API_PORT env var if the port ever changes.
+const apiPort = process.env.API_PORT ?? "8082";
+const CANONICAL_MOCKUP_PREFIX = "/mockups/psd-master-v10/runtime-roles/";
+
+function isRetiredMockupPath(url: string | undefined): boolean {
+  const pathname = (url ?? "").split("?", 1)[0];
+  return pathname.startsWith("/mockups/") && !pathname.startsWith(CANONICAL_MOCKUP_PREFIX);
+}
+
+function blockRetiredMockups() {
+  const middleware = (
+    req: { url?: string },
+    res: { statusCode: number; setHeader: (name: string, value: string) => void; end: (body: string) => void },
+    next: () => void,
+  ) => {
+    if (!isRetiredMockupPath(req.url)) return next();
+    res.statusCode = 410;
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.end("This mockup runtime has been retired.");
+  };
+
+  return {
+    name: "trynext:block-retired-mockups",
+    configureServer(server: { middlewares: { use: (handler: typeof middleware) => void } }) {
+      server.middlewares.use(middleware);
+    },
+    configurePreviewServer(server: { middlewares: { use: (handler: typeof middleware) => void } }) {
+      server.middlewares.use(middleware);
+    },
+  };
+}
 
 /**
  * Cloudflare Rocket Loader rewrites every `<script>` it sees, including
@@ -54,18 +85,8 @@ function injectBuildMeta(html: string): string {
   );
 }
 
-function removeDeferredModulePreloads(html: string): string {
-  // Charts and 3D rendering are route-specific. Vite otherwise emits
-  // modulepreload hints for their shared vendor chunks on every first visit,
-  // competing with the storefront shell and product images.
-  return html.replace(
-    /\s*<link rel="modulepreload"[^>]+href="[^"]*\/assets\/vendor-(?:3d|charts)-[^"]+\.js"[^>]*>/gi,
-    "",
-  );
-}
-
 const cfDisableRocketLoader = {
-  name: "trynex:disable-cf-rocket-loader",
+  name: "trynext:disable-cf-rocket-loader",
   // Stamp the dev server response so dev iframes match production behaviour.
   transformIndexHtml: {
     order: "post" as const,
@@ -81,7 +102,7 @@ const cfDisableRocketLoader = {
       const fs = await import("node:fs/promises");
       const outFile = path.resolve(import.meta.dirname, "dist/index.html");
       const html = await fs.readFile(outFile, "utf8");
-      const patched = removeDeferredModulePreloads(addCfAsyncFalse(injectBuildMeta(html)));
+      const patched = addCfAsyncFalse(injectBuildMeta(html));
       if (patched !== html) await fs.writeFile(outFile, patched, "utf8");
       // NOTE: Do NOT write dist/404.html here. When 404.html coexists with the
       // "/* /index.html 200" rule in _redirects, Cloudflare Pages silently
@@ -97,6 +118,7 @@ const cfDisableRocketLoader = {
 export default defineConfig({
   base: basePath,
   plugins: [
+    blockRetiredMockups(),
     react(),
     tailwindcss(),
     cfDisableRocketLoader,
@@ -109,9 +131,25 @@ export default defineConfig({
       manifest: false,
       injectManifest: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        globIgnores: ["**/mockups/**"],
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-        additionalManifestEntries: [{ url: "/offline.html", revision: null }],
+        globIgnores: [
+          "**/mockups/**",
+          // Product imagery is large and already covered by the bounded
+          // runtime image cache in src/sw.ts. Precaching it can exceed 300 MB,
+          // delay first boot, and make free-tier deployments needlessly heavy.
+          "**/assets/products/**",
+          // Route-split Studio and admin modules are not required for an
+          // offline public storefront shell. Precaching them causes a fresh
+          // PWA install to fetch 3D/editor and admin analytics code before a
+          // customer has requested either route.
+          "**/assets/DesignStudioV2-*.js",
+          "**/assets/vendor-3d-*.js",
+          "**/assets/vendor-charts-*.js",
+          "**/assets/vendor-editor-*.js",
+          "**/assets/ort*.js",
+          "**/assets/*Admin*.js",
+        ],
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+        additionalManifestEntries: [{ url: `${basePath}offline.html`, revision: null }],
       },
       devOptions: {
         enabled: false,
@@ -128,6 +166,18 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    reportCompressedSize: false,
+    modulePreload: {
+      // Keep dynamic-import dependencies available when their route is opened,
+      // but do not force public Home visitors to download Studio-only 3D code
+      // or admin-chart code from the entry HTML.
+      resolveDependencies(_filename, dependencies, context) {
+        if (context.hostType !== "html") return dependencies;
+        return dependencies.filter(
+          (dependency) => !/vendor-(3d|charts)-/.test(dependency),
+        );
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -146,14 +196,6 @@ export default defineConfig({
           "vendor-editor": [
             "@tiptap/react",
             "@tiptap/starter-kit",
-          ],
-          "vendor-charts": ["recharts"],
-          // Three.js + React Three Fiber/Drei only needed in DesignStudio.
-          // Splitting them keeps the storefront critical path bundle lean.
-          "vendor-3d": [
-            "three",
-            "@react-three/fiber",
-            "@react-three/drei",
           ],
         },
       },
@@ -225,6 +267,14 @@ export default defineConfig({
     host: "0.0.0.0",
     allowedHosts: true,
     proxy: {
+      // Keep the canonical crawler URL working in local development too.
+      // Cloudflare Pages uses public/_redirects in production, while Vite
+      // otherwise falls through to the SPA shell for this XML route.
+      "/sitemap.xml": {
+        target: `http://localhost:${apiPort}`,
+        changeOrigin: true,
+        secure: false,
+      },
       "/api": {
         target: `http://localhost:${apiPort}`,
         changeOrigin: true,
@@ -243,6 +293,14 @@ export default defineConfig({
     },
     fs: {
       strict: true,
+      // Local PSD T-shirt staging assets stay outside the repository so they
+      // cannot be committed or deployed. This directory is reachable only by
+      // Vite's development server; production builds still contain no staging
+      // asset path because the route branch is gated by import.meta.env.DEV.
+      allow: [
+        path.resolve(import.meta.dirname),
+        path.resolve("/home/ubuntu/webdev-static-assets"),
+      ],
       deny: ["**/.*"],
     },
   },

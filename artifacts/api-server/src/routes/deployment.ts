@@ -25,11 +25,18 @@ const KEYS = {
 } as const;
 
 const REPO_ROOT = process.env.REPO_ROOT || "/home/runner/workspace";
-const TEMP_REMOTE = "trynex-deploy";
+const TEMP_REMOTE = "trynext-deploy";
 
 const RENDER_API_KEY = process.env.RENDER_API_KEY || "";
 const RENDER_SERVICE_ID = process.env.RENDER_SERVICE_ID || "";
-const GITHUB_TOKEN_ENV = process.env.GITHUB_PERSONAL_TOKEN || process.env.GITHUB_PERSONAL_ACCESS_TOKEN || process.env.GITHUB_TOKEN || "";
+const GITHUB_TOKEN_ENV =
+  process.env.NEW_GITHUB_PERSONAL_ACCESS_TOKEN ||
+  process.env.GITHUB_PERSONAL_ACCESS_TOKEN ||
+  process.env.GITHUB_PERSONAL_TOKEN ||
+  process.env.GITHUB_PERSON_ACCESS_TOKEN ||
+  process.env.GITHUB_ACCESS_TOKEN ||
+  process.env.GITHUB_TOKEN ||
+  "";
 const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || "";
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || "";
 
@@ -87,8 +94,8 @@ router.get("/admin/deployment/status", requireAdmin, async (req, res) => {
       owner: s[KEYS.owner] || "",
       repo: s[KEYS.repo] || "",
       branch: s[KEYS.branch] || "main",
-      authorName: s[KEYS.authorName] || "TryNex Admin",
-      authorEmail: s[KEYS.authorEmail] || "admin@trynex.local",
+      authorName: s[KEYS.authorName] || "Trynext Admin",
+      authorEmail: s[KEYS.authorEmail] || "admin@trynext.local",
       tokenMasked: s[KEYS.token] ? `••••${s[KEYS.token].slice(-4)}` : "",
       lastPushAt: s[KEYS.lastPushAt] || null,
       lastPushSha: s[KEYS.lastPushSha] || null,
@@ -117,8 +124,8 @@ router.get("/admin/deployment/config", requireAdmin, async (_req, res) => {
       owner: s[KEYS.owner] || "",
       repo: s[KEYS.repo] || "",
       branch: s[KEYS.branch] || "main",
-      authorName: s[KEYS.authorName] || "TryNex Admin",
-      authorEmail: s[KEYS.authorEmail] || "admin@trynex.local",
+      authorName: s[KEYS.authorName] || "Trynext Admin",
+      authorEmail: s[KEYS.authorEmail] || "admin@trynext.local",
       tokenMasked: s[KEYS.token] ? `••••${s[KEYS.token].slice(-4)}` : "",
       renderDeployHookSet: Boolean(s[KEYS.renderDeployHook]),
       renderServiceId: s[KEYS.renderServiceId] || "",
@@ -140,8 +147,8 @@ router.put("/admin/deployment/config", requireAdmin, async (req, res) => {
     const ownerStr = String(owner ?? "").trim();
     const repoStr = String(repo ?? "").trim();
     const branchStr = String(branch ?? "main").trim() || "main";
-    const nameStr = String(authorName ?? "TryNex Admin").trim() || "TryNex Admin";
-    const emailStr = String(authorEmail ?? "admin@trynex.local").trim() || "admin@trynex.local";
+    const nameStr = String(authorName ?? "Trynext Admin").trim() || "Trynext Admin";
+    const emailStr = String(authorEmail ?? "admin@trynext.local").trim() || "admin@trynext.local";
 
     if (!OWNER_RE.test(ownerStr)) { res.status(400).json({ error: "validation_error", message: "Invalid GitHub owner/org name." }); return; }
     if (!REPO_RE.test(repoStr)) { res.status(400).json({ error: "validation_error", message: "Invalid repository name." }); return; }
@@ -225,20 +232,20 @@ router.post("/admin/deployment/push", requireAdmin, async (req, res) => {
   };
 
   try {
-    const rawMessage = String(req.body?.message ?? "chore: push from TryNex admin");
+    const rawMessage = String(req.body?.message ?? "chore: push from Trynext admin");
     if (/[\x00-\x1f]/.test(rawMessage)) {
       res.status(400).json({ error: "validation_error", message: "Commit message contains invalid characters." });
       return;
     }
-    const message = rawMessage.slice(0, 200) || "chore: push from TryNex admin";
+    const message = rawMessage.slice(0, 200) || "chore: push from Trynext admin";
 
     const s = await readSettings(Object.values(KEYS));
     const owner = s[KEYS.owner] || process.env.GITHUB_REPO_OWNER || "";
     const repo = s[KEYS.repo] || process.env.GITHUB_REPO_NAME || "";
     const branch = s[KEYS.branch] || process.env.GITHUB_REPO_BRANCH || "main";
     const token = s[KEYS.token] || GITHUB_TOKEN_ENV;
-    const authorName = s[KEYS.authorName] || "TryNex Admin";
-    const authorEmail = s[KEYS.authorEmail] || "admin@trynexshop.com";
+    const authorName = s[KEYS.authorName] || "Trynext Admin";
+    const authorEmail = s[KEYS.authorEmail] || "admin@trynextshop.com";
 
     if (!owner || !repo || !token) {
       res.status(400).json({ error: "not_configured", message: "GitHub credentials not configured. Save settings first." });
@@ -560,7 +567,7 @@ router.get("/admin/deployment/live-status", requireAdmin, async (req, res) => {
 // POST /api/admin/deployment/deploy-all  — One-click: push + render + CF
 // ---------------------------------------------------------------------------
 router.post("/admin/deployment/deploy-all", requireAdmin, async (req, res) => {
-  const message = String(req.body?.message || "chore: deploy from TryNex admin").slice(0, 200);
+  const message = String(req.body?.message || "chore: deploy from Trynext admin").slice(0, 200);
   const steps: Array<{ step: string; status: "ok" | "skipped" | "error"; detail: string }> = [];
 
   const s = await readSettings(Object.values(KEYS));
@@ -581,8 +588,8 @@ router.post("/admin/deployment/deploy-all", requireAdmin, async (req, res) => {
     const runGit = (args: string[]) => execFileAsync("git", args, { cwd, env, maxBuffer: 10 * 1024 * 1024 });
 
     try {
-      const authorName = s[KEYS.authorName] || "TryNex Admin";
-      const authorEmail = s[KEYS.authorEmail] || "admin@trynex.local";
+      const authorName = s[KEYS.authorName] || "Trynext Admin";
+      const authorEmail = s[KEYS.authorEmail] || "admin@trynext.local";
       const remoteUrl = `https://x-access-token:${token}@github.com/${owner}/${repo}.git`;
 
       await runGit(["config", "user.name", authorName]);

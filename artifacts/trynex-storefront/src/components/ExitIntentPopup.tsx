@@ -6,8 +6,9 @@ import { useSiteSettings } from "@/context/SiteSettingsContext";
 import { useLocation } from "wouter";
 import { getApiUrl } from "@/lib/utils";
 import { trackLead } from "@/lib/tracking";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-const STORAGE_KEY = "trynex_exit_intent_ts";
+const STORAGE_KEY = "trynext_exit_intent_ts";
 const THROTTLE_MS  = 24 * 60 * 60 * 1000; // 24 hours per browser
 const OFFER_DURATION_S = 15 * 60;
 
@@ -38,6 +39,7 @@ function useOfferCountdown(active: boolean) {
 
 export function ExitIntentPopup() {
   const { exitIntentPromoEnabled, exitIntentPromoDiscount } = useSiteSettings();
+  const isMobile = useIsMobile();
   const [show, setShow] = useState(false);
   const [step, setStep] = useState<"capture" | "code">("capture");
   const [contact, setContact] = useState("");
@@ -49,11 +51,12 @@ export function ExitIntentPopup() {
   const shownRef = useRef(false);
 
   const excluded = ["/checkout", "/admin"].some(p => location.startsWith(p));
+  const allowAutomaticEntry = exitIntentPromoEnabled && !isMobile;
 
   const { display: countdownDisplay, pct: countdownPct, expired: offerExpired } = useOfferCountdown(show);
 
   useEffect(() => {
-    if (!exitIntentPromoEnabled || excluded || shownRef.current) return;
+    if (!allowAutomaticEntry || excluded || shownRef.current) return;
     // Only show once per 24 hours per browser (localStorage persists across refreshes/tabs)
     try {
       const ts = localStorage.getItem(STORAGE_KEY);
@@ -95,7 +98,7 @@ export function ExitIntentPopup() {
       document.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("scroll", onScroll);
     };
-  }, [exitIntentPromoEnabled, excluded]);
+  }, [allowAutomaticEntry, excluded]);
 
   useEffect(() => {
     if (offerExpired && show) setShow(false);

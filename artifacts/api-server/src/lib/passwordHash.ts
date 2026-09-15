@@ -65,7 +65,7 @@ export function isArgon2Hash(hash: string): boolean {
 export async function verifyPasswordAny(
   hash: string,
   password: string,
-  sha256Salt: string,
+  sha256Salt?: string,
 ): Promise<boolean> {
   if (isPbkdf2Hash(hash)) {
     return verifyPasswordPbkdf2(hash, password);
@@ -73,7 +73,7 @@ export async function verifyPasswordAny(
   if (isArgon2Hash(hash)) {
     return verifyPasswordArgon2(hash, password);
   }
-  if (isSha256Hash(hash)) {
+  if (sha256Salt && isSha256Hash(hash)) {
     return hashPasswordSha256(password, sha256Salt) === hash;
   }
   return false;

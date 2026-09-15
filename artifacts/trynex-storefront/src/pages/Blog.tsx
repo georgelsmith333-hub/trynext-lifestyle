@@ -247,24 +247,24 @@ export default function Blog() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
-        title="Blog | Custom Apparel Tips & Fashion Guides — TryNex Lifestyle"
-        description="Read the latest tips, trends & guides from TryNex Lifestyle — Bangladesh's #1 custom apparel brand. Garment care, design inspiration & gift ideas."
+        title="Blog | Custom Apparel Tips & Fashion Guides — Trynext Lifestyle"
+        description="Read the latest tips, trends & guides from Trynext Lifestyle — Bangladesh's #1 custom apparel brand. Garment care, design inspiration & gift ideas."
         canonical="/blog"
-        keywords="trynex blog, custom apparel tips bangladesh, bangladesh fashion blog, t-shirt care guide, custom gift ideas bd, কাস্টম পোশাক টিপস"
+        keywords="trynext blog, custom apparel tips bangladesh, bangladesh fashion blog, t-shirt care guide, custom gift ideas bd, কাস্টম পোশাক টিপস"
         jsonLd={[
           {
             "@context": "https://schema.org",
             "@type": "Blog",
-            "name": "TryNex Lifestyle Blog",
+            "name": "Trynext Lifestyle Blog",
             "description": "Premium custom apparel tips, fashion trends, and lifestyle content from Bangladesh.",
-            "publisher": { "@type": "Organization", "name": "TryNex Lifestyle" },
+            "publisher": { "@type": "Organization", "name": "Trynext Lifestyle" },
           },
           {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynexshop.com/" },
-              { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://trynexshop.com/blog" },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
+              { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://trynext.pages.dev/blog" },
             ],
           },
         ]}
@@ -272,7 +272,7 @@ export default function Blog() {
       <Navbar />
 
       <main className="flex-1 pt-header pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -284,7 +284,7 @@ export default function Blog() {
               <BookOpen className="w-7 h-7 text-orange-500" />
             </div>
             <p className="text-xs font-black uppercase tracking-widest text-orange-500 mb-2 sm:mb-3">Stories & Updates</p>
-            <h1 className="text-3xl sm:text-6xl font-black font-display tracking-tighter mb-2 sm:mb-4 text-gray-900">TryNex Magazine</h1>
+            <h1 className="text-3xl sm:text-6xl font-black font-display tracking-tighter mb-2 sm:mb-4 text-gray-900">Trynext Magazine</h1>
             <p className="text-gray-400 text-sm sm:text-lg max-w-md mx-auto">
               Style tips, brand stories, and custom apparel inspiration from Bangladesh.
             </p>

@@ -8,7 +8,7 @@ export default function PrivacyPolicy() {
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title="Privacy Policy"
-        description="TryNex Lifestyle privacy policy. Learn how we collect, use, and protect your personal data."
+        description="Trynext Lifestyle privacy policy. Learn how we collect, use, and protect your personal data."
         canonical="/privacy-policy"
       />
       <Navbar />
@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
             </span>
             <h1 className="section-heading mt-4">Privacy Policy</h1>
             <p className="text-gray-500 mt-4 max-w-2xl">
-              Your privacy matters to us. This policy explains how TryNex Lifestyle collects, uses, and protects your information.
+              Your privacy matters to us. This policy explains how Trynext Lifestyle collects, uses, and protects your information.
             </p>
             <p className="text-xs text-gray-400 mt-2">Last updated: April 7, 2026</p>
           </div>
@@ -107,7 +107,7 @@ export default function PrivacyPolicy() {
               <h2 className="text-xl font-black text-gray-900 mb-3">7. Contact Us</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
                 For any privacy-related questions or requests, contact us at{" "}
-                <a href="mailto:hello@trynexshop.com" className="text-orange-600 font-bold hover:underline">hello@trynexshop.com</a>{" "}
+                <a href="mailto:hello@trynextshop.com" className="text-orange-600 font-bold hover:underline">hello@trynextshop.com</a>{" "}
                 or reach out via WhatsApp.
               </p>
             </section>

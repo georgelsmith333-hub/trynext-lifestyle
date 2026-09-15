@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SEOHead } from "@/components/SEOHead";
 import { useAuth } from "@/context/AuthContext";
+import { useSiteSettings } from "@/context/SiteSettingsContext";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getApiUrl } from "@/lib/utils";
 import {
@@ -98,6 +99,8 @@ export default function Account() {
   const [, navigate] = useLocation();
   const { customer, isLoading, isAuthenticated, updateProfile, logout } = useAuth();
   const { toast } = useToast();
+  const siteSettings = useSiteSettings();
+  const waNum = (siteSettings.whatsappNumber || siteSettings.phone || "").replace(/[^0-9]/g, "");
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
@@ -151,7 +154,7 @@ export default function Account() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("trynex_recently_viewed");
+      const stored = localStorage.getItem("trynext_recently_viewed");
       if (stored) {
         const parsed = JSON.parse(stored);
         setRecentProducts(Array.isArray(parsed) ? parsed.slice(0, 8) : []);
@@ -176,7 +179,7 @@ export default function Account() {
   }, []);
 
   const fetchMessages = async (orderId: number) => {
-    const token = localStorage.getItem("trynex_customer_token");
+    const token = localStorage.getItem("trynext_customer_token");
     if (!token) return;
     setMessagesLoading(true);
     try {
@@ -192,7 +195,7 @@ export default function Account() {
   };
 
   const sendMessage = async (orderId: number) => {
-    const token = localStorage.getItem("trynex_customer_token");
+    const token = localStorage.getItem("trynext_customer_token");
     if (!token || !messageInput.trim() || sendingMessage) return;
     setSendingMessage(true);
     try {
@@ -215,7 +218,7 @@ export default function Account() {
   };
 
   const fetchUnreadCount = async () => {
-    const token = localStorage.getItem("trynex_customer_token");
+    const token = localStorage.getItem("trynext_customer_token");
     if (!token) return;
     try {
       const resp = await fetch(getApiUrl("/api/orders/my/messages/unread-count"), {
@@ -245,13 +248,21 @@ export default function Account() {
   useEffect(() => {
     if (!isAuthenticated) return;
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000);
+    const interval = setInterval(fetchUnreadCount, 8000);
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
+  // Live message polling — refresh messages every 5s when chat is open
+  useEffect(() => {
+    if (!isAuthenticated || selectedOrderId === null) return;
+    const interval = setInterval(() => fetchMessages(selectedOrderId), 5000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, selectedOrderId]);
+
   const fetchOrders = async () => {
-    const token = localStorage.getItem("trynex_customer_token");
+    const token = localStorage.getItem("trynext_customer_token");
     if (!token) return;
     setOrdersLoading(true);
     setOrdersError("");
@@ -297,7 +308,7 @@ export default function Account() {
       setPasswordError("Password must be at least 6 characters");
       return;
     }
-    const token = localStorage.getItem("trynex_customer_token");
+    const token = localStorage.getItem("trynext_customer_token");
     if (!token) return;
     setPasswordSaving(true);
     try {
@@ -348,7 +359,7 @@ export default function Account() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SEOHead title="My Account" description="Manage your TryNex Lifestyle account" noindex />
+      <SEOHead title="My Account" description="Manage your Trynext Lifestyle account" noindex />
       <Navbar />
 
       <main className="flex-1 px-4 py-6 sm:py-12 pt-header">
@@ -686,14 +697,14 @@ export default function Account() {
                                 <div className="text-right">
                                   <p className="text-sm font-black text-gray-900">{formatPrice(parseFloat(order.total))}</p>
                                   <p className="text-[10px] text-gray-400 capitalize">{order.paymentMethod}</p>
+                                  <p className={`mt-1 text-[10px] font-black uppercase tracking-wide ${['paid', 'verified'].includes(String(order.paymentStatus).toLowerCase()) ? 'text-green-600' : String(order.paymentStatus).toLowerCase() === 'wrong' ? 'text-red-600' : 'text-amber-600'}`}>
+                                    {['paid', 'verified'].includes(String(order.paymentStatus).toLowerCase()) ? 'Payment Confirmed' : String(order.paymentStatus).toLowerCase() === 'submitted' ? 'Payment Under Review' : 'Payment ' + (order.paymentStatus || 'Pending')}
+                                  </p>
                                 </div>
                               </div>
 
-                              <div className="flex justify-end pt-2 border-t border-gray-100 mt-1">
+                              <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-1 gap-2 flex-wrap">
                                 <Link
-                                  // Auto-fill: prefer phone, fall back to email
-                                  // so the tracking page can auto-submit even
-                                  // for users who never set a phone number.
                                   href={(() => {
                                     const id = customer?.phone?.trim();
                                     const email = customer?.email?.trim();
@@ -710,6 +721,15 @@ export default function Account() {
                                 >
                                   Track this order <ArrowRight className="w-3 h-3" />
                                 </Link>
+                                {(order.status === "delivered" || order.status === "shipped") && (
+                                  <Link
+                                    href={`/product/${order.items[0]?.productId || ''}?review=1`}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors hover:bg-amber-50"
+                                    style={{ color: '#FB8500', border: '1px solid #fde68a' }}
+                                  >
+                                    ★ Write a Review
+                                  </Link>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -730,9 +750,9 @@ export default function Account() {
                           </h3>
                           <p className="text-[10px] text-gray-400">Tap an order to chat</p>
                         </div>
-                        {/* Direct contact CTA — always visible */}
-                        <a
-                          href="https://wa.me/8801903426915?text=Hi%20TryNex!%20I%20need%20help%20with%20my%20order%20or%20have%20a%20question."
+                        {/* Direct contact CTA — only when admin support contact is configured */}
+                        {waNum && <a
+                          href={`https://wa.me/${waNum}?text=Hi%20Trynext!%20I%20need%20help%20with%20my%20order%20or%20have%20a%20question.`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 w-full p-3 rounded-xl mb-4 hover:brightness-95 transition-all"
@@ -742,11 +762,11 @@ export default function Account() {
                             <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
                           </div>
                           <div className="flex-1 text-left">
-                            <p className="text-white font-bold text-sm leading-none">Chat with TryNex Team</p>
+                            <p className="text-white font-bold text-sm leading-none">Chat with Trynext Team</p>
                             <p className="text-white/80 text-[11px] mt-0.5">Start a new conversation instantly on WhatsApp</p>
                           </div>
                           <ExternalLink className="w-4 h-4 text-white/60 shrink-0" />
-                        </a>
+                        </a>}
 
                         {ordersLoading ? (
                           <div className="space-y-3">
@@ -784,7 +804,7 @@ export default function Account() {
                                       </span>
                                     </div>
                                     {lastMsg ? (
-                                      <p className="text-xs text-gray-500 truncate mt-0.5">{lastMsg.sender_type === "admin" ? "TryNex: " : "You: "}{lastMsg.message}</p>
+                                      <p className="text-xs text-gray-500 truncate mt-0.5">{lastMsg.sender_type === "admin" ? "Trynext: " : "You: "}{lastMsg.message}</p>
                                     ) : (
                                       <p className="text-xs text-gray-400 italic mt-0.5">No messages yet — tap to start</p>
                                     )}
@@ -819,7 +839,7 @@ export default function Account() {
                             <p className="text-sm font-bold text-gray-900">
                               #{orders.find(o => o.id === selectedOrderId)?.orderNumber}
                             </p>
-                            <p className="text-[10px] text-gray-400">Conversation with TryNex Team</p>
+                            <p className="text-[10px] text-gray-400">Conversation with Trynext Team</p>
                           </div>
                         </div>
 
@@ -832,7 +852,7 @@ export default function Account() {
                             <div className="text-center py-8">
                               <MessageSquare className="w-10 h-10 text-gray-200 mx-auto mb-2" />
                               <p className="text-sm text-gray-500">No messages yet</p>
-                              <p className="text-xs text-gray-400">Send a message to the TryNex Team below</p>
+                              <p className="text-xs text-gray-400">Send a message to the Trynext Team below</p>
                             </div>
                           ) : (
                             (messages[selectedOrderId] || []).map((msg) => (
@@ -932,7 +952,7 @@ export default function Account() {
                             <button
                               onClick={() => {
                                 const url = `${window.location.origin}?ref=${myReferral.code}`;
-                                const msg = encodeURIComponent(`🎁 TryNex Lifestyle থেকে কাস্টম টি-শার্ট অর্ডার করুন!\n✅ আমার লিঙ্ক দিয়ে অর্ডার করলে ১০% ছাড় পাবেন!\n👉 ${url}`);
+                                const msg = encodeURIComponent(`🎁 Trynext Lifestyle থেকে কাস্টম টি-শার্ট অর্ডার করুন!\n✅ আমার লিঙ্ক দিয়ে অর্ডার করলে ১০% ছাড় পাবেন!\n👉 ${url}`);
                                 window.open(`https://wa.me/?text=${msg}`, '_blank');
                               }}
                               className="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm text-white"
@@ -955,7 +975,7 @@ export default function Account() {
                             <button
                               onClick={async () => {
                                 const url = `${window.location.origin}?ref=${myReferral.code}`;
-                                try { await navigator.share({ title: "Get 10% off at TryNex!", text: "Use my referral link for 10% off!", url }); }
+                                try { await navigator.share({ title: "Get 10% off at Trynext!", text: "Use my referral link for 10% off!", url }); }
                                 catch { await navigator.clipboard.writeText(url); toast({ title: "Link copied!" }); }
                               }}
                               className="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all"

@@ -39,7 +39,9 @@ function parsePromoBody<T>(schema: z.ZodSchema<T>, body: unknown):
 
 // Simple in-memory IP rate limiter for exit-intent endpoint: 1 code per IP per 10 minutes
 const exitIntentCooldowns = new Map<string, number>();
+const exitIntentContactCooldowns = new Map<string, number>();
 const EXIT_INTENT_COOLDOWN_MS = 10 * 60 * 1000;
+const EXIT_INTENT_CONTACT_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 function isExitIntentRateLimited(ip: string): boolean {
   const last = exitIntentCooldowns.get(ip);
   if (last && Date.now() - last < EXIT_INTENT_COOLDOWN_MS) return true;
@@ -48,6 +50,24 @@ function isExitIntentRateLimited(ip: string): boolean {
   if (exitIntentCooldowns.size > 5000) {
     const cutoff = Date.now() - EXIT_INTENT_COOLDOWN_MS;
     for (const [k, v] of exitIntentCooldowns) { if (v < cutoff) exitIntentCooldowns.delete(k); }
+  }
+  return false;
+}
+function normalizePromoContact(value: string): string | null {
+  const raw = value.trim().toLowerCase();
+  if (raw.includes("@")) return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(raw) ? raw : null;
+  const digits = raw.replace(/\D/g, "");
+  if (/^01\d{9}$/.test(digits)) return digits;
+  if (/^8801\d{9}$/.test(digits)) return `0${digits.slice(3)}`;
+  return null;
+}
+function isPromoContactRateLimited(contact: string): boolean {
+  const last = exitIntentContactCooldowns.get(contact);
+  if (last && Date.now() - last < EXIT_INTENT_CONTACT_COOLDOWN_MS) return true;
+  exitIntentContactCooldowns.set(contact, Date.now());
+  if (exitIntentContactCooldowns.size > 5000) {
+    const cutoff = Date.now() - EXIT_INTENT_CONTACT_COOLDOWN_MS;
+    for (const [k, v] of exitIntentContactCooldowns) { if (v < cutoff) exitIntentContactCooldowns.delete(k); }
   }
   return false;
 }
@@ -274,10 +294,15 @@ router.post("/promo-codes/exit-intent", async (req, res) => {
       res.status(400).json({ error: "validation_error", message: "Contact (phone or email) is required" });
       return;
     }
+    const normalizedContact = normalizePromoContact(contact);
+    if (!normalizedContact) {
+      res.status(400).json({ error: "validation_error", message: "Enter a valid email or Bangladesh mobile number" });
+      return;
+    }
 
     const clientIp = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
-    if (isExitIntentRateLimited(clientIp)) {
-      res.status(429).json({ error: "rate_limited", message: "Please wait before requesting another promo code" });
+    if (isExitIntentRateLimited(clientIp) || isPromoContactRateLimited(normalizedContact)) {
+      res.status(429).json({ error: "rate_limited", message: "This contact has already received a promo recently. Please try again later." });
       return;
     }
 

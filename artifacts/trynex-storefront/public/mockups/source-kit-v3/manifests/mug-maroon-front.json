@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "mug:maroon:front",
+  "category": "mug",
+  "colorSlug": "maroon",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/mug-maroon-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/mug/maroon/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psb/mug-maroon-front.psb",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    143,
+    192,
+    881,
+    829
+  ],
+  "sha256": "7d9d9e573b79d77ff42a78f621f59fc8db417e973b6c326e417b7419c90b9009",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

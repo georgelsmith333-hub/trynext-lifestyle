@@ -8,9 +8,9 @@ export default function ReturnPolicy() {
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title="Return & Refund Policy"
-        description="TryNex Lifestyle return and refund policy. We stand behind every product. Easy returns within 3 days for defective or incorrect items."
+        description="Trynext Lifestyle return and refund policy. We stand behind every product. Easy returns within 3 days for defective or incorrect items."
         canonical="/return-policy"
-        keywords="trynex returns, refund policy, exchange policy bangladesh"
+        keywords="trynext returns, refund policy, exchange policy bangladesh"
       />
       <Navbar />
       <main className="flex-1 pt-header pb-20">
@@ -106,7 +106,7 @@ export default function ReturnPolicy() {
                 <AlertCircle className="w-5 h-5 text-amber-500" /> Refund Methods
               </h2>
               <p className="text-sm text-gray-600 leading-relaxed">
-                Refunds are processed via the original payment method (bKash, Nagad, Rocket). For COD orders, refunds are sent to your preferred mobile banking account. Refund processing takes 3-5 business days after the returned item is received and approved.
+                Refunds are processed via the original payment method (bKash, Nagad, or uPay). Refund processing takes 3-5 business days after the returned item is received and approved.
               </p>
             </section>
           </div>

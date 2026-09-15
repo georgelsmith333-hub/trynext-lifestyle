@@ -18,8 +18,13 @@ import { motion, AnimatePresence } from "framer-motion";
 const STATUS_OPTIONS = ["all", "pending", "processing", "shipped", "ongoing", "delivered", "cancelled"] as const;
 type StatusFilter = typeof STATUS_OPTIONS[number];
 
+function getPaymentProofUrl(notes?: string | null): string | null {
+  return notes?.match(/Payment proof:\s*((?:https?:\/\/\S+)?\/api\/storage\/objects\/\S+)/i)?.[1] ?? null;
+}
+
 const PAYMENT_LABELS: Record<string, { label: string; color: string }> = {
-  cod: { label: "Cash on Delivery", color: "#4ade80" },
+  cod: { label: "Legacy COD", color: "#9ca3af" },
+  partial: { label: "25% Advance (COD)", color: "#f59e0b" },
   bkash: { label: "bKash", color: "#e2136e" },
   nagad: { label: "Nagad", color: "#f7941d" },
   upay: { label: "uPay", color: "#0077cc" },
@@ -29,9 +34,12 @@ const PAYMENT_LABELS: Record<string, { label: string; color: string }> = {
 
 const PAYMENT_STATUS_OPTS = [
   { value: 'pending', label: '✗ Not Paid', color: '#ef4444' },
+  { value: 'not_paid', label: '✗ Not Paid', color: '#ef4444' },
   { value: 'submitted', label: '⏳ Under Review', color: '#f59e0b' },
   { value: 'verified', label: '✓ Payment Confirmed', color: '#22c55e' },
+  { value: 'paid', label: '✓ Payment Received', color: '#22c55e' },
   { value: 'wrong', label: '⚠ Payment Issue', color: '#ef4444' },
+  { value: 'refunded', label: '↩ Refunded', color: '#8b5cf6' },
 ];
 
 
@@ -44,7 +52,7 @@ export default function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [newOrderAlert, setNewOrderAlert] = useState(false);
   const [lastCount, setLastCount] = useState<number | null>(null);
-  const [isUpdatingPayment, setIsUpdatingPayment] = useState(false);
+  const [updatingPaymentOrderId, setUpdatingPaymentOrderId] = useState<number | null>(null);
   const [lightbox, setLightbox] = useState<{ items: PreviewItem[]; index: number } | null>(null);
   const openLightbox = (items: PreviewItem[], index: number) => setLightbox({ items, index });
   const closeLightbox = () => setLightbox(null);
@@ -63,24 +71,22 @@ export default function AdminOrders() {
 
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: "", end: "" });
 
-  const { data, isLoading, refetch, dataUpdatedAt } = useListOrders(
+  const ordersQueryParams = {
+    limit: 200,
+    ...(statusFilter !== "all" ? { status: statusFilter } : {}),
+    ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    ...(dateRange.start ? { startDate: dateRange.start } : {}),
+    ...(dateRange.end ? { endDate: dateRange.end } : {}),
+  };
+  const ordersQueryKey = getListOrdersQueryKey(ordersQueryParams);
+  const { data, isLoading, isError, error, refetch, dataUpdatedAt } = useListOrders(
     {
-      limit: 200,
-      ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-      ...(debouncedSearch ? { search: debouncedSearch } : {}),
-      ...(dateRange.start ? { startDate: dateRange.start } : {}),
-      ...(dateRange.end ? { endDate: dateRange.end } : {}),
+         ...ordersQueryParams,
     },
     {
       request: { headers: getAuthHeaders() },
       query: {
-        queryKey: getListOrdersQueryKey({
-          limit: 200,
-          ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-          ...(debouncedSearch ? { search: debouncedSearch } : {}),
-          ...(dateRange.start ? { startDate: dateRange.start } : {}),
-          ...(dateRange.end ? { endDate: dateRange.end } : {}),
-        }),
+         queryKey: ordersQueryKey,
         refetchInterval: 15000,
         refetchIntervalInBackground: false,
         refetchOnWindowFocus: true,
@@ -90,20 +96,16 @@ export default function AdminOrders() {
     }
   );
 
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
 
   // Cross-tab + cross-window instant sync: when any admin tab updates an order,
   // every other admin tab refetches immediately via BroadcastChannel.
   useEffect(() => {
     if (typeof BroadcastChannel === "undefined") return;
-    const ch = new BroadcastChannel("trynex-admin-orders");
+    const ch = new BroadcastChannel("trynext-admin-orders");
     ch.onmessage = (ev) => {
       if (ev.data?.type === "orders:invalidate") {
-        queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey({
-          limit: 200,
-          ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-          ...(debouncedSearch ? { search: debouncedSearch } : {}),
-        }) });
+        queryClient.invalidateQueries({ queryKey: ordersQueryKey });
         refetch();
       }
     };
@@ -122,7 +124,7 @@ export default function AdminOrders() {
   const broadcastInvalidate = () => {
     try {
       if (typeof BroadcastChannel !== "undefined") {
-        const ch = new BroadcastChannel("trynex-admin-orders");
+        const ch = new BroadcastChannel("trynext-admin-orders");
         ch.postMessage({ type: "orders:invalidate", at: Date.now() });
         ch.close();
       }
@@ -139,11 +141,7 @@ export default function AdminOrders() {
   }, [data?.total]);
 
   const patchOrdersCache = (id: number, patch: Record<string, string>) => {
-    queryClient.setQueriesData({ queryKey: getListOrdersQueryKey({
-          limit: 200,
-          ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-          ...(debouncedSearch ? { search: debouncedSearch } : {}),
-        }) }, (old: any) => {
+    queryClient.setQueriesData({ queryKey: ordersQueryKey }, (old: any) => {
       if (!old?.orders) return old;
       return { ...old, orders: old.orders.map((o: any) => o.id === id ? { ...o, ...patch } : o) };
     });
@@ -152,75 +150,58 @@ export default function AdminOrders() {
   const handleStatusChange = async (id: number, status: string) => {
     patchOrdersCache(id, { status });
     if (selectedOrder?.id === id) setSelectedOrder((prev: any) => ({ ...prev, status }));
-    setIsUpdating(true);
+    setUpdatingOrderId(id);
     try {
       const res = await fetch(getApiUrl(`/api/orders/${id}/status`), {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', ...getAuthHeaders() },
         body: JSON.stringify({ status }),
       });
       if (!res.ok) throw new Error('Failed');
-      queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey({
-          limit: 200,
-          ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-          ...(debouncedSearch ? { search: debouncedSearch } : {}),
-        }) });
+       queryClient.invalidateQueries({ queryKey: ordersQueryKey });
       broadcastInvalidate();
       toast({ title: "✓ Status updated" });
     } catch {
-      queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey({
-          limit: 200,
-          ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-          ...(debouncedSearch ? { search: debouncedSearch } : {}),
-        }) });
+      queryClient.invalidateQueries({ queryKey: ordersQueryKey });
       toast({ title: "Update failed", variant: "destructive" });
     } finally {
-      setIsUpdating(false);
+      setUpdatingOrderId(null);
     }
   };
 
   const handlePaymentStatusChange = async (id: number, paymentStatus: string) => {
     patchOrdersCache(id, { paymentStatus });
     if (selectedOrder?.id === id) setSelectedOrder((prev: any) => ({ ...prev, paymentStatus }));
-    setIsUpdatingPayment(true);
+    setUpdatingPaymentOrderId(id);
     try {
       const res = await fetch(getApiUrl(`/api/orders/${id}/payment-status`), {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', ...getAuthHeaders() },
         body: JSON.stringify({ paymentStatus }),
       });
       if (!res.ok) throw new Error('Failed');
-      queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey({
-          limit: 200,
-          ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-          ...(debouncedSearch ? { search: debouncedSearch } : {}),
-        }) });
+       queryClient.invalidateQueries({ queryKey: ordersQueryKey });
       broadcastInvalidate();
       toast({ title: "✓ Payment status updated" });
     } catch {
-      queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey({
-          limit: 200,
-          ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-          ...(debouncedSearch ? { search: debouncedSearch } : {}),
-        }) });
+      queryClient.invalidateQueries({ queryKey: ordersQueryKey });
       toast({ title: "Failed to update payment status", variant: "destructive" });
     } finally {
-      setIsUpdatingPayment(false);
+      setUpdatingPaymentOrderId(null);
     }
   };
 
   const getPaymentStatusColor = (s: string) => {
     const map: Record<string, string> = {
       pending: '#ef4444', not_paid: '#ef4444',
-      submitted: '#f59e0b', verified: '#22c55e', wrong: '#ef4444', cod: '#4ade80'
+      submitted: '#f59e0b', verified: '#22c55e', paid: '#22c55e', wrong: '#ef4444', refunded: '#8b5cf6', cod: '#9ca3af'
     };
     return map[s] || '#aaa';
   };
 
   const getPaymentStatusLabel = (s: string) => {
     const map: Record<string, string> = {
-      pending: 'Not Paid', not_paid: 'Not Paid', submitted: 'Under Review',
-      verified: 'Confirmed', wrong: 'Issue', cod: 'COD'
+      pending: 'Not Paid', not_paid: 'Not Paid', submitted: 'Under Review', verified: 'Payment Confirmed', paid: 'Payment Received', wrong: 'Payment Issue', refunded: 'Refunded', cod: 'Legacy COD'
     };
     return map[s] || s;
   };
@@ -246,6 +227,13 @@ export default function AdminOrders() {
 
   const lastRefresh = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString('en-BD') : null;
 
+  const resolveAdminAssetUrl = (raw: unknown): string => {
+    const value = typeof raw === "string" ? raw.trim() : "";
+    if (!value) return resolveImageUrl(value);
+    if (value.startsWith("data:") || value.startsWith("blob:") || value.startsWith("http://") || value.startsWith("https://")) return value;
+    return resolveImageUrl(value.startsWith("objects/") ? `/${value}` : value);
+  };
+
   const buildOrderPreview = (order: any) => {
     const items: PreviewItem[] = [];
     const mainIdx = new Map<number, number>();
@@ -263,7 +251,7 @@ export default function AdminOrders() {
       const rawSrc: string = (item.imageUrl as string | null) ?? (item.productImage as string | null) ?? '';
       const isDataUrl = rawSrc.startsWith('data:');
       const isR2Path  = rawSrc.includes('/objects/');
-      const src = (isDataUrl || isR2Path) ? rawSrc : resolveImageUrl(rawSrc);
+      const src = (isDataUrl || isR2Path) ? resolveAdminAssetUrl(rawSrc) : resolveImageUrl(rawSrc);
 
       if (src) {
         mainIdx.set(idx, items.length);
@@ -273,7 +261,7 @@ export default function AdminOrders() {
         const arr: number[] = [];
         item.customImages.forEach((img: string, i: number) => {
           arr.push(items.length);
-          items.push({ src: img, alt: `${item.productName} customer design ${i + 1}`, isStudio: false });
+          items.push({ src: resolveAdminAssetUrl(img), alt: `${item.productName} customer design ${i + 1}`, isStudio: true });
         });
         customIdx.set(idx, arr);
       }
@@ -361,10 +349,10 @@ export default function AdminOrders() {
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
         {[
           { label: "Total", count: data?.total ?? 0, cls: 'text-gray-900' },
-          { label: "Pending", count: (data?.orders ?? []).filter(o => o.status === 'pending').length, cls: 'text-yellow-400' },
-          { label: "Processing", count: (data?.orders ?? []).filter(o => o.status === 'processing').length, cls: 'text-blue-400' },
-          { label: "Shipped", count: (data?.orders ?? []).filter(o => ['shipped', 'ongoing'].includes(o.status)).length, cls: 'text-purple-400' },
-          { label: "Delivered", count: (data?.orders ?? []).filter(o => o.status === 'delivered').length, cls: 'text-green-400' },
+          { label: "Pending", count: (data?.orders ?? []).filter((o: { status?: string }) => o.status === 'pending').length, cls: 'text-yellow-400' },
+          { label: "Processing", count: (data?.orders ?? []).filter((o: { status?: string }) => o.status === 'processing').length, cls: 'text-blue-400' },
+          { label: "Shipped", count: (data?.orders ?? []).filter((o: { status?: string }) => ['shipped', 'ongoing'].includes(o.status ?? '')).length, cls: 'text-purple-400' },
+          { label: "Delivered", count: (data?.orders ?? []).filter((o: { status?: string }) => o.status === 'delivered').length, cls: 'text-green-400' },
         ].map(s => (
           <div key={s.label} className="p-4 rounded-2xl text-center"
             style={{ background: '#f9fafb', border: '1px solid #f3f4f6' }}>
@@ -436,8 +424,8 @@ export default function AdminOrders() {
               </thead>
               <tbody>
                 <AnimatePresence>
-                  {filteredOrders.map((order, i) => {
-                    const Icon = statusIcon(order.status);
+                  {filteredOrders.map((order: import("@workspace/api-client-react").Order, i: number) => {
+                    const Icon = statusIcon(order.status ?? "");
                     const pm = PAYMENT_LABELS[order.paymentMethod ?? ''] || { label: order.paymentMethod, color: '#aaa' };
                     const payColor = getPaymentStatusColor(order.paymentStatus || 'pending');
                     const payLabel = getPaymentStatusLabel(order.paymentStatus || 'pending');
@@ -506,9 +494,9 @@ export default function AdminOrders() {
                           })()}
                         </td>
                         <td className="px-4 py-4">
-                          <p className="font-black text-primary text-sm">{formatPrice(parseFloat(String(order.total)))}</p>
-                          {parseFloat(String(order.shippingCost)) === 0 && <p className="text-[10px] text-green-400">FREE ship</p>}
-                          {order.promoCode && <p className="text-[10px] text-purple-500 font-bold">{order.promoCode} (-{formatPrice(parseFloat(String(order.promoDiscount || "0")) || 0)})</p>}
+                          <p className="font-black text-primary text-sm">{formatPrice(parseFloat(String(order.total ?? "0")))}</p>
+                          {parseFloat(String(order.shippingCost ?? "0")) === 0 && <p className="text-[10px] text-green-400">FREE ship</p>}
+                          {order.promoCode && <p className="text-[10px] text-purple-500 font-bold">{order.promoCode} (-{formatPrice(parseFloat(String(order.promoDiscount ?? "0")))})</p>}
                         </td>
                         <td className="px-4 py-4">
                           <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ background: `${pm.color}15`, color: pm.color }}>
@@ -519,7 +507,7 @@ export default function AdminOrders() {
                           <select
                             value={order.paymentStatus || 'pending'}
                             onChange={e => handlePaymentStatusChange(order.id, e.target.value)}
-                            disabled={isUpdatingPayment}
+                            disabled={updatingPaymentOrderId === order.id}
                             className="text-xs font-bold px-2 py-1.5 rounded-lg border border-gray-200 outline-none cursor-pointer"
                             style={{ background: `${payColor}15`, color: payColor }}
                           >
@@ -532,8 +520,8 @@ export default function AdminOrders() {
                           <select
                             value={order.status}
                             onChange={e => handleStatusChange(order.id, e.target.value)}
-                            disabled={isUpdating}
-                            className={`text-xs font-bold px-2 py-1.5 rounded-xl border border-gray-200 outline-none cursor-pointer capitalize ${statusClass(order.status)}`}
+                            disabled={updatingOrderId === order.id}
+                            className={`text-xs font-bold px-2 py-1.5 rounded-xl border border-gray-200 outline-none cursor-pointer capitalize ${statusClass(order.status ?? "")}`}
                             style={{ background: 'white' }}
                           >
                             <option value="pending">⏳ Pending</option>
@@ -638,7 +626,7 @@ export default function AdminOrders() {
                       try { isStudio = !!JSON.parse(item.customNote ?? "{}").studioDesign; } catch {}
                     }
                     if (isStudio && item.imageUrl) {
-                      studioSnapshots.push({ src: item.imageUrl as string, label: item.productName as string });
+                      studioSnapshots.push({ src: resolveAdminAssetUrl(item.imageUrl), label: item.productName as string });
                     }
                   });
                   if (studioSnapshots.length === 0) return null;
@@ -655,7 +643,8 @@ export default function AdminOrders() {
                             style={{ background: 'repeating-conic-gradient(#e5e7eb 0% 25%,white 0% 50%) 0 0/16px 16px' }}
                             onClick={() => {
                               const { items: pi } = buildOrderPreview(selectedOrder);
-                              openLightbox(pi, idx);
+                              const targetIndex = pi.findIndex((preview) => preview.src === snap.src);
+                              openLightbox(pi, targetIndex >= 0 ? targetIndex : 0);
                             }}
                           >
                             <img
@@ -702,17 +691,17 @@ export default function AdminOrders() {
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">
                       <CreditCard className="inline w-3 h-3 mr-1" />Payment Status
-                      {selectedOrder.paymentMethod === 'cod' && (
-                        <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded"
-                          style={{ background: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>
-                          15% Advance
-                        </span>
-                      )}
+                        {(selectedOrder.paymentMethod === 'cod' || selectedOrder.paymentStatus === 'submitted') && (
+                          <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded"
+                            style={{ background: 'rgba(74,222,128,0.1)', color: '#16a34a' }}>
+                            25% Advance Flow
+                          </span>
+                        )}
                     </p>
                     <select
                       value={selectedOrder.paymentStatus || 'pending'}
                       onChange={e => handlePaymentStatusChange(selectedOrder.id, e.target.value)}
-                      disabled={isUpdatingPayment}
+                      disabled={updatingPaymentOrderId === selectedOrder.id}
                       className="w-full px-3 py-3 rounded-xl text-sm font-bold focus:outline-none focus:ring-1 focus:ring-primary transition-all cursor-pointer"
                       style={{ background: 'white', border: '1px solid #e5e7eb', color: '#111827' }}
                     >
@@ -726,8 +715,15 @@ export default function AdminOrders() {
                 {selectedOrder.notes && (
                   <div className="p-4 rounded-xl"
                     style={{ background: 'rgba(255,107,43,0.05)', border: '1px solid rgba(255,107,43,0.15)' }}>
-                    <p className="text-xs font-black uppercase tracking-widest text-primary mb-2">Notes / Payment Info</p>
-                    <p className="text-sm text-gray-500 font-mono">{selectedOrder.notes}</p>
+                    <p className="text-xs font-black uppercase tracking-widest text-primary mb-2">Payment Evidence / Notes</p>
+                    <p className="text-sm text-gray-500 font-mono whitespace-pre-wrap break-words">{selectedOrder.notes}</p>
+                    {getPaymentProofUrl(selectedOrder.notes) && (
+                      <a href={getPaymentProofUrl(selectedOrder.notes)!} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 mt-3 px-3 py-2 rounded-lg text-xs font-black text-orange-700 bg-orange-50 border border-orange-200 hover:bg-orange-100">
+                        View payment screenshot
+                      </a>
+                    )}
+                    <p className="text-[11px] text-gray-400 mt-3">Use “Payment Received” only after matching the wallet number and transaction evidence in the bKash, Nagad, or uPay account.</p>
                   </div>
                 )}
 
@@ -811,7 +807,7 @@ export default function AdminOrders() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-start gap-2.5 flex-1 min-w-0">
                             {(() => {
-                              const previewSrc = (item.imageUrl as string) || (item.productImage as string) || '';
+                              const previewSrc = resolveAdminAssetUrl((item.imageUrl as string) || (item.productImage as string) || '');
                               let isStudio = !!item.isStudio;
                               if (!isStudio) {
                                 try { isStudio = !!JSON.parse(item.customNote ?? "{}").studioDesign; } catch { /* ignore */ }
@@ -916,6 +912,9 @@ export default function AdminOrders() {
                                     <p className="text-xs text-primary/70 mt-1">
                                       Custom studio design · {layers} layer{layers === 1 ? '' : 's'}
                                       {(front || back) ? ` (${front} front, ${back} back)` : ''}
+                                      {parsed.category === "mug" && parsed.mugMode
+                                        ? ` · Mug: ${parsed.mugMode === "side1" ? "Side 1" : parsed.mugMode === "side2" ? "Side 2" : "Full wrap"}`
+                                        : ''}
                                     </p>
                                     {richAssets.length > 0 ? (
                                       <div className="mt-2 space-y-1.5">
@@ -975,7 +974,7 @@ export default function AdminOrders() {
                                 return (
                                   <ItemPreviewThumb
                                     key={idx}
-                                    src={img}
+                                    src={resolveAdminAssetUrl(img)}
                                     alt={`${item.productName} design ${idx + 1}`}
                                     isStudio={false}
                                     size="sm"

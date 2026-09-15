@@ -27,7 +27,7 @@ function slugify(str: string): string {
 
 const EMPTY_POST: Partial<BlogPost> = {
   title: "", slug: "", excerpt: "", content: "", imageUrl: "",
-  author: "TryNex Team", authorBio: "", authorAvatarUrl: "",
+  author: "Trynext Team", authorBio: "", authorAvatarUrl: "",
   category: "General", tags: [], published: false, featured: false,
 };
 
@@ -420,7 +420,7 @@ export default function AdminBlog() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {sortedPosts.map((post, idx) => (
+          {sortedPosts.map((post: BlogPost, idx: number) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, y: 20 }}
@@ -475,14 +475,14 @@ export default function AdminBlog() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => openEditor(post)}
+                    onClick={() => openEditor(post as BlogPost)}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all hover:scale-105 bg-orange-50 border border-orange-200 text-orange-600"
                   >
                     <Edit2 className="w-3.5 h-3.5" /> Edit
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleTogglePublish(post)}
+                    onClick={() => handleTogglePublish(post as BlogPost)}
                     className="flex items-center justify-center w-10 h-10 rounded-xl transition-all hover:scale-105"
                     style={{
                       background: post.published ? "rgba(239,68,68,0.08)" : "rgba(74,222,128,0.1)",

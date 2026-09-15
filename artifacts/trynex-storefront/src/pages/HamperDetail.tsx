@@ -53,7 +53,7 @@ export default function HamperDetail() {
     return (
       <div className="min-h-screen flex flex-col bg-white">
         <Navbar />
-        <main className="flex-1 pt-header pb-24 max-w-7xl mx-auto px-4 w-full">
+        <main className="flex-1 pt-header pb-24 container-wide mx-auto px-4 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8">
             <div className="aspect-square rounded-3xl bg-gray-100 animate-pulse" />
             <div className="space-y-4">
@@ -115,7 +115,7 @@ export default function HamperDetail() {
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title={`${hamper.name} | Gift Hamper`}
-        description={hamper.description || `Premium ${hamper.name} gift hamper from TryNex Lifestyle Bangladesh — beautifully wrapped, delivered nationwide.`}
+        description={hamper.description || `Premium ${hamper.name} gift hamper from Trynext Lifestyle Bangladesh — beautifully wrapped, delivered nationwide.`}
         canonical={`/hampers/${hamper.slug}`}
         ogImage={hamper.imageUrl}
         ogType="product"
@@ -125,27 +125,27 @@ export default function HamperDetail() {
             "@context": "https://schema.org",
             "@type": "Product",
             "name": hamper.name,
-            "description": hamper.description || `Premium ${hamper.name} gift hamper from TryNex Lifestyle.`,
+            "description": hamper.description || `Premium ${hamper.name} gift hamper from Trynext Lifestyle.`,
             "image": hamper.imageUrl || "",
             "sku": `hamper-${hamper.id}`,
-            "brand": { "@type": "Brand", "name": "TryNex Lifestyle" },
+            "brand": { "@type": "Brand", "name": "Trynext Lifestyle" },
             "category": "Gift Hamper",
             "offers": {
               "@type": "Offer",
               "priceCurrency": "BDT",
               "price": price,
               "availability": "https://schema.org/InStock",
-              "seller": { "@type": "Organization", "name": "TryNex Lifestyle" },
-              "url": `https://trynexshop.com/hampers/${hamper.slug}`,
+              "seller": { "@type": "Organization", "name": "Trynext Lifestyle" },
+              "url": `https://trynext.pages.dev/hampers/${hamper.slug}`,
             },
           },
           {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynexshop.com/" },
-              { "@type": "ListItem", "position": 2, "name": "Gift Hampers", "item": "https://trynexshop.com/hampers" },
-              { "@type": "ListItem", "position": 3, "name": hamper.name, "item": `https://trynexshop.com/hampers/${hamper.slug}` },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
+              { "@type": "ListItem", "position": 2, "name": "Gift Hampers", "item": "https://trynext.pages.dev/hampers" },
+              { "@type": "ListItem", "position": 3, "name": hamper.name, "item": `https://trynext.pages.dev/hampers/${hamper.slug}` },
             ],
           },
         ]}
@@ -153,12 +153,12 @@ export default function HamperDetail() {
       <Navbar />
 
       <main className="flex-1 pt-header pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8">
           <Link href="/hampers" className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-orange-600 transition-colors mb-6 mt-4">
             <ArrowLeft className="w-3.5 h-3.5" /> All Hampers
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             {/* Image */}
             <div>
               <motion.div
@@ -170,7 +170,7 @@ export default function HamperDetail() {
                 {hamper.imageUrl ? (
                   <img
                     src={hamper.imageUrl}
-                    alt={`${hamper.name} — premium gift hamper from TryNex Lifestyle`}
+                    alt={`${hamper.name} — premium gift hamper from Trynext Lifestyle`}
                     className="w-full h-full object-cover"
                     width={800}
                     height={800}
@@ -191,12 +191,12 @@ export default function HamperDetail() {
               {hamper.occasion && (
                 <p className="text-[11px] font-black uppercase tracking-widest text-orange-500 mb-2">{hamper.occasion}</p>
               )}
-              <h1 className="text-3xl sm:text-5xl font-black font-display tracking-tighter text-gray-900 mb-1">{hamper.name}</h1>
-              {hamper.nameBn && <p className="text-lg text-gray-500 mb-3">{hamper.nameBn}</p>}
-              {hamper.description && <p className="text-gray-500 leading-relaxed mb-6">{hamper.description}</p>}
+              <h1 className="text-3xl sm:text-5xl font-black font-display tracking-tight text-gray-900 mb-1">{hamper.name}</h1>
+              {hamper.nameBn && <p className="text-base sm:text-lg text-gray-500 mb-3">{hamper.nameBn}</p>}
+              {hamper.description && <p className="text-sm sm:text-base text-gray-500 leading-relaxed mb-6">{hamper.description}</p>}
 
-              <div className="flex items-baseline gap-3 mb-6">
-                <span className="font-black text-4xl text-orange-600">{formatPrice(price)}</span>
+              <div className="flex items-baseline flex-wrap gap-3 mb-6">
+                <span className="font-black text-3xl sm:text-4xl text-orange-600">{formatPrice(price)}</span>
                 {hasDiscount && (
                   <span className="text-lg text-gray-400 line-through">{formatPrice(hamper.basePrice)}</span>
                 )}

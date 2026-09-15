@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <rect width="400" height="500" fill="#FEF3C7"/>
+  <rect x="60" y="80" width="280" height="340" rx="16" fill="#FDE68A" opacity="0.6"/>
+  <!-- T-shirt outline silhouette -->
+  <path d="M140 160 L110 130 L70 145 L90 185 L125 172 L125 300 L275 300 L275 172 L310 185 L330 145 L290 130 L260 160 Q240 148 200 148 Q160 148 140 160Z"
+    fill="#F59E0B" opacity="0.4" stroke="#D97706" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Shopping bag icon -->
+  <path d="M168 340 L232 340 L226 420 L174 420 Z" fill="none" stroke="#D97706" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M183 340 C183 322 217 322 217 340" fill="none" stroke="#D97706" stroke-width="3" stroke-linecap="round"/>
+  <text x="200" y="450" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#92400E" font-weight="600">Trynext Lifestyle</text>
+</svg>

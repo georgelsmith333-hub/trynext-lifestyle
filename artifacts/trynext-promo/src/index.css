@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --color-primary: #e85d04; --color-primary-light: #ff7a2b; --color-primary-dark: #c44d00;
+  --color-navy: #18264a; --color-navy-mid: #24386b; --color-navy-light: #314b89;
+  --color-bg-light: #18264a; --color-bg-dark: #101a35; --color-bg-muted: #24386b;
+  --color-text-primary: #fffaf5; --color-text-secondary: #e4dcd3; --color-text-muted: #b4a99f; --color-text-inverse: #21170f;
+  --color-gold: #f59e0b; --color-success: #006a4e; --color-warning: #a85b00; --color-error: #b42318;
+  --color-teal: #087f8c; --color-violet: #6d4aff; --color-pink: #c43d72;
+  --font-display: 'Outfit', sans-serif; --font-body: 'Plus Jakarta Sans', sans-serif; --font-mono: 'Space Mono', monospace;
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-navy: var(--color-navy);
+  --color-bg-light: var(--color-bg-light);
+  --color-bg-dark: var(--color-bg-dark);
+  --color-bg-muted: var(--color-bg-muted);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-inverse: var(--color-text-inverse);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-navy);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+button, [role="button"] { min-height: 44px; }
+button:focus-visible, [role="button"]:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

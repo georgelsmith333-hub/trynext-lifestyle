@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
+import React, { useState, useCallback, useEffect } from "react";
 import { Facebook, Instagram, Mail, MapPin, Phone, Truck, ShieldCheck, Clock, Youtube, Heart, ExternalLink, Loader2 } from "lucide-react";
-import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useSiteSettings } from "@/context/SiteSettingsContext";
 import { useToast } from "@/hooks/use-toast";
@@ -9,8 +9,7 @@ import { getApiUrl } from "@/lib/utils";
 const PAYMENT_BADGES = [
   { name: "bKash", color: "#e2136e", bg: "#fde8f1" },
   { name: "Nagad", color: "#f7941d", bg: "#fff3e0" },
-  { name: "Rocket", color: "#8b2291", bg: "#f3e5f5" },
-  { name: "COD", color: "#16a34a", bg: "#f0fdf4" },
+  { name: "uPay", color: "#8b2291", bg: "#f3e5f5" },
 ];
 
 export function Footer() {
@@ -18,6 +17,13 @@ export function Footer() {
   const [tapCount, setTapCount] = useState(0);
   const [tapTimer, setTapTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [tapFeedback, setTapFeedback] = useState(false);
+
+  // Clean up reset timer on unmount to prevent state update on unmounted component
+  useEffect(() => {
+    return () => {
+      if (tapTimer) clearTimeout(tapTimer);
+    };
+  }, [tapTimer]);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
@@ -32,10 +38,10 @@ export function Footer() {
   const contactAddress = settings.address?.trim() || "";
   const phoneHref = contactPhone.replace(/[^+0-9]/g, '');
   const socialLinks = [
-    facebookUrl ? { icon: Facebook, href: facebookUrl, color: "#1877f2" } : null,
-    instagramUrl ? { icon: Instagram, href: instagramUrl, color: "#e1306c" } : null,
-    youtubeUrl ? { icon: Youtube, href: youtubeUrl, color: "#ff0000" } : null,
-  ].filter(Boolean) as Array<{ icon: typeof Facebook; href: string; color: string }>;
+    facebookUrl ? { icon: Facebook, label: "Facebook", href: facebookUrl, color: "#1877f2" } : null,
+    instagramUrl ? { icon: Instagram, label: "Instagram", href: instagramUrl, color: "#e1306c" } : null,
+    youtubeUrl ? { icon: Youtube, label: "YouTube", href: youtubeUrl, color: "#ff0000" } : null,
+  ].filter(Boolean) as Array<{ icon: typeof Facebook; label: string; href: string; color: string }>;
 
   const handleSecretTap = useCallback(() => {
     setTapFeedback(true);
@@ -78,7 +84,7 @@ export function Footer() {
     <footer className="bg-gray-950 text-gray-300 overflow-hidden relative">
       <div className="footer-glow-strip w-full" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 py-12 border-b border-white/5">
           {[
@@ -123,6 +129,7 @@ export function Footer() {
               <form onSubmit={handleNewsletter} className="flex flex-col sm:flex-row gap-2 max-w-sm mx-auto">
                 <input
                   type="email"
+                  aria-label="Email address for newsletter updates"
                   placeholder="your@email.com"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
@@ -140,6 +147,30 @@ export function Footer() {
                 </button>
               </form>
             )}
+          </div>
+        </div>
+
+        {/* Popular Searches — SEO internal links to keyword landing pages */}
+        <div className="py-6 border-b border-white/5">
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-600 mb-3 text-center">Popular Searches</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {[
+              { label: "Custom T-Shirt Bangladesh", href: "/custom-tshirt-bangladesh" },
+              { label: "Custom Hoodie Bangladesh",  href: "/custom-hoodie-bangladesh" },
+              { label: "Custom Mug Bangladesh",     href: "/custom-mug-bangladesh" },
+              { label: "Corporate Gift Dhaka",      href: "/corporate-gift-dhaka" },
+              { label: "Custom Gift Bangladesh",    href: "/custom-gift-bangladesh" },
+              { label: "Birthday Gift Bangladesh",  href: "/birthday-gift-bangladesh" },
+            ].map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-xs text-gray-500 hover:text-orange-400 transition-colors px-3 py-1.5 rounded-full"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+              >
+                {label}
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -161,7 +192,7 @@ export function Footer() {
               </div>
               <span className="text-2xl font-black font-display tracking-tight text-white">
                 {(() => {
-                  const name = settings.siteName?.trim() || "TryNex Lifestyle";
+                  const name = settings.siteName?.trim() || "Trynext Lifestyle";
                   const parts = name.split(' ');
                   const head = parts[0];
                   const tail = parts.slice(1).join(' ');
@@ -189,8 +220,9 @@ export function Footer() {
             </div>
 
             <div className="flex gap-3">
-              {socialLinks.map(({ icon: Icon, href, color }) => (
+              {socialLinks.map(({ icon: Icon, label, href, color }) => (
                 <a key={href} href={href} target="_blank" rel="noopener noreferrer"
+                  aria-label={`Visit Trynext Lifestyle on ${label}`}
                   className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:-translate-y-1 hover:scale-110"
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
                   onMouseEnter={e => {

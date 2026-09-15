@@ -1,12 +1,13 @@
 import { useParams, Link, useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { TrustBadges } from "@/components/TrustBadges";
 import { SEOHead } from "@/components/SEOHead";
 import { Loader } from "@/components/ui/Loader";
 import { ProductDetailSkeleton } from "@/components/ui/skeleton";
 import { useGetProduct, useListProducts, getListProductsQueryKey } from "@workspace/api-client-react";
 import { ProductCard } from "@/components/ProductCard";
-import { formatPrice, cn, getApiUrl } from "@/lib/utils";
+import { formatPrice, cn, getApiUrl, resolveImageUrl } from "@/lib/utils";
 import { useState, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCartActions } from "@/context/CartContext";
@@ -46,13 +47,13 @@ const SIZE_GUIDE = [
   { size: "3XL", chest: "46-48", length: "32", sleeve: "37" },
 ];
 
-const REVIEW_SAMPLES = [
-  { name: "Rakib H.", rating: 5, text: "Amazing quality! The print is sharp and fabric is premium. Delivery was super fast.", date: "2 days ago", location: "Dhaka" },
-  { name: "Priya M.", rating: 5, text: "Exactly what I ordered. The color is vibrant and the stitching is perfect.", date: "1 week ago", location: "Chittagong" },
-  { name: "Tanvir A.", rating: 4, text: "Good quality product. Would recommend TryNex to everyone!", date: "2 weeks ago", location: "Sylhet" },
-];
+function isSizedApparelProduct(product: any): boolean {
+  const text = [product?.name, product?.categoryName, product?.category?.name].filter(Boolean).join(" ").toLowerCase();
+  return !/(mug|cup|cap|hat|bottle|tumbler|flask|water bottle|accessory)/.test(text);
+}
 
-function ReviewsSection({ productId, rating }: { productId: number; rating: number }) {
+
+function ReviewsSection({ productId }: { productId: number }) {
   const [reviews, setReviews] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -105,8 +106,8 @@ function ReviewsSection({ productId, rating }: { productId: number; rating: numb
     finally { setSubmitting(false); }
   };
 
-  const avg = stats?.average || rating;
-  const total = stats?.total || 0;
+  const total = stats?.total ?? 0;
+  const avg = total > 0 ? stats?.average : null;
 
   if (loading) return (
     <div className="flex items-center justify-center py-12">
@@ -123,28 +124,37 @@ function ReviewsSection({ productId, rating }: { productId: number; rating: numb
 
   return (
     <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
-      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 p-5 sm:p-6 bg-white rounded-2xl border border-gray-100 shadow-sm mb-6">
-        <div className="text-center">
-          <div className="text-5xl font-black text-gray-900">{avg}</div>
-          <div className="flex justify-center mt-2">
-            {Array.from({ length: 5 }).map((_, j) => (
-              <Star key={j} className="w-4 h-4" style={{ fill: j < Math.floor(avg) ? '#FB8500' : '#e5e7eb', color: j < Math.floor(avg) ? '#FB8500' : '#e5e7eb' }} />
-            ))}
-          </div>
-          <p className="text-xs text-gray-500 mt-1">{total} review{total !== 1 ? "s" : ""}</p>
+      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 p-4 sm:p-6 bg-white rounded-2xl border border-gray-100 shadow-sm mb-6">
+        <div className="text-center w-full sm:w-auto">
+          {avg !== null ? (
+            <>
+              <div className="text-4xl sm:text-5xl font-black text-gray-900">{avg}</div>
+              <div className="flex justify-center mt-1 sm:mt-2">
+                {Array.from({ length: 5 }).map((_, j) => (
+                  <Star key={j} className="w-4 h-4" style={{ fill: j < Math.floor(avg) ? '#FB8500' : '#e5e7eb', color: j < Math.floor(avg) ? '#FB8500' : '#e5e7eb' }} />
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">{total} review{total !== 1 ? "s" : ""}</p>
+            </>
+          ) : (
+            <>
+              <p className="font-bold text-gray-900">No reviews yet</p>
+              <p className="text-xs text-gray-500 mt-1">Be the first to share your experience.</p>
+            </>
+          )}
         </div>
-        <div className="flex-1 space-y-2">
+        <div className="flex-1 space-y-1.5 w-full">
           {[5, 4, 3, 2, 1].map((s) => {
             const count = stats?.distribution?.[s] || 0;
             const pct = total > 0 ? (count / total) * 100 : 0;
             return (
-              <div key={s} className="flex items-center gap-3">
-                <span className="text-xs font-bold text-gray-500 w-4">{s}</span>
-                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+              <div key={s} className="flex items-center gap-2 sm:gap-3">
+                <span className="text-[10px] sm:text-xs font-bold text-gray-500 w-3 sm:w-4">{s}</span>
+                <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400 shrink-0" />
+                <div className="flex-1 h-1.5 sm:h-2 rounded-full bg-gray-100 overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${pct}%`, background: '#FB8500' }} />
                 </div>
-                <span className="text-xs text-gray-400 w-6 text-right">{count}</span>
+                <span className="text-[10px] sm:text-xs text-gray-400 w-5 sm:w-6 text-right shrink-0">{count}</span>
               </div>
             );
           })}
@@ -166,11 +176,11 @@ function ReviewsSection({ productId, rating }: { productId: number; rating: numb
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input type="text" placeholder="Your name *" value={submitName} onChange={e => setSubmitName(e.target.value)}
-              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 w-full" />
             <input type="email" placeholder="Your email *" value={submitEmail} onChange={e => setSubmitEmail(e.target.value)}
-              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 w-full" />
           </div>
           <textarea placeholder="Share your experience (optional)" rows={3} value={submitText} onChange={e => setSubmitText(e.target.value)}
             className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
@@ -290,7 +300,7 @@ export default function ProductDetail() {
     return undefined;
   }, [queryClient, isNumeric, isSlug, numericId, id]);
 
-  const { data: productFromHook, isLoading: hookLoading, error: hookError } = useGetProduct(isNumeric ? String(numericId) : '0', {
+  const { data: productFromHook, isLoading: hookLoading, error: hookError, refetch: refetchProduct } = useGetProduct(isNumeric ? String(numericId) : '0', {
     query: { enabled: isNumeric, retry: 2, staleTime: 30000, initialData: isNumeric ? cachedProduct : undefined }
   } as any);
 
@@ -315,6 +325,17 @@ export default function ProductDetail() {
   const error = isNumeric ? hookError : slugError;
   const productId = product?.id ?? numericId;
   const isValidId = isNumeric || isSlug;
+  const hasApparelSizing = isSizedApparelProduct(product);
+  const [selectedVariantId, setSelectedVariantId] = useState<string>("");
+  const productVariants = useMemo(() =>
+    (Array.isArray((product as any)?.variants) ? (product as any).variants : [])
+      .filter((v: any) => v && v.active !== false),
+    [product?.id, (product as any)?.variants]
+  );
+  const selectedVariant = productVariants.find((v: any) => v.id === selectedVariantId) ?? null;
+  const variantPrice = selectedVariant ? Number(selectedVariant.price) : null;
+  const variantCustomizationFee = selectedVariant ? Number(selectedVariant.customizationFee || 0) : 0;
+  const selectedProductPrice = variantPrice != null ? variantPrice : Number(product?.discountPrice || product?.price || 0);
 
   const { data: relatedData } = useListProducts(
     { limit: 4, category: product?.categoryId ? String(product.categoryId) : undefined } as any,
@@ -346,7 +367,7 @@ export default function ProductDetail() {
   const { toast } = useToast();
   const settings = useSiteSettings();
   const { addProduct: trackRecentlyViewed } = useRecentlyViewed();
-  const whatsappNum = (settings.whatsappNumber?.replace(/[^0-9]/g, '') || '8801903426915');
+  const whatsappNum = (settings.whatsappNumber || settings.phone || "").replace(/[^0-9]/g, '');
 
   const prefersReducedMotion = useReducedMotion();
   const [quantity, setQuantity] = useState(1);
@@ -403,28 +424,45 @@ export default function ProductDetail() {
     };
   }, [product?.id, product?.stock]);
 
+  // Auto-open Reviews tab and scroll to review form when ?review=1 is in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("review") === "1") {
+      setActiveTab("reviews");
+      setTimeout(() => {
+        const el = document.getElementById("reviews-section");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 400);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     setActiveImage("");
     setQuantity(1);
     setSelectedSize("");
     setSelectedColor("");
+    setSelectedVariantId(productVariants[0]?.id || "");
     setCustomNote("");
     setCustomImages([]);
     if (product) {
+      const defaultVariantPrice = productVariants[0]?.price != null
+        ? Number(productVariants[0].price)
+        : Number(product.discountPrice || product.price);
       trackViewContent({
         id: product.id,
         name: product.name,
-        price: product.discountPrice || product.price,
+        price: defaultVariantPrice,
       });
       trackRecentlyViewed({
         id: product.id,
         name: product.name,
         slug: product.slug || String(product.id),
-        price: product.discountPrice || product.price,
+        price: defaultVariantPrice,
         imageUrl: product.imageUrl || '',
       });
     }
-  }, [product?.id]);
+  }, [product?.id, productVariants.length, productVariants[0]?.price]);
 
   if (isLoading) return <ProductDetailSkeleton />;
 
@@ -432,13 +470,13 @@ export default function ProductDetail() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <div className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-20">
-        <div className="text-center">
+          <div className="text-center">
           <div className="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
             <Search className="w-10 h-10 text-gray-400" />
           </div>
           <h2 className="text-4xl font-black font-display tracking-tight text-gray-900 mb-3">Product Not Found</h2>
           <p className="text-gray-500 mb-8 max-w-sm mx-auto">This product may have been removed or the link is incorrect.</p>
-          <Link href="/products" className="btn-primary inline-flex">
+           <Link href="/products" className="btn-primary inline-flex" data-testid="link-browse-products">
             <ArrowLeft className="w-5 h-5" /> Browse All Products
           </Link>
         </div>
@@ -447,7 +485,33 @@ export default function ProductDetail() {
     </div>
   );
 
-  if (!isValidId || error || !product) return NotFound;
+  if (error && isNumeric) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center px-4 py-20" role="alert">
+          <div className="max-w-md text-center">
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-orange-50">
+              <Package2 className="h-10 w-10 text-orange-500" aria-hidden="true" />
+            </div>
+            <h1 className="font-display text-3xl font-black text-gray-900">Product details are unavailable</h1>
+            <p className="mt-3 text-sm leading-6 text-gray-600">The product could not be loaded right now. Try again or return to the shop.</p>
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
+              <button type="button" onClick={() => void refetchProduct()} className="min-h-11 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2" data-testid="button-retry-product">
+                Try again
+              </button>
+              <Link href="/products" className="inline-flex min-h-11 items-center rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-bold text-gray-700 transition hover:border-orange-300 hover:text-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2">
+                Browse products
+              </Link>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isValidId || !product) return NotFound;
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -515,12 +579,21 @@ export default function ProductDetail() {
       return;
     }
 
+    if (productVariants.length > 0 && !selectedVariant) {
+      toast({ title: "Choose a variant", description: "Select the product style or fit before adding it to your bag.", variant: "destructive" });
+      document.getElementById("variant-picker")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    if (selectedVariant && selectedVariant.sizes?.length && selectedSize && !selectedVariant.sizes.includes(selectedSize)) {
+      toast({ title: "Size unavailable", description: "Choose a size available for this variant.", variant: "destructive" });
+      return;
+    }
     // Block if selected color is marked out of stock
     if (selectedColor) {
       const variant = (product.colorVariants ?? []).find((v: any) => v.name === selectedColor);
       if (variant && variant.inStock === false) return;
     }
-    const itemPrice = product.discountPrice || product.price;
+    const itemPrice = selectedProductPrice + (customNote || customImages.length > 0 ? variantCustomizationFee : 0);
     addToCart({
       productId: product.id,
       name: product.name,
@@ -530,6 +603,10 @@ export default function ProductDetail() {
       imageUrl: displayImage || product.imageUrl,
       size: selectedSize || undefined,
       color: selectedColor || undefined,
+      variantId: selectedVariant?.id,
+      variantName: selectedVariant?.name,
+      variantPrice: selectedVariant?.price,
+      customizationFee: variantCustomizationFee || undefined,
       customNote: customNote || undefined,
       customImages: customImages.length > 0 ? customImages : undefined,
     } as any);
@@ -548,13 +625,14 @@ export default function ProductDetail() {
     setTimeout(() => setAddedToBag(false), 1200);
   };
 
-  const discount = product.discountPrice
+  const discount = productVariants.length === 0 && product.discountPrice
     ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
     : 0;
 
   const displayImage = activeImage || product.imageUrl || "";
   const wishlisted = isWishlisted(product.id);
-  const rating = product.rating ? parseFloat(String(product.rating)) : 4.9;
+  const itemPrice = selectedProductPrice + (customNote || customImages.length > 0 ? variantCustomizationFee : 0);
+  const advanceAmount = Math.round(itemPrice * 0.25);
 
   const handleShare = async () => {
     try {
@@ -566,15 +644,19 @@ export default function ProductDetail() {
   };
 
   const handleWhatsAppOrder = () => {
-    const itemPrice = product.discountPrice || product.price;
+    if (!whatsappNum) {
+      toast({ title: "WhatsApp ordering is unavailable", description: "Please add this item to your cart and continue to checkout." });
+      return;
+    }
+    const itemPrice = selectedProductPrice + (customNote || customImages.length > 0 ? variantCustomizationFee : 0);
     const totalPrice = itemPrice * quantity;
     const lines = [
-      `Assalamu Alaikum, TryNex!`,
+      `Assalamu Alaikum, Trynext!`,
       ``,
       `I'd like to place an order:`,
       ``,
       `🛍️ *Product:* ${product.name}`,
-      `💰 *Price:* ${formatPrice(itemPrice)}${product.discountPrice ? ` (was ${formatPrice(product.price)})` : ``}`,
+      `💰 *Price:* ${formatPrice(itemPrice)}${selectedVariant ? ` (${selectedVariant.name})` : ``}`,
       `📦 *Quantity:* ${quantity}`,
       `💵 *Total:* ${formatPrice(totalPrice)}`,
     ];
@@ -594,45 +676,49 @@ export default function ProductDetail() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <SEOHead
-        title={`${product.name} | TryNex Lifestyle`}
-        description={product.description?.substring(0, 160) || `Buy ${product.name} from TryNex Lifestyle. Premium quality custom apparel in Bangladesh. Fast delivery to Dhaka and beyond.`}
+        title={`${product.name} | Trynext Lifestyle`}
+        description={product.description?.substring(0, 160) || `Buy ${product.name} from Trynext Lifestyle. Premium quality custom apparel in Bangladesh. Fast delivery to Dhaka and beyond.`}
         canonical={`/product/${product.slug || product.id}`}
         ogImage={product.imageUrl || undefined}
         ogType="product"
-        keywords={`${product.name}, buy ${product.name} bangladesh, trynex ${product.name}, customized gift Bangladesh, কাস্টম গিফট বাংলাদেশ`}
+        keywords={`${product.name}, buy ${product.name} bangladesh, trynext ${product.name}, customized gift Bangladesh, কাস্টম গিফট বাংলাদেশ`}
         jsonLd={[
           {
             "@context": "https://schema.org",
             "@type": "Product",
             "name": product.name,
-            "description": product.description || `Buy ${product.name} from TryNex Lifestyle. Premium quality, fast delivery across Bangladesh.`,
+            "description": product.description || `Buy ${product.name} from Trynext Lifestyle. Premium quality, fast delivery across Bangladesh.`,
             "image": product.imageUrl || "",
             "sku": `TN-${product.id}`,
-            "brand": { "@type": "Brand", "name": "TryNex Lifestyle" },
+            "brand": { "@type": "Brand", "name": "Trynext Lifestyle" },
             "offers": {
               "@type": "Offer",
               "priceCurrency": "BDT",
               "price": product.discountPrice || product.price,
               "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-              "url": `https://trynexshop.com/products/${product.slug || product.id}`,
+              "url": `https://trynext.pages.dev/product/${product.slug || product.id}`,
               "itemCondition": "https://schema.org/NewCondition",
-              "seller": { "@type": "Organization", "name": "TryNex Lifestyle" }
+              "seller": { "@type": "Organization", "name": "Trynext Lifestyle" }
             },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": stats?.average || product.rating || 4.9,
-              "reviewCount": stats?.total || 10,
-              "bestRating": "5",
-              "worstRating": "1"
-            }
+            ...(stats?.total > 0
+              ? {
+                  "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": stats.average,
+                    "reviewCount": stats.total,
+                    "bestRating": "5",
+                    "worstRating": "1",
+                  },
+                }
+              : {})
           },
           {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynexshop.com/" },
-              { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://trynexshop.com/products" },
-              { "@type": "ListItem", "position": 3, "name": product.name, "item": `https://trynexshop.com/products/${product.slug || product.id}` },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
+              { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://trynext.pages.dev/products" },
+              { "@type": "ListItem", "position": 3, "name": product.name, "item": `https://trynext.pages.dev/product/${product.slug || product.id}` },
             ],
           },
         ]}
@@ -640,7 +726,7 @@ export default function ProductDetail() {
       <Navbar />
 
       <main className="flex-1 pt-header pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
           <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-8 font-medium">
             <Link href="/" className="hover:text-orange-600 transition-colors">Home</Link>
             <span>/</span>
@@ -653,9 +739,10 @@ export default function ProductDetail() {
             {/* Images Column */}
             <div className="relative flex flex-col gap-4">
               {/* Desktop Image Viewer */}
-              <motion.div
+                 <motion.div
                 ref={imageContainerRef}
-                className="relative aspect-square rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-sm group cursor-zoom-in hidden md:block"
+                 className="relative aspect-square rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-sm group cursor-zoom-in hidden md:block"
+                 aria-label={`${product.name} product image`}
                 layoutId={`product-image-${product.id}`}
                 onMouseEnter={() => setZoomActive(true)}
                 onMouseLeave={() => setZoomActive(false)}
@@ -663,8 +750,12 @@ export default function ProductDetail() {
               >
                 {displayImage ? (
                   <img
-                    src={displayImage}
-                    alt={`${product.name} — TryNex Lifestyle`}
+                    src={resolveImageUrl(displayImage)}
+                    alt={`${product.name} — Trynext Lifestyle`}
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = "/images/product-placeholder.svg";
+                    }}
                     className="w-full h-full object-cover transition-transform duration-300"
                     width={800}
                     height={800}
@@ -750,8 +841,12 @@ export default function ProductDetail() {
                   >
                     {displayImage ? (
                       <img
-                        src={displayImage}
+                        src={resolveImageUrl(displayImage)}
                         alt={product.name}
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = "/images/product-placeholder.svg";
+                        }}
                         className="w-full h-full object-cover pointer-events-none"
                         width="600"
                         height="600"
@@ -781,7 +876,7 @@ export default function ProductDetail() {
                       </span>
                     )}
                     {displayImage && (
-                      <button
+                     <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -806,15 +901,23 @@ export default function ProductDetail() {
                   return allImages.map((img, i) => (
                     <button
                       key={i}
-                      onClick={() => { setActiveImage(img); setZoomActive(false); }}
+                       onClick={() => { setActiveImage(img); setZoomActive(false); }}
+                       type="button"
+                       aria-label={`View product image ${i + 1}`}
+                       aria-pressed={activeImage === img || (!activeImage && i === 0)}
+                       data-testid={`button-product-thumbnail-${i + 1}`}
                       className={cn(
                         "relative w-14 sm:w-16 aspect-square shrink-0 rounded-xl overflow-hidden border-2 transition-all",
                         activeImage === img || (!activeImage && i === 0) ? "border-orange-500 scale-95" : "border-gray-100 hover:border-orange-200"
                       )}
                     >
                       <img
-                        src={img}
+                        src={resolveImageUrl(img)}
                         alt={`${product.name} thumb ${i + 1}`}
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = "/images/product-placeholder.svg";
+                        }}
                         className="w-full h-full object-cover"
                         loading="lazy"
                       />
@@ -832,7 +935,11 @@ export default function ProductDetail() {
                   {product.customizable ? "✨ Customizable" : "Ready Made"}
                 </span>
                 <div className="flex items-center gap-2">
-                  <button
+                   <button
+                     type="button"
+                     aria-label={wishlisted ? "Remove product from wishlist" : "Add product to wishlist"}
+                     aria-pressed={wishlisted}
+                     data-testid="button-product-wishlist"
                     onClick={() => toggleWishlist({ id: product.id, name: product.name, price: product.price, discountPrice: product.discountPrice, imageUrl: product.imageUrl })}
                     className="p-2.5 rounded-xl transition-all"
                     style={{
@@ -842,7 +949,10 @@ export default function ProductDetail() {
                   >
                     <Heart className="w-4.5 h-4.5" style={{ width: '1.1rem', height: '1.1rem', color: wishlisted ? '#E85D04' : '#9ca3af', fill: wishlisted ? '#E85D04' : 'none' }} />
                   </button>
-                  <button
+                   <button
+                     type="button"
+                     aria-label="Share product"
+                     data-testid="button-share-product"
                     onClick={handleShare}
                     className="p-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-700 transition-all"
                   >
@@ -855,22 +965,25 @@ export default function ProductDetail() {
                 {product.name}
               </h1>
 
-              {/* Rating */}
-              <div className="flex items-center gap-3 mb-6">
-                <div className="flex">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <Star key={j} className="w-4 h-4"
-                      style={{ fill: j < Math.floor(rating) ? '#FB8500' : '#e5e7eb', color: j < Math.floor(rating) ? '#FB8500' : '#e5e7eb' }} />
-                  ))}
+              {stats?.total > 0 && (
+                <div className="flex items-center gap-3 mb-6" aria-label={`${stats.average} from ${stats.total} approved review${stats.total !== 1 ? "s" : ""}`}>
+                  <div className="flex" aria-hidden="true">
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <Star key={j} className="w-4 h-4"
+                        style={{ fill: j < Math.floor(stats.average) ? '#FB8500' : '#e5e7eb', color: j < Math.floor(stats.average) ? '#FB8500' : '#e5e7eb' }} />
+                    ))}
+                  </div>
+                  <span className="font-bold text-sm text-gray-700">{stats.average}</span>
+                  <span className="text-sm text-gray-400">({stats.total} review{stats.total !== 1 ? "s" : ""})</span>
                 </div>
-                <span className="font-bold text-sm text-gray-700">{rating}</span>
-                <span className="text-sm text-gray-400">(128 reviews)</span>
-              </div>
+              )}
 
               {/* Price */}
-              <div className="mb-8 p-5 rounded-2xl" style={{ background: '#fff8f5', border: '1px solid #fde4d0' }}>
+               <div className="mb-8 p-5 rounded-2xl" style={{ background: '#fff8f5', border: '1px solid #fde4d0' }}>
                 <div className="flex items-baseline gap-3 sm:gap-4 mb-3 flex-wrap">
-                  {product.discountPrice ? (
+                  {productVariants.length > 0 ? (
+                    <span className="text-4xl font-black text-orange-600">{formatPrice(selectedProductPrice)}</span>
+                  ) : product.discountPrice ? (
                     <>
                       <span className="text-4xl font-black text-orange-600">{formatPrice(product.discountPrice)}</span>
                       <span className="text-xl line-through text-gray-400">{formatPrice(product.price)}</span>
@@ -881,20 +994,24 @@ export default function ProductDetail() {
                     <span className="text-4xl font-black text-gray-900">{formatPrice(product.price)}</span>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center gap-2 mb-3">
+                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   <span
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wide"
                     style={{ background: '#dcfce7', color: '#15803d', border: '1px solid #86efac' }}
                   >
-                    <Truck className="w-3 h-3" /> Cash on Delivery
+                    <Truck className="w-3 h-3" /> 25% Advance, Rest on Delivery
                   </span>
                   <span
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wide"
                     style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}
                   >
-                    🇧🇩 5,000+ happy customers
+                    🇧🇩 Nationwide delivery
                   </span>
                 </div>
+                 <div className="mt-3 rounded-xl border border-green-200 bg-green-50 px-3 py-2.5 text-xs text-green-800">
+                   <p className="font-black">Pay {formatPrice(advanceAmount)} today (25% advance)</p>
+                   <p className="mt-0.5 font-medium text-green-700">Pay the remaining {formatPrice(Math.max(0, itemPrice - advanceAmount))} when your order is delivered.</p>
+                 </div>
                 <ViewerCount productId={product.id} />
 
                 {/* Estimated Delivery */}
@@ -921,15 +1038,58 @@ export default function ProductDetail() {
                 })()}
               </div>
 
+              {/* Structured product variants: mug handle/rim or apparel fit */}
+              {productVariants.length > 0 && (
+                <div className="mb-6" id="variant-picker">
+                  <p className="font-bold text-gray-900 text-sm mb-3">
+                    {hasApparelSizing ? "Fit" : "Style"}
+                    <span className="ml-1.5 text-[10px] font-bold text-orange-500 uppercase tracking-wider">· Required</span>
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {productVariants.map((variant: any) => {
+                      const available = Number(variant.stock) > 0;
+                      const active = selectedVariantId === variant.id;
+                      return (
+                        <button
+                          key={variant.id}
+                          type="button"
+                          disabled={!available}
+                          onClick={() => {
+                            if (!available) return;
+                            setSelectedVariantId(active ? "" : variant.id);
+                            if (variant.sizes?.length && selectedSize && !variant.sizes.includes(selectedSize)) setSelectedSize("");
+                            if (variant.colors?.length && selectedColor && !variant.colors.includes(selectedColor)) setSelectedColor("");
+                          }}
+                          className={cn("text-left rounded-xl border px-3.5 py-3 transition-all", active ? "border-orange-500 bg-orange-50 ring-2 ring-orange-200" : "border-gray-200 bg-white hover:border-orange-300", !available && "opacity-45 cursor-not-allowed")}
+                          aria-pressed={active}
+                          aria-label={`${variant.name}${available ? `, ${formatPrice(variant.price)}` : ", out of stock"}`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="font-black text-sm text-gray-900">{variant.name}</span>
+                            {active && <Check className="w-4 h-4 text-orange-600 shrink-0" />}
+                          </div>
+                          <div className="mt-1 text-xs font-bold text-orange-600">{formatPrice(variant.price)}{variant.customizationFee ? ` · +${formatPrice(variant.customizationFee)} custom` : ""}</div>
+                          <div className="mt-1 text-[11px] text-gray-500">{available ? `${variant.stock} available` : "Out of stock"}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Sizes */}
-              {product.sizes && product.sizes.length > 0 && (
+              {hasApparelSizing && product.sizes && product.sizes.length > 0 && (
                 <div className="mb-6" id="size-picker">
                   <div className="flex items-center justify-between mb-3">
                     <p className="font-bold text-gray-900 text-sm">
                       Size
                       {!selectedSize && <span className="ml-1.5 text-[10px] font-bold text-orange-500 uppercase tracking-wider">· Required</span>}
                     </p>
-                    <button
+                     <button
+                       type="button"
+                       aria-expanded={showSizeGuide}
+                       aria-controls="size-guide-panel"
+                       data-testid="button-size-guide"
                       onClick={() => setShowSizeGuide(!showSizeGuide)}
                       className="flex items-center gap-1.5 text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors"
                     >
@@ -974,7 +1134,7 @@ export default function ProductDetail() {
                         exit={{ opacity: 0, height: 0 }}
                         className="overflow-hidden mt-4"
                       >
-                        <div className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                         <div id="size-guide-panel" className="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm">
                           <p className="font-bold text-sm text-gray-900 mb-3">Size Chart (inches)</p>
                           <table className="w-full text-xs text-center">
                             <thead>
@@ -1023,7 +1183,11 @@ export default function ProductDetail() {
                       const mappedImage = colorImages[color];
 
                       return (
-                        <button
+                         <button
+                           type="button"
+                           aria-label={`${isOutOfStock ? `${color}, out of stock` : `Select ${color} color`}${selectedColor === color ? ", selected" : ""}`}
+                           aria-pressed={selectedColor === color}
+                           data-testid={`button-color-${colorIdx}`}
                           key={color}
                           onClick={() => {
                             if (isOutOfStock) return;
@@ -1107,7 +1271,11 @@ export default function ProductDetail() {
 
                   <p className="text-xs text-gray-400 text-center font-medium">— or describe your idea below —</p>
 
-                  <textarea
+                   <label htmlFor="custom-note" className="sr-only">Describe your design idea</label>
+                   <textarea
+                     id="custom-note"
+                     aria-label="Describe your design idea"
+                     data-testid="textarea-custom-note"
                     value={customNote}
                     onChange={(e) => setCustomNote(e.target.value)}
                     placeholder="Describe your design idea, text, placement, or any instructions..."
@@ -1132,7 +1300,9 @@ export default function ProductDetail() {
                     )}>
                       <Upload className="w-4 h-4" />
                       {uploadingImage ? "Uploading..." : "Choose Files"}
-                      <input
+                       <input
+                         aria-label="Upload design or logo files"
+                         data-testid="input-design-upload"
                         type="file"
                         accept="image/*"
                         multiple
@@ -1147,7 +1317,10 @@ export default function ProductDetail() {
                           <div key={idx} className="relative group">
                             <img src={img} alt={`Design ${idx + 1}`}
                               className="w-16 h-16 rounded-xl object-cover border border-gray-200" />
-                            <button
+                             <button
+                               type="button"
+                               aria-label={`Remove attached design ${idx + 1}`}
+                               data-testid={`button-remove-design-${idx + 1}`}
                               onClick={() => setCustomImages(prev => prev.filter((_, i) => i !== idx))}
                               className="btn-press absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                             >
@@ -1177,7 +1350,7 @@ export default function ProductDetail() {
                   >
                     <Minus className="w-4 h-4" />
                   </motion.button>
-                  <span className="px-5 font-black text-gray-900 text-lg min-w-[3rem] text-center overflow-hidden">
+                   <span className="px-5 font-black text-gray-900 text-lg min-w-[3rem] text-center overflow-hidden" aria-live="polite" aria-label={`Quantity ${quantity}`}>
                     <motion.span
                       key={qtyPulse}
                       initial={prefersReducedMotion ? false : { scale: 0.7, opacity: 0.4 }}
@@ -1203,10 +1376,13 @@ export default function ProductDetail() {
                   </motion.button>
                 </div>
                 <motion.button
+                   type="button"
                   ref={mainAddToCartRef}
                   onClick={handleAddToCart}
                   disabled={product.stock < 1}
                   aria-live="polite"
+                   aria-label={product.stock > 0 ? `Add ${quantity} ${product.name} to cart` : `${product.name} is sold out`}
+                   data-testid="button-add-product-to-cart"
                   animate={
                     prefersReducedMotion || !addedToBag
                       ? { scale: 1 }
@@ -1323,7 +1499,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Tabs: Details & Reviews */}
-          <div className="mt-16">
+          <div className="mt-16" id="reviews-section">
             <div className="flex gap-1 border-b border-gray-200 mb-8">
               {[
                 { id: "details", label: "Product Details" },
@@ -1356,7 +1532,7 @@ export default function ProductDetail() {
                   <div>
                     <h3 className="font-black text-gray-900 mb-4">Description</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      {product.description || "Premium quality product from TryNex Lifestyle. Crafted with care using the finest materials, designed to last and impress. Perfect for custom designs, corporate gifts, or personal style."}
+                      {product.description || "Premium quality product from Trynext Lifestyle. Crafted with care using the finest materials, designed to last and impress. Perfect for custom designs, corporate gifts, or personal style."}
                     </p>
                   </div>
                   <div>
@@ -1365,7 +1541,9 @@ export default function ProductDetail() {
                       {[
                         { label: "Material", value: "230-320 GSM Premium Cotton" },
                         { label: "Print Method", value: "DTF / Screen Print / Sublimation" },
-                        { label: "Available Sizes", value: product.sizes?.join(", ") || "S, M, L, XL, 2XL" },
+                        ...(hasApparelSizing
+                          ? [{ label: "Available Sizes", value: Array.isArray(product.sizes) && product.sizes.length > 0 ? product.sizes.join(", ") : SIZE_GUIDE.map(s => s.size).join(", ") }]
+                          : [{ label: "Size", value: "One size" }]),
                         { label: "Available Colors", value: product.colors?.join(", ") || "Multiple" },
                         { label: "Production Time", value: "24 hours", highlight: true },
                         { label: "Delivery", value: "24 hours nationwide", highlight: true },
@@ -1385,7 +1563,7 @@ export default function ProductDetail() {
                   </div>
                 </motion.div>
               ) : (
-                <ReviewsSection productId={product.id} rating={rating} />
+                <ReviewsSection productId={product.id} />
               )}
             </AnimatePresence>
           </div>
@@ -1395,7 +1573,7 @@ export default function ProductDetail() {
       {/* Frequently Bought Together */}
       {fbtProducts.length > 0 && (
         <section className="py-12 px-4 bg-gray-50 border-t border-gray-100">
-          <div className="max-w-7xl mx-auto">
+          <div className="container-wide mx-auto">
             <div className="mb-6">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-3"
                 style={{ background: '#fff4ee', color: '#E85D04' }}>
@@ -1409,7 +1587,7 @@ export default function ProductDetail() {
                 <div className="relative flex flex-col items-center gap-2 w-28">
                   <div className="w-28 h-28 rounded-2xl overflow-hidden border-2 border-orange-400 shadow-md">
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" onError={e => { e.currentTarget.style.display = "none"; }} />
+                      <img src={resolveImageUrl(product.imageUrl)} alt={product.name} className="w-full h-full object-cover" loading="eager" decoding="async" width={900} height={900} onError={e => { e.currentTarget.src = "/images/product-placeholder.svg"; }} />
                     ) : (
                       <div className="w-full h-full bg-orange-50 flex items-center justify-center">
                         <ShoppingCart className="w-8 h-8 text-orange-300" />
@@ -1429,7 +1607,7 @@ export default function ProductDetail() {
                     <div className="flex flex-col items-center gap-2 w-28">
                       <Link href={`/product/${fbtProduct.id}`} className="w-28 h-28 rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:border-orange-300 transition-colors block">
                         {fbtProduct.imageUrl ? (
-                          <img src={fbtProduct.imageUrl} alt={fbtProduct.name} className="w-full h-full object-cover" loading="lazy" onError={e => { e.currentTarget.style.display = "none"; }} />
+                          <img src={resolveImageUrl(fbtProduct.imageUrl)} alt={fbtProduct.name} className="w-full h-full object-cover" loading="lazy" onError={e => { e.currentTarget.style.display = "none"; }} />
                         ) : (
                           <div className="w-full h-full bg-gray-50 flex items-center justify-center">
                             <ShoppingCart className="w-8 h-8 text-gray-300" />
@@ -1490,7 +1668,7 @@ export default function ProductDetail() {
 
       {relatedProducts.length > 0 && (
         <section className="py-16 px-4 bg-white border-t border-gray-100">
-          <div className="max-w-7xl mx-auto">
+          <div className="container-wide mx-auto">
             <div className="flex items-end justify-between mb-10">
               <div>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-3"
@@ -1514,6 +1692,13 @@ export default function ProductDetail() {
 
       <RecentlyViewed />
 
+      {/* Trust Badges */}
+      <section className="py-12 px-4 bg-white border-t border-gray-100">
+        <div className="container-wide">
+          <TrustBadges />
+        </div>
+      </section>
+
       <Footer />
 
       <StickyAddToCart
@@ -1521,8 +1706,8 @@ export default function ProductDetail() {
         product={{
           id: product.id,
           name: product.name,
-          price: product.price,
-          discountPrice: product.discountPrice,
+          price: selectedProductPrice,
+          discountPrice: productVariants.length > 0 ? undefined : product.discountPrice,
           imageUrl: product.imageUrl,
           stock: product.stock,
         }}

@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "longsleeve:red:back",
+  "category": "longsleeve",
+  "colorSlug": "red",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/longsleeve-red-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/longsleeve/red/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/longsleeve-red-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    72,
+    113,
+    952,
+    912
+  ],
+  "sha256": "fe928cf7f5563bc7ccfa72abc07f599dd8150e285196c7df6c768e9e3426fabd",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

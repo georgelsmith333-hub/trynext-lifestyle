@@ -1,0 +1,151 @@
+=== SECOND PASS UTC ===
+Mon Aug 17 01:40:30 UTC 2026
+=== PUBLIC AUDIT ===
+PUBLIC ROUTES
+/                        200
+/products                200
+/categories              200
+/design-studio           200
+/cart                    200
+/checkout                200
+/track                   200
+/admin/login             200
+/hampers                 200
+/blog                    200
+
+API ROUTES
+/api/healthz                     200
+/api/health/liveness             200
+/api/health/readiness            200
+/api/categories                  200
+/api/products?limit=100          200
+/api/blog                        200
+/api/hampers                     200
+/api/testimonials                200
+/api/stats/public                404
+/api/announcement                200
+/api/sitemap.xml                 200
+/api/robots.txt                  200
+
+PROTECTED ROUTES
+/api/admin/backup/sync-status            401
+/api/admin/promo-codes                   404
+/api/admin/referrals                     404
+
+REPRESENTATIVE ASSETS
+/assets/products/bottle_name.png                 200 image/png 2707134
+/assets/products/bottle_space.png                200 image/png 3053945
+/assets/products/longsleeve_corporate.png        200 image/png 3304331
+/assets/products/longsleeve_floral.png           200 image/png 3243237
+/assets/products/hoodie_abstract.png             200 image/png 4033197
+/assets/products/bottle_fitness.png              200 image/png 2588102
+/products/main-combo.png                         200 image/png 20242
+/images/product-placeholder.svg                  200 image/svg+xml 923
+=== CATALOG FAMILY AUDIT ===
+category_count 7
+product_count 20
+CATEGORY 4 Caps caps 2
+CATEGORY 5 Custom Orders custom-orders 1
+CATEGORY 2 Hoodies hoodies 2
+CATEGORY 6 Long Sleeves long-sleeves 5
+CATEGORY 3 Mugs mugs 2
+CATEGORY 1 T-Shirts t-shirts 3
+CATEGORY 7 Water Bottles water-bottles 5
+PRODUCT_FAMILY_COUNTS
+FAMILY caps 2
+FAMILY custom orders 1
+FAMILY hoodies 2
+FAMILY long sleeves 5
+FAMILY mugs 2
+FAMILY t-shirts 3
+FAMILY water bottles 5
+missing_image_records []
+sample_slugs ['T-Shirt-Combo-2-in-1-Couple-Set', 'adventure-series-flask', 'artistic-floral-long-sleeve', 'classic-dad-hat', 'classic-white-tee', 'couple-tshirt-set', 'custom-snapback-cap', 'cyberpunk-future-long-sleeve', 'eco-friendly-bamboo-water-bottle', 'galaxy-space-water-bottle', 'graphic-print-tee', 'magic-color-changing-mug', 'minimalist-corporate-long-sleeve', 'minimalist-name-bottle', 'modern-geometric-long-sleeve', 'personalized-photo-mug', 'premium-pullover-hoodie', 'pro-fitness-tracker-bottle', 'vintage-travel-long-sleeve', 'zip-up-hoodie']
+=== RENDER HEALTH ===
+/api/healthz 200 1.722134
+/api/health/liveness 200 1.423477
+/api/health/readiness 200 1.627411
+/api/public-stats 200 2.566453
+/api/promo-codes 401 2.780347
+/api/referrals 401 1.608012
+=== GITHUB RECENT CHECKS ===
+[1;37m[[m
+  [1;37m{[m
+    [1;34m"conclusion"[m[1;37m:[m [32m"success"[m[1;37m,[m
+    [1;34m"createdAt"[m[1;37m:[m [32m"2026-08-17T01:17:54Z"[m[1;37m,[m
+    [1;34m"databaseId"[m[1;37m:[m 31984545399[1;37m,[m
+    [1;34m"headSha"[m[1;37m:[m [32m"de95ab88fd9025c56f924fd25e0374da6aeaadbf"[m[1;37m,[m
+    [1;34m"name"[m[1;37m:[m [32m"CI"[m[1;37m,[m
+    [1;34m"status"[m[1;37m:[m [32m"completed"[m[1;37m,[m
+    [1;34m"workflowName"[m[1;37m:[m [32m"CI"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"conclusion"[m[1;37m:[m [32m"success"[m[1;37m,[m
+    [1;34m"createdAt"[m[1;37m:[m [32m"2026-08-17T01:17:54Z"[m[1;37m,[m
+    [1;34m"databaseId"[m[1;37m:[m 31984545390[1;37m,[m
+    [1;34m"headSha"[m[1;37m:[m [32m"de95ab88fd9025c56f924fd25e0374da6aeaadbf"[m[1;37m,[m
+    [1;34m"name"[m[1;37m:[m [32m"Active app verification"[m[1;37m,[m
+    [1;34m"status"[m[1;37m:[m [32m"completed"[m[1;37m,[m
+    [1;34m"workflowName"[m[1;37m:[m [32m"Active app verification"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"conclusion"[m[1;37m:[m [32m"success"[m[1;37m,[m
+    [1;34m"createdAt"[m[1;37m:[m [32m"2026-08-17T00:56:22Z"[m[1;37m,[m
+    [1;34m"databaseId"[m[1;37m:[m 31983462613[1;37m,[m
+    [1;34m"headSha"[m[1;37m:[m [32m"92567e6174a1a488158e90991113e43f47f481ed"[m[1;37m,[m
+    [1;34m"name"[m[1;37m:[m [32m"CI"[m[1;37m,[m
+    [1;34m"status"[m[1;37m:[m [32m"completed"[m[1;37m,[m
+    [1;34m"workflowName"[m[1;37m:[m [32m"CI"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"conclusion"[m[1;37m:[m [32m"success"[m[1;37m,[m
+    [1;34m"createdAt"[m[1;37m:[m [32m"2026-08-17T00:56:22Z"[m[1;37m,[m
+    [1;34m"databaseId"[m[1;37m:[m 31983462553[1;37m,[m
+    [1;34m"headSha"[m[1;37m:[m [32m"92567e6174a1a488158e90991113e43f47f481ed"[m[1;37m,[m
+    [1;34m"name"[m[1;37m:[m [32m"Active app verification"[m[1;37m,[m
+    [1;34m"status"[m[1;37m:[m [32m"completed"[m[1;37m,[m
+    [1;34m"workflowName"[m[1;37m:[m [32m"Active app verification"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"conclusion"[m[1;37m:[m [32m"success"[m[1;37m,[m
+    [1;34m"createdAt"[m[1;37m:[m [32m"2026-08-17T00:54:05Z"[m[1;37m,[m
+    [1;34m"databaseId"[m[1;37m:[m 31983353404[1;37m,[m
+    [1;34m"headSha"[m[1;37m:[m [32m"93aa0af45dfa9ff32bf409aae5847797d0ffe3ee"[m[1;37m,[m
+    [1;34m"name"[m[1;37m:[m [32m"Active app verification"[m[1;37m,[m
+    [1;34m"status"[m[1;37m:[m [32m"completed"[m[1;37m,[m
+    [1;34m"workflowName"[m[1;37m:[m [32m"Active app verification"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"conclusion"[m[1;37m:[m [32m"cancelled"[m[1;37m,[m
+    [1;34m"createdAt"[m[1;37m:[m [32m"2026-08-17T00:54:05Z"[m[1;37m,[m
+    [1;34m"databaseId"[m[1;37m:[m 31983353363[1;37m,[m
+    [1;34m"headSha"[m[1;37m:[m [32m"93aa0af45dfa9ff32bf409aae5847797d0ffe3ee"[m[1;37m,[m
+    [1;34m"name"[m[1;37m:[m [32m"CI"[m[1;37m,[m
+    [1;34m"status"[m[1;37m:[m [32m"completed"[m[1;37m,[m
+    [1;34m"workflowName"[m[1;37m:[m [32m"CI"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"conclusion"[m[1;37m:[m [32m"cancelled"[m[1;37m,[m
+    [1;34m"createdAt"[m[1;37m:[m [32m"2026-08-17T00:53:25Z"[m[1;37m,[m
+    [1;34m"databaseId"[m[1;37m:[m 31983320625[1;37m,[m
+    [1;34m"headSha"[m[1;37m:[m [32m"68f9e5b6f787fa70dd1ea0bc7b962206e33e72b5"[m[1;37m,[m
+    [1;34m"name"[m[1;37m:[m [32m"CI"[m[1;37m,[m
+    [1;34m"status"[m[1;37m:[m [32m"completed"[m[1;37m,[m
+    [1;34m"workflowName"[m[1;37m:[m [32m"CI"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"conclusion"[m[1;37m:[m [32m"cancelled"[m[1;37m,[m
+    [1;34m"createdAt"[m[1;37m:[m [32m"2026-08-17T00:53:25Z"[m[1;37m,[m
+    [1;34m"databaseId"[m[1;37m:[m 31983320543[1;37m,[m
+    [1;34m"headSha"[m[1;37m:[m [32m"68f9e5b6f787fa70dd1ea0bc7b962206e33e72b5"[m[1;37m,[m
+    [1;34m"name"[m[1;37m:[m [32m"Active app verification"[m[1;37m,[m
+    [1;34m"status"[m[1;37m:[m [32m"completed"[m[1;37m,[m
+    [1;34m"workflowName"[m[1;37m:[m [32m"Active app verification"[m
+  [1;37m}[m
+[1;37m][m
+=== GIT STATUS ===
+## [32mmain[m...[31morigin/main[m
+ [31mM[m docs/LIVE_CATALOG_REPAIR_EVIDENCE_2026-08-17.md
+[31m??[m docs/PHASE6_SECOND_PASS_RAW_2026-08-17.txt
+[31m??[m scripts/phase3_catalog_family_audit.py
+[31m??[m scripts/phase3_public_audit.sh

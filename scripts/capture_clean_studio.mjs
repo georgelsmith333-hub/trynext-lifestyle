@@ -1,0 +1,15 @@
+import { chromium } from 'playwright';
+const base = process.env.TRYNEXT_BASE_URL || 'https://trynext.pages.dev';
+const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
+const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+const page = await context.newPage();
+await page.goto(`${base}/design-studio?product=hoodie`, { waitUntil: 'domcontentloaded', timeout: 45000 });
+await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+await page.reload({ waitUntil: 'domcontentloaded', timeout: 45000 });
+await page.waitForTimeout(2500);
+await page.screenshot({ path: '/home/ubuntu/trynext-lifestyle/docs/studio-v2-clean-front.png', fullPage: false });
+await page.getByRole('button', { name: /^Back/ }).click();
+await page.waitForTimeout(600);
+await page.screenshot({ path: '/home/ubuntu/trynext-lifestyle/docs/studio-v2-clean-back.png', fullPage: false });
+console.log(JSON.stringify({ front: 'studio-v2-clean-front.png', back: 'studio-v2-clean-back.png', url: page.url() }, null, 2));
+await browser.close();

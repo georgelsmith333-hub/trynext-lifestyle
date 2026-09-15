@@ -11,23 +11,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar
 } from "recharts";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-
-const FALLBACK_WEEKLY: AdminStatsWeeklyDataItem[] = [
-  { day: "Mon", revenue: 0, orders: 0 },
-  { day: "Tue", revenue: 0, orders: 0 },
-  { day: "Wed", revenue: 0, orders: 0 },
-  { day: "Thu", revenue: 0, orders: 0 },
-  { day: "Fri", revenue: 0, orders: 0 },
-  { day: "Sat", revenue: 0, orders: 0 },
-  { day: "Sun", revenue: 0, orders: 0 },
-];
-
-const FALLBACK_PAYMENT: AdminStatsPaymentDistributionItem[] = [
-  { name: "bKash", value: 0, color: "#e2136e" },
-  { name: "Nagad", value: 0, color: "#f7941d" },
-  { name: "COD", value: 0, color: "#16a34a" },
-  { name: "Rocket", value: 0, color: "#8b2291" },
-];
+import { useToast } from "@/hooks/use-toast";
 
 interface TooltipPayloadEntry {
   name: string;
@@ -53,11 +37,23 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
 
 export default function AdminDashboard() {
   const { data: rawStats, isLoading, refetch, dataUpdatedAt } = useGetAdminStats({ request: { headers: getAuthHeaders() }, query: { queryKey: ["/api/admin/stats"], staleTime: 0, refetchOnMount: "always", refetchInterval: 15_000 } });
-  const [showProdNotice, setShowProdNotice] = React.useState(
-    () => localStorage.getItem("trynex_prod_notice_dismissed") !== "1"
-  );
-  const dismissProdNotice = () => {
-    localStorage.setItem("trynex_prod_notice_dismissed", "1");
+  const [showProdNotice, setShowProdNotice] = React.useState(true);
+  const [prodNoticeLoaded, setProdNoticeLoaded] = React.useState(false);
+  React.useEffect(() => {
+    fetch(getApiUrl("/api/settings/prodNoticeDismissed"), {
+      headers: getAuthHeaders(),
+    }).then(r => r.json()).then(d => {
+      if (d.value === "1") setShowProdNotice(false);
+    }).catch(() => {}).finally(() => setProdNoticeLoaded(true));
+  }, []);
+  const dismissProdNotice = async () => {
+    try {
+      await fetch(getApiUrl("/api/settings"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify({ prodNoticeDismissed: "1" }),
+      });
+    } catch {}
     setShowProdNotice(false);
   };
 
@@ -65,54 +61,54 @@ export default function AdminDashboard() {
 
   const stats = rawStats;
   const lastRefresh = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString('en-BD') : null;
-  const WEEKLY_DATA = stats.weeklyData && stats.weeklyData.length > 0 ? stats.weeklyData : FALLBACK_WEEKLY;
-  const PAYMENT_DATA = stats.paymentDistribution && stats.paymentDistribution.length > 0 ? stats.paymentDistribution : FALLBACK_PAYMENT;
+  const WEEKLY_DATA = stats.weeklyData || [];
+  const PAYMENT_DATA = stats.paymentDistribution || [];
   const topProducts = stats.topProducts || [];
 
   const cards = [
     {
       title: "Total Revenue",
-      value: formatPrice(stats.totalRevenue),
+      value: formatPrice(stats.totalRevenue ?? 0),
       icon: TrendingUp,
       color: "#16a34a",
       bg: "#f0fdf4",
       border: "#bbf7d0",
       desc: "All time earnings",
-      trend: stats.totalOrders > 0 ? `Avg ${formatPrice(Math.round(stats.totalRevenue / stats.totalOrders))} / order` : "No orders yet",
-      link: ""
-    },
-    {
-      title: "Today's Revenue",
-      value: formatPrice(stats.todayRevenue ?? 0),
-      icon: TrendingUp,
-      color: "#2563eb",
-      bg: "#eff6ff",
-      border: "#bfdbfe",
-      desc: "Earned today",
-      trend: (stats.todayRevenue ?? 0) > 0 ? `${stats.totalOrders ?? "—"} orders today` : "No revenue yet today",
+      trend: stats.totalOrders > 0 ? `Avg ${formatPrice(Math.round((stats.totalRevenue ?? 0) / stats.totalOrders))} / order` : "No orders yet",
       link: ""
     },
     {
       title: "Total Orders",
-      value: String(stats.totalOrders),
+      value: String(stats.totalOrders ?? 0),
       icon: ShoppingCart,
-      color: "#E85D04",
-      bg: "#fff4ee",
-      border: "#fdd5b4",
+      color: "#2563eb",
+      bg: "#eff6ff",
+      border: "#bfdbfe",
       desc: "All orders placed",
-      trend: `${stats.pendingOrders} pending`,
+      trend: `${stats.pendingOrders ?? 0} pending`,
       link: "/admin/orders"
     },
     {
-      title: "Low Stock Alert",
-      value: String(stats.lowStockProducts ?? 0),
+      title: "Total Products",
+      value: String(stats.totalProducts ?? 0),
+      icon: Package,
+      color: "#E85D04",
+      bg: "#fff4ee",
+      border: "#fdd5b4",
+      desc: "Items in catalog",
+      trend: `${stats.lowStockProducts ?? 0} low stock`,
+      link: "/admin/products"
+    },
+    {
+      title: "Pending Orders",
+      value: String(stats.pendingOrders ?? 0),
       icon: AlertTriangle,
       color: "#d97706",
       bg: "#fffbeb",
       border: "#fde68a",
-      desc: "Products ≤ 5 units",
-      trend: (stats.lowStockProducts ?? 0) > 0 ? "Action needed" : "All good",
-      link: "/admin/products?filter=lowstock"
+      desc: "Awaiting processing",
+      trend: (stats.pendingOrders ?? 0) > 0 ? "Action needed" : "All clear",
+      link: "/admin/orders"
     },
   ];
 
@@ -159,7 +155,7 @@ export default function AdminDashboard() {
           <div className="flex-1" style={{ color: "#92400e" }}>
             <span className="font-black">All changes here are live instantly.</span>{" "}
             Products, orders, blog posts, promo codes and settings you edit in this panel update on{" "}
-            <span className="font-semibold">trynexshop.com</span> in real time. No need to redeploy or restart after making changes.
+            <span className="font-semibold">trynext.pages.dev</span> in real time. No need to redeploy or restart after making changes.
           </div>
           <button type="button" onClick={dismissProdNotice} className="mt-0.5 shrink-0 hover:opacity-70" style={{ color: "#d97706" }}>
             <X className="w-4 h-4" />
@@ -225,7 +221,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
         {/* Revenue Chart */}
-        <ErrorBoundary section="weekly revenue chart" fallback={<div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center justify-center h-48 text-gray-400 text-sm">Chart unavailable — <button className="ml-1 text-orange-600 underline" onClick={() => window.location.reload()}>reload</button></div>}>
+        <ErrorBoundary section="weekly revenue chart" fallback={<div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center justify-center h-48 text-gray-400 text-sm">Chart unavailable — <button className="ml-1 text-orange-600 underline" onClick={() => refetch()}>reload</button></div>}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -241,21 +237,28 @@ export default function AdminDashboard() {
               Real-time data
             </span>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={WEEKLY_DATA} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#E85D04" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#E85D04" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-              <XAxis dataKey="day" tick={{ fontSize: 11, fontWeight: 600, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={v => `৳${(v/1000).toFixed(0)}K`} />
-              <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="revenue" name="revenue" stroke="#E85D04" strokeWidth={2.5} fill="url(#revenueGrad)" dot={{ fill: '#E85D04', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
-            </AreaChart>
-          </ResponsiveContainer>
+          {WEEKLY_DATA.length > 0 ? (
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={WEEKLY_DATA} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#E85D04" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#E85D04" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                <XAxis dataKey="day" tick={{ fontSize: 11, fontWeight: 600, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={v => `৳${(v/1000).toFixed(0)}K`} />
+                <Tooltip content={<CustomTooltip />} />
+                <Area type="monotone" dataKey="revenue" name="revenue" stroke="#E85D04" strokeWidth={2.5} fill="url(#revenueGrad)" dot={{ fill: '#E85D04', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[220px] flex flex-col items-center justify-center text-gray-400">
+              <ShoppingCart className="w-8 h-8 mb-2 opacity-40" />
+              <p className="text-sm font-semibold">No orders in the last 7 days</p>
+            </div>
+          )}
         </motion.div>
         </ErrorBoundary>
 
@@ -269,33 +272,42 @@ export default function AdminDashboard() {
         >
           <h2 className="font-black text-gray-900 mb-1">Payment Methods</h2>
           <p className="text-xs text-gray-400 mb-6">Order distribution</p>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart>
-              <Pie
-                data={PAYMENT_DATA}
-                cx="50%" cy="50%"
-                innerRadius={45} outerRadius={70}
-                paddingAngle={3}
-                dataKey="value"
-              >
-                {PAYMENT_DATA.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
+          {PAYMENT_DATA.length > 0 ? (
+            <>
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie
+                    data={PAYMENT_DATA}
+                    cx="50%" cy="50%"
+                    innerRadius={45} outerRadius={70}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {PAYMENT_DATA.map((entry: { name: string; value: number; color: string }, i: number) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(v: number) => `${v}%`} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-2 mt-2">
+                {PAYMENT_DATA.map((p: { name: string; value: number; color: string }) => (
+                  <div key={p.name} className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: p.color }} />
+                      <span className="font-semibold text-gray-600">{p.name}</span>
+                    </div>
+                    <span className="font-black text-gray-900">{p.value}%</span>
+                  </div>
                 ))}
-              </Pie>
-              <Tooltip formatter={(v: number) => `${v}%`} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="space-y-2 mt-2">
-            {PAYMENT_DATA.map((p) => (
-              <div key={p.name} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: p.color }} />
-                  <span className="font-semibold text-gray-600">{p.name}</span>
-                </div>
-                <span className="font-black text-gray-900">{p.value}%</span>
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <div className="h-[160px] flex flex-col items-center justify-center text-gray-400">
+              <TrendingUp className="w-8 h-8 mb-2 opacity-40" />
+              <p className="text-sm font-semibold">No payment data yet</p>
+            </div>
+          )}
         </motion.div>
         </ErrorBoundary>
       </div>
@@ -354,7 +366,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {(stats.recentOrders ?? []).map((order: any, i) => (
+                {(stats.recentOrders ?? []).map((order: import("@workspace/api-client-react").Order, i: number) => (
                   <motion.tr
                     key={order.id}
                     initial={{ opacity: 0, x: -10 }}
@@ -365,14 +377,14 @@ export default function AdminDashboard() {
                     <td className="px-5 py-4 font-mono text-xs font-black text-orange-600">{order.orderNumber}</td>
                     <td className="px-5 py-4 font-semibold text-sm text-gray-900">{order.customerName}</td>
                     <td className="px-5 py-4">
-                      <span className={`px-2.5 py-1 rounded-xl text-xs font-bold capitalize ${getStatusStyle(order.status)}`}>
-                        {order.status}
+                      <span className={`px-2.5 py-1 rounded-xl text-xs font-bold capitalize ${getStatusStyle(order.status ?? "")}`}>
+                        {order.status ?? ""}
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="text-xs font-black text-gray-500 uppercase">{order.paymentMethod}</span>
+                      <span className="text-xs font-black text-gray-500 uppercase">{order.paymentMethod ?? ""}</span>
                     </td>
-                    <td className="px-5 py-4 font-black text-orange-600">{formatPrice(order.total)}</td>
+                    <td className="px-5 py-4 font-black text-orange-600">{formatPrice(parseFloat(order.total ?? "0"))}</td>
                   </motion.tr>
                 ))}
                 {(stats.recentOrders ?? []).length === 0 && (
@@ -407,7 +419,7 @@ export default function AdminDashboard() {
             </Link>
           </div>
           <div className="divide-y divide-gray-50">
-            {topProducts.map((product, i) => (
+            {topProducts.map((product: { id: number; name: string; imageUrl?: string | null; totalSold?: number; totalRevenue?: string }, i: number) => (
               <motion.div
                 key={product.id}
                 initial={{ opacity: 0, x: -10 }}
@@ -450,6 +462,7 @@ function SystemHealthWidget() {
   const [health, setHealth] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
+  const { toast } = useToast();
 
   const fetchHealth = async () => {
     try {
@@ -477,12 +490,12 @@ function SystemHealthWidget() {
         headers: getAuthHeaders(),
       });
       if (res.ok) {
-        alert(`${action === "flush-cache" ? "Cache flushed" : "Telegram test sent"} successfully!`);
+        toast({ title: action === "flush-cache" ? "Cache flushed" : "Telegram test sent", description: "Action completed successfully." });
       } else {
-        alert("Action failed. Check console or logs.");
+        toast({ title: "Action failed", description: "Check server logs for details.", variant: "destructive" });
       }
     } catch (err) {
-      alert("Action failed. Connection error.");
+      toast({ title: "Connection error", description: "Could not reach the server.", variant: "destructive" });
     } finally {
       setActionLoading(null);
       if (action === "flush-cache") fetchHealth();
@@ -500,15 +513,22 @@ function SystemHealthWidget() {
     );
   }
 
+  // NOTE: /api/admin/system/health nests each service under `services.<name>`
+  // (e.g. `services.database.status`), not top-level `db`/`redis`/etc. Reading
+  // the wrong path silently returns `undefined` for every service, which this
+  // widget rendered as "offline" — while the separate DB Cluster page (a
+  // different endpoint) correctly showed the DB as connected. That mismatch
+  // is what caused "database says not connected in one place, connected in
+  // another." Always read via `services.*`.
   const services = [
-    { id: "database", name: "Database", icon: Database, status: (health as any)?.database?.status },
-    { id: "redis", name: "Redis", icon: Wifi, status: (health as any)?.redis?.status },
-    { id: "storage", name: "R2 Storage", icon: HardDrive, status: (health as any)?.storage?.status },
-    { id: "telegram", name: "Telegram", icon: MessageCircle, status: (health as any)?.telegram?.status },
+    { id: "database", name: "Database", icon: Database, status: (health as any)?.services?.database?.status },
+    { id: "redis", name: "Redis", icon: Wifi, status: (health as any)?.services?.redis?.status },
+    { id: "storage", name: "R2 Storage", icon: HardDrive, status: (health as any)?.services?.storage?.status },
+    { id: "telegram", name: "Telegram", icon: MessageCircle, status: (health as any)?.services?.telegram?.status },
   ];
 
   const getStatusColor = (status: string) => {
-    if (status === "healthy" || status === "connected" || status === "online") return "bg-green-50 text-green-600 border-green-100";
+    if (status === "ok" || status === "healthy" || status === "connected" || status === "online" || status === "configured") return "bg-green-50 text-green-600 border-green-100";
     if (status === "degraded" || status === "warning") return "bg-yellow-50 text-yellow-600 border-yellow-100";
     return "bg-red-50 text-red-600 border-red-100";
   };
@@ -536,7 +556,7 @@ function SystemHealthWidget() {
             {actionLoading === "test-telegram" ? "Testing..." : "Test Telegram"}
           </button>
           <button
-            onClick={() => window.open('https://trynexshop.com', '_blank')}
+            onClick={() => window.open('https://trynext.pages.dev', '_blank')}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-orange-50 text-orange-600 hover:bg-orange-100 border border-orange-100 transition-colors"
           >
             <Globe className="w-3.5 h-3.5" /> View Live Site

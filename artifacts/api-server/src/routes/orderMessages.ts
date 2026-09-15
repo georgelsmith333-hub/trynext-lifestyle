@@ -76,7 +76,7 @@ router.post("/admin/orders/:id/messages", requireAdmin, messageLimiter, async (r
 
     const inserted = await db.execute(
       sql`INSERT INTO order_messages (order_id, sender_type, sender_name, message, attachment_url, read_by_admin)
-          VALUES (${orderId}, 'admin', 'TryNex Team', ${message.trim()}, ${attachmentUrl ?? null}, true)
+           VALUES (${orderId}, 'admin', 'Trynext Team', ${message.trim()}, ${attachmentUrl ?? null}, true)
           RETURNING *`
     );
     const row = ((inserted as any).rows ?? inserted ?? [])[0];
@@ -86,7 +86,7 @@ router.post("/admin/orders/:id/messages", requireAdmin, messageLimiter, async (r
         await db.insert(notificationsTable).values({
           customerId: order.customer_id,
           title: "New Message",
-          message: `You have a new message from TryNex Team regarding order #${order.order_number}.`,
+           message: `You have a new message from Trynext Team regarding order #${order.order_number}.`,
           type: "message",
           link: `/account`,
         });
@@ -110,7 +110,7 @@ router.get("/orders/:id/messages", messageLimiter, async (req, res) => {
     if (token) {
       try {
         const decoded = verifyCustomerToken(token);
-        customerEmail = (decoded as any)?.email ?? null;
+        customerEmail = String((decoded as any)?.email ?? "").trim().toLowerCase() || null;
       } catch {}
     }
 
@@ -129,9 +129,9 @@ router.get("/orders/:id/messages", messageLimiter, async (req, res) => {
       return;
     }
 
-    const { trackEmail } = req.query;
-    const effectiveEmail = customerEmail ?? (trackEmail as string | undefined);
-    if (!effectiveEmail || order.customer_email !== effectiveEmail) {
+    const effectiveEmail = String(customerEmail ?? (req.query.trackEmail as string | undefined) ?? "").trim().toLowerCase();
+    const storedEmail = String(order.customer_email ?? "").trim().toLowerCase();
+    if (!effectiveEmail || !storedEmail || storedEmail !== effectiveEmail) {
       res.status(403).json({ error: "Not authorised to view this order" });
       return;
     }
@@ -159,7 +159,7 @@ router.post("/orders/:id/messages", messageLimiter, async (req, res) => {
     if (token) {
       try {
         const decoded = verifyCustomerToken(token) as any;
-        customerEmail = decoded?.email ?? null;
+        customerEmail = String(decoded?.email ?? "").trim().toLowerCase() || null;
         customerName = decoded?.name ?? null;
       } catch {}
     }
@@ -180,7 +180,7 @@ router.post("/orders/:id/messages", messageLimiter, async (req, res) => {
       return;
     }
 
-    const effectiveEmail = customerEmail ?? trackEmail;
+    const effectiveEmail = String(customerEmail ?? trackEmail ?? "").trim().toLowerCase();
     if (!effectiveEmail) {
       res.status(403).json({ error: "Not authorised" });
       return;
@@ -194,7 +194,7 @@ router.post("/orders/:id/messages", messageLimiter, async (req, res) => {
       res.status(404).json({ error: "Order not found" });
       return;
     }
-    if (order.customer_email !== effectiveEmail) {
+    if (String(order.customer_email ?? "").trim().toLowerCase() !== effectiveEmail) {
       res.status(403).json({ error: "Not authorised to reply to this order" });
       return;
     }
@@ -226,7 +226,7 @@ router.get("/orders/my/messages/unread-count", messageLimiter, async (req, res) 
     let customerEmail: string | null = null;
     try {
       const decoded = verifyCustomerToken(token) as any;
-      customerEmail = decoded?.email ?? null;
+      customerEmail = String(decoded?.email ?? "").trim().toLowerCase() || null;
     } catch {
       res.json({ count: 0 });
       return;
@@ -238,7 +238,7 @@ router.get("/orders/my/messages/unread-count", messageLimiter, async (req, res) 
     const result = await db.execute(
       sql`SELECT COUNT(*) as count FROM order_messages om
           JOIN orders o ON o.id = om.order_id
-          WHERE o.customer_email = ${customerEmail}
+          WHERE LOWER(TRIM(o.customer_email)) = ${customerEmail}
           AND om.sender_type = 'admin'
           AND om.read_by_customer = false`
     );

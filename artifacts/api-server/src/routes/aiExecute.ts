@@ -14,9 +14,25 @@ import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
-const POLLIN_TEXT_URL = "https://text.pollinations.ai/openai";
+const POLLIN_TEXT_URL = process.env.POLLINATIONS_API_URL || "https://gen.pollinations.ai/v1/chat/completions";
+const POLLINATIONS_API_KEY = process.env.POLLINATIONS_API_KEY || "";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-const COMMAND_PARSER_SYSTEM = `You are a strict JSON command parser for TryNex Lifestyle admin panel.
+function parserConfig(): { url: string; key: string; models: string[] } {
+  if (OPENAI_API_KEY) return { url: "https://api.openai.com/v1/chat/completions", key: OPENAI_API_KEY, models: [OPENAI_MODEL, "gpt-4.1"] };
+  return { url: POLLIN_TEXT_URL, key: POLLINATIONS_API_KEY, models: ["openai", "openai-large", "mistral"] };
+}
+
+function parserHeaders(key: string): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    "User-Agent": "Trynext-Admin/3.0",
+    ...(key ? { Authorization: `Bearer ${key}` } : {}),
+  };
+}
+
+const COMMAND_PARSER_SYSTEM = `You are a strict JSON command parser for Trynext Lifestyle admin panel.
 Parse the natural language admin command into ONE of these JSON action objects.
 Return ONLY valid JSON — no markdown, no explanation, no code fences.
 
@@ -62,46 +78,46 @@ Rules:
 function getSEOAdvice(topic: string): string {
   const t = topic.toLowerCase();
 
-  if (t.includes("trynex") || t.includes("brand") || t.includes("name") || t.includes("search")) {
-    return `## Getting "TryNex" to Rank on Google
+  if (t.includes("trynext") || t.includes("brand") || t.includes("name") || t.includes("search")) {
+    return `## Getting "Trynext" to Rank on Google
 
 **1. Google Search Console (Most Important)**
-- Go to [search.google.com/search-console](https://search.google.com/search-console) and add \`trynexshop.com\`
+- Go to [search.google.com/search-console](https://search.google.com/search-console) and add \`trynext.pages.dev\`
 - Verify ownership by adding the Google Site Verification meta tag in Admin → Settings → SEO
-- Submit your sitemap: \`https://trynexshop.com/sitemap.xml\`
+- Submit your sitemap: \`https://trynext.pages.dev/api/sitemap.xml\`
 
 **2. Brand Name Signals**
-- Your site title already includes "TryNex Lifestyle" — good ✓
+- Your site title already includes "Trynext Lifestyle" — good ✓
 - Ensure your Google Business Profile is set up at [business.google.com](https://business.google.com)
 - Get your brand mentioned on Bangladeshi fashion/lifestyle blogs
 
 **3. Backlinks (Most Effective)**
 - Register on local directories: Bikroy.com, Shajgoj, local BD directories
-- Ask happy customers to mention TryNex on social media
+- Ask happy customers to mention Trynext on social media
 - Post in Facebook groups: Custom T-shirts Bangladesh, Corporate Gifts BD
 
 **4. Content Strategy**
-- Publish 2 blog posts/week with "TryNex" in headings
-- Create a dedicated "About TryNex" page at \`/about\` with full brand story
+- Publish 2 blog posts/week with "Trynext" in headings
+- Create a dedicated "About Trynext" page at \`/about\` with full brand story
 - Build social proof: Facebook page, Instagram with consistent branding
 
 **5. Technical**
-- Ensure \`https://trynexshop.com\` is live and fast
-- All pages have unique title tags with "TryNex" prefix
+- Ensure \`https://trynext.pages.dev\` is live and fast
+- All pages have unique title tags with "Trynext" prefix
 - Mobile-friendly design ✓ (already done)
 
 Google typically takes **4–12 weeks** to index new brand searches after you've done the above steps.`;
   }
 
   if (t.includes("keyword") || t.includes("ranking") || t.includes("rank")) {
-    return `## Keyword Ranking Tips for TryNex
+    return `## Keyword Ranking Tips for Trynext
 
 **High-Priority Keywords to Target:**
 - "custom t-shirt Bangladesh" — high volume, commercial
 - "কাস্টম গিফট বাংলাদেশ" — Bangla searches growing fast
 - "custom hoodie Dhaka" — local intent = high conversion
 - "personalized mug Bangladesh" — gift searches spike Dec/Eid
-- "TryNex" — brand query (build with social + GSC)
+- "Trynext" — brand query (build with social + GSC)
 
 **On-Page SEO Actions:**
 - Each product page should have H1 with the keyword
@@ -138,11 +154,11 @@ Your site uses Vite + React — already a fast stack. Key optimizations:
 - Enable Brotli compression on the server`;
   }
 
-  return `## SEO Advice for TryNex Lifestyle
+  return `## SEO Advice for Trynext Lifestyle
 
 **Top 5 Actions Right Now:**
 
-1. **Google Search Console** — Submit sitemap at \`https://trynexshop.com/sitemap.xml\` + verify ownership
+1. **Google Search Console** — Submit sitemap at \`https://trynext.pages.dev/sitemap.xml\` + verify ownership
 2. **Google Business Profile** — Set up at business.google.com for local Dhaka presence
 3. **Get backlinks** — List on Bangladeshi business directories (Bikroy, Yellow Pages BD)
 4. **Blog consistently** — 1-2 posts/week on custom apparel, gift ideas, BD fashion trends
@@ -151,7 +167,7 @@ Your site uses Vite + React — already a fast stack. Key optimizations:
 **Ask more specific questions:**
 - "How to rank for 'custom t-shirt Bangladesh'?"
 - "How to fix site speed?"
-- "How to get TryNex to show in Google?"
+- "How to get Trynext to show in Google?"
 - "What keywords should I target?"`;
 }
 
@@ -273,17 +289,18 @@ async function parseCommandWithAI(command: string): Promise<Record<string, unkno
   if (local) return local;
 
   // Fall back to AI parsing for complex/ambiguous commands
-  const modelsToTry = ["openai-large", "openai", "mistral-large"];
+  const config = parserConfig();
+  const modelsToTry = config.models;
   let lastError: Error = new Error("No models tried");
 
   for (const model of modelsToTry) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15_000);
     try {
-      const r = await fetch(POLLIN_TEXT_URL, {
+      const r = await fetch(config.url, {
         method: "POST",
         signal: controller.signal,
-        headers: { "Content-Type": "application/json", "User-Agent": "TryNex-Admin/2.0" },
+        headers: parserHeaders(config.key),
         body: JSON.stringify({
           model,
           messages: [
@@ -291,7 +308,6 @@ async function parseCommandWithAI(command: string): Promise<Record<string, unkno
             { role: "user", content: command },
           ],
           stream: false,
-          private: true,
           seed: Math.floor(Math.random() * 99999),
         }),
       });
@@ -576,7 +592,7 @@ router.post("/admin/ai-preview", requireAdmin, async (req, res) => {
           action, parsedCommand: parsed,
           preview: {
             title: "SEO Advice",
-            description: "Will provide SEO guidance for TryNex",
+            description: "Will provide SEO guidance for Trynext",
             riskLevel: "low",
             details: ["Read-only — provides strategic recommendations", "No database changes"],
             requiresConfirmation: false,
@@ -649,8 +665,8 @@ router.post("/admin/ai-execute", requireAdmin, async (req, res) => {
           name,
           slug,
           price: String(price),
-          description: String(parsed.description ?? `${name} — premium quality custom apparel from TryNex Lifestyle.`),
-          imageUrl: "/mockups/white-tshirt-front.png",
+          description: String(parsed.description ?? `${name} — premium quality custom apparel from Trynext Lifestyle.`),
+          imageUrl: "/mockups/psd-master-v10/runtime-roles/tshirt/white/front-base.png",
           categoryId,
           stock: 50,
           featured: false,
@@ -1042,7 +1058,7 @@ router.post("/admin/ai-execute", requireAdmin, async (req, res) => {
 
       case "test_telegram": {
         const { tgSend } = await import("../lib/telegram");
-        await tgSend("🔔 <b>TryNex Admin AI:</b> Test message successful!");
+        await tgSend("🔔 <b>Trynext Admin AI:</b> Test message successful!");
         return res.json({
           success: true,
           action: "test_telegram",

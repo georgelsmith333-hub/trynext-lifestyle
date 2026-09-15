@@ -27,11 +27,12 @@ router.post("/referrals", async (req, res) => {
 
     const existing = await db.select().from(referralsTable).where(eq(referralsTable.ownerEmail, ownerEmail));
     if (existing.length > 0) {
-      res.json({ referral: existing[0], message: "You already have a referral code!" });
+      const r = existing[0];
+      res.json({ referral: { ...r, code: r.referralCode, totalUses: r.usedCount ?? 0, totalEarnings: r.totalEarnings ?? 0 }, message: "You already have a referral code!" });
       return;
     }
 
-    const referralCode = "TRYNEX" + ownerName.replace(/\s+/g, "").toUpperCase().slice(0, 6) + Math.random().toString(36).slice(2, 5).toUpperCase();
+    const referralCode = "TRYNEXT" + ownerName.replace(/\s+/g, "").toUpperCase().slice(0, 6) + Math.random().toString(36).slice(2, 5).toUpperCase();
 
     const [referral] = await db.insert(referralsTable).values({
       referralCode,
@@ -40,7 +41,7 @@ router.post("/referrals", async (req, res) => {
       ownerPhone: ownerPhone || null,
     }).returning();
 
-    res.status(201).json({ referral, message: "Your referral code has been created!" });
+    res.status(201).json({ referral: { ...referral, code: referral.referralCode, totalUses: referral.usedCount ?? 0, totalEarnings: referral.totalEarnings ?? 0 }, message: "Your referral code has been created!" });
   } catch (err) {
     req.log.error({ err }, "Failed to create referral");
     res.status(500).json({ error: "internal_error", message: "Failed to create referral" });
@@ -94,7 +95,7 @@ router.get("/referrals/my/:email", async (req, res) => {
       res.json({ referral: null });
       return;
     }
-    res.json({ referral });
+    res.json({ referral: { ...referral, code: referral.referralCode, totalUses: referral.usedCount ?? 0, totalEarnings: referral.totalEarnings ?? 0 } });
   } catch (err) {
     req.log.error({ err }, "Failed to get referral by email");
     res.status(500).json({ error: "internal_error", message: "Failed" });

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { getApiUrl, getAuthHeaders } from "@/lib/utils";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   GitBranch, Github, Save, Rocket, Loader2, CheckCircle2, AlertCircle,
   Eye, EyeOff, Trash2, Clock, ExternalLink, Copy, Check, Zap, Info, Shield, Server, RefreshCw, ChevronDown
@@ -15,15 +16,22 @@ interface PlatformInfo {
   checkedAt: string;
 }
 
+// Matches the response shape of GET /api/admin/system/health in
+// routes/systemHealth.ts — the single source of truth for this endpoint.
+// See that file's header comment before assuming a different shape.
 interface SystemHealth {
-  db: { status: string; latencyMs: number };
-  redis: { status: string };
-  storage: { status: string; backend: string };
-  telegram: { status: string };
+  services: {
+    database: { status: string };
+    redis: { status: string };
+    storage: { status: string; backend: string };
+    telegram: { status: string };
+  };
 }
 
+// Matches GET /api/admin/system/env-status in routes/systemHealth.ts, which
+// returns an array of `{ name, set, ... }` rather than a flat map.
 interface EnvStatus {
-  envVars: Record<string, boolean>;
+  vars: { name: string; label: string; set: boolean }[];
 }
 
 interface DeploymentStatus {
@@ -75,15 +83,17 @@ export default function AdminDeployment() {
   const [triggerResult, setTriggerResult] = useState<TriggerResult | null>(null);
   const [showToken, setShowToken] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [clearTokenConfirm, setClearTokenConfirm] = useState(false);
+  const [systemFeedback, setSystemFeedback] = useState<string | null>(null);
 
   const [owner, setOwner] = useState("");
   const [repo, setRepo] = useState("");
   const [branch, setBranch] = useState("main");
   const [token, setToken] = useState("");
-  const [authorName, setAuthorName] = useState("TryNex Admin");
-  const [authorEmail, setAuthorEmail] = useState("admin@trynex.local");
+  const [authorName, setAuthorName] = useState("Trynext Admin");
+  const [authorEmail, setAuthorEmail] = useState("admin@trynext.local");
   const [renderDeployHook, setRenderDeployHook] = useState("");
-  const [commitMessage, setCommitMessage] = useState("chore: deploy from TryNex admin");
+  const [commitMessage, setCommitMessage] = useState("chore: deploy from Trynext admin");
 
   const fetchStatus = async () => {
     setLoading(true);
@@ -120,23 +130,30 @@ export default function AdminDeployment() {
 
   const checkHealth = async () => {
     setCheckingHealth(true);
+    setSystemFeedback(null);
     try {
       const r = await fetch(getApiUrl("/api/admin/system/health"), { headers: getAuthHeaders() });
-      if (r.ok) setHealth(await r.json());
-    } catch (e) {}
+      if (!r.ok) throw new Error(`Health check failed (HTTP ${r.status})`);
+      setHealth(await r.json());
+      setSystemFeedback("System health checked just now.");
+    } catch (e) {
+      setSystemFeedback(e instanceof Error ? e.message : "Could not check system health.");
+    }
     setCheckingHealth(false);
   };
 
-  const flushCache = async () => {
-    if (!confirm("Flush all cached data? This may temporarily slow down the site.")) return;
+  const [flushCacheConfirm, setFlushCacheConfirm] = useState(false);
+  const doFlushCache = async () => {
+    setFlushCacheConfirm(false);
     setFlushingCache(true);
+    setSystemFeedback(null);
     try {
-      const r = await fetch(getApiUrl("/api/admin/system/flush-cache"), { 
-        method: "POST", 
-        headers: getAuthHeaders() 
-      });
-      if (r.ok) alert("Cache flush command sent successfully.");
-    } catch (e) {}
+      const r = await fetch(getApiUrl("/api/admin/system/flush-cache"), { method: "POST", headers: getAuthHeaders() });
+      if (!r.ok) throw new Error(`Cache flush failed (HTTP ${r.status})`);
+      setSystemFeedback("Cache flushed successfully.");
+    } catch (e) {
+      setSystemFeedback(e instanceof Error ? e.message : "Could not flush cache.");
+    }
     setFlushingCache(false);
   };
 
@@ -223,8 +240,9 @@ export default function AdminDeployment() {
     setTriggering(false);
   };
 
-  const handleClearToken = async () => {
-    if (!confirm("Remove the saved GitHub token? You'll need to enter it again to push.")) return;
+  const handleClearToken = () => setClearTokenConfirm(true);
+  const doDeleteToken = async () => {
+    setClearTokenConfirm(false);
     setSaving(true);
     try {
       await fetch(getApiUrl("/api/admin/deployment/token"), { method: "DELETE", headers: getAuthHeaders() });
@@ -299,6 +317,7 @@ export default function AdminDeployment() {
               <div className="pt-2 flex flex-wrap gap-3">
                 <button
                   onClick={checkHealth}
+                  type="button"
                   disabled={checkingHealth}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-900 text-white text-xs font-bold hover:bg-black transition-colors disabled:opacity-50"
                 >
@@ -306,7 +325,8 @@ export default function AdminDeployment() {
                   Check System Health
                 </button>
                 <button
-                  onClick={flushCache}
+                  onClick={() => setFlushCacheConfirm(true)}
+                  type="button"
                   disabled={flushingCache}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-100 text-orange-700 text-xs font-bold hover:bg-orange-200 transition-colors disabled:opacity-50"
                 >
@@ -319,9 +339,9 @@ export default function AdminDeployment() {
             <div className="space-y-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
               <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest">Environment Variables</h3>
               <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                {envStatus?.envVars && Object.entries(envStatus.envVars).map(([key, set]) => (
-                  <div key={key} className="flex items-center justify-between text-[11px]">
-                    <span className="font-mono text-gray-600 truncate mr-2" title={key}>{key}</span>
+                {envStatus?.vars && envStatus.vars.map(({ name, set }) => (
+                  <div key={name} className="flex items-center justify-between text-[11px]">
+                    <span className="font-mono text-gray-600 truncate mr-2" title={name}>{name}</span>
                     {set ? (
                       <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />
                     ) : (
@@ -332,6 +352,14 @@ export default function AdminDeployment() {
               </div>
             </div>
           </div>
+
+          {systemFeedback && (
+            <div className="px-6 pb-6">
+              <p role="status" className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs font-semibold text-blue-700">
+                {systemFeedback}
+              </p>
+            </div>
+          )}
 
           <AnimatePresence>
             {health && (
@@ -345,24 +373,23 @@ export default function AdminDeployment() {
                   <div>
                     <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Database</div>
                     <div className="text-sm font-bold text-blue-900 flex items-center gap-1.5">
-                      {health.db.status === "ok" ? "Connected" : "Error"}
-                      <span className="text-[10px] font-normal text-blue-600">{health.db.latencyMs}ms</span>
+                      {health.services.database.status === "ok" ? "Connected" : "Error"}
                     </div>
                   </div>
                   <div>
                     <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Redis Cache</div>
-                    <div className="text-sm font-bold text-blue-900 capitalize">{health.redis.status}</div>
+                    <div className="text-sm font-bold text-blue-900 capitalize">{health.services.redis.status}</div>
                   </div>
                   <div>
                     <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Object Storage</div>
                     <div className="text-sm font-bold text-blue-900 flex items-center gap-1.5 uppercase">
-                      {health.storage.backend}
-                      <span className="text-[10px] font-normal text-blue-600">{health.storage.status}</span>
+                      {health.services.storage.backend}
+                      <span className="text-[10px] font-normal text-blue-600">{health.services.storage.status}</span>
                     </div>
                   </div>
                   <div>
                     <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Telegram Bot</div>
-                    <div className="text-sm font-bold text-blue-900 capitalize">{health.telegram.status}</div>
+                    <div className="text-sm font-bold text-blue-900 capitalize">{health.services.telegram.status}</div>
                   </div>
                 </div>
               </motion.div>
@@ -417,7 +444,7 @@ export default function AdminDeployment() {
                 <input
                   value={repo}
                   onChange={(e) => setRepo(e.target.value)}
-                  placeholder="trynex-lifestyle"
+                  placeholder="trynext-lifestyle"
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none text-sm font-medium"
                 />
               </div>
@@ -623,7 +650,7 @@ export default function AdminDeployment() {
                   </div>
                   <div>
                     <div className="text-[10px] font-bold text-green-700 uppercase tracking-wider">Commit</div>
-                    <button type="button" onClick={copySha} className="font-mono font-bold text-gray-900 inline-flex items-center gap-1 hover:text-orange-600">
+                    <button type="button" onClick={copySha} aria-label="Copy commit SHA" className="font-mono font-bold text-gray-900 inline-flex items-center gap-1 hover:text-orange-600">
                       {pushResult.shortSha}
                       {copied ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 opacity-50" />}
                     </button>
@@ -645,7 +672,10 @@ export default function AdminDeployment() {
         {/* RENDER DEPLOY TRIGGER CARD */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <button
+            type="button"
             onClick={() => setShowLegacy(!showLegacy)}
+            aria-expanded={showLegacy}
+            aria-controls="legacy-render-deploy"
             className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
           >
             <div className="flex items-center gap-2 text-gray-400">
@@ -662,6 +692,7 @@ export default function AdminDeployment() {
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
+                id="legacy-render-deploy"
               >
                 <div className="p-6 pt-0 space-y-4">
                   <p className="text-xs text-gray-500">
@@ -719,6 +750,25 @@ export default function AdminDeployment() {
           <p><strong className="text-gray-600">Push to GitHub:</strong> Configure your GitHub repo and token below, then use the push button to sync changes.</p>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={clearTokenConfirm}
+        title="Remove GitHub Token"
+        description="Remove the saved GitHub token? You'll need to enter it again to push."
+        confirmText="Remove"
+        variant="warning"
+        onConfirm={doDeleteToken}
+        onCancel={() => setClearTokenConfirm(false)}
+      />
+      <ConfirmDialog
+        open={flushCacheConfirm}
+        title="Flush Cache"
+        description="Flush all cached data? This may temporarily slow down the site."
+        confirmText="Flush"
+        variant="warning"
+        onConfirm={doFlushCache}
+        onCancel={() => setFlushCacheConfirm(false)}
+      />
     </AdminLayout>
   );
 }

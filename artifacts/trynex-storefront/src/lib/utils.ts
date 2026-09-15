@@ -15,22 +15,25 @@ export function formatPrice(price: number): string {
 }
 
 export function getAuthHeaders(): Record<string, string> {
-  const token = sessionStorage.getItem('trynex_admin_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  const token = sessionStorage.getItem('trynext_admin_token');
+  return token
+    ? { Authorization: `Bearer ${token}`, 'X-Requested-With': 'XMLHttpRequest' }
+    : { 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 // API base URL — empty means same-origin (Replit proxy or Vite dev proxy handles /api/*).
 // Override at build/deploy time with VITE_API_BASE_URL env var when running frontend
 // on a different domain from the API (e.g. Cloudflare Pages → custom API domain).
-export const PRODUCTION_API_BASE_URL = "";
-
 export function getApiBaseUrl(): string {
   // If VITE_API_BASE_URL is explicitly set at build time, use it.
   // An empty string or absent var means "same-origin" — the proxy handles /api/*.
   const fromEnv = import.meta.env.VITE_API_BASE_URL as string | undefined;
   if (fromEnv) return fromEnv.replace(/\/+$/, '');
-  // Default: same-origin — works in Replit (proxy routes /api → API server port)
-  // and Vite dev mode (dev server proxy handles /api/* → localhost:5001).
+  // Production Cloudflare Pages exposes /api/* through the Pages Function
+  // reverse proxy. Keep browser requests same-origin so preflight, CSRF
+  // headers, cookies, and signed-upload URL negotiation are not blocked by
+  // the Render origin's browser CORS policy.
+  // Local development also remains same-origin through the Vite proxy.
   return '';
 }
 
@@ -51,7 +54,29 @@ export function resolveImageUrl(url: string | null | undefined): string {
   const PLACEHOLDER = "/images/product-placeholder.svg";
   if (!url || url.trim() === "") return PLACEHOLDER;
   const value = url.trim();
-  if (value.startsWith("http://") || value.startsWith("https://")) return value;
+  // The restored catalog records use exact `/assets/products/*` paths that
+  // are served by Cloudflare Pages. Keep those paths intact so each product
+  // retains its design-specific asset. Only remap external URLs verified to
+  // fail in production. The onError handlers remain the final safeguard.
+  const legacyAssetMap: Record<string, string> = {
+    "https://i.imgur.com/Xc8yXgT.jpeg": "/products/main-combo.png",
+    "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=700&q=85": "/assets/products/hoodie_abstract.png",
+  };
+  if (legacyAssetMap[value]) return legacyAssetMap[value];
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    // Recently-viewed items can outlive a backend migration and retain an old
+    // Render asset URL. Re-enter those paths through the current storefront
+    // so they use the same Pages asset/proxy behavior as fresh catalogue data.
+    if (/^https?:\/\/(?:trynext-api(?:-standby-\d+)?|trynext-lifestyle-main-render)\.onrender\.com\//i.test(value)) {
+      try {
+        const legacyUrl = new URL(value);
+        return `${legacyUrl.pathname}${legacyUrl.search}`;
+      } catch {
+        return PLACEHOLDER;
+      }
+    }
+    return value;
+  }
   // Uploads need the API base URL prepended — check before the generic "/" guard
   if (value.startsWith("/uploads/")) return `${getApiBaseUrl()}${value}`;
   if (value.startsWith("uploads/")) return `${getApiBaseUrl()}/${value}`;

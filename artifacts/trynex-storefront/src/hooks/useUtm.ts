@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "wouter";
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign"] as const;
-const SESSION_PREFIX = "trynex_utm_";
+const SESSION_PREFIX = "trynext_utm_";
 
 export function captureUtm() {
   const params = new URLSearchParams(window.location.search);

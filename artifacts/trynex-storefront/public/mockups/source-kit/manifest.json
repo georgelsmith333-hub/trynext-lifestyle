@@ -1,0 +1,2719 @@
+{
+  "schemaVersion": 1,
+  "canvas": {
+    "width": 1024,
+    "height": 1024,
+    "colorSpace": "RGBA"
+  },
+  "documentCount": 108,
+  "products": [
+    "tshirt",
+    "longsleeve",
+    "hoodie",
+    "mug",
+    "cap",
+    "waterbottle"
+  ],
+  "documents": [
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "White",
+      "hex": "#F8F7F4",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-white-front.png",
+      "psd": "psd/tshirt-white-front.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "White",
+      "hex": "#F8F7F4",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-white-back.png",
+      "psd": "psd/tshirt-white-back.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Black",
+      "hex": "#1a1a1a",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-black-front.png",
+      "psd": "psd/tshirt-black-front.psd",
+      "sourceStrategy": "black studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Black",
+      "hex": "#1a1a1a",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-black-back.png",
+      "psd": "psd/tshirt-black-back.psd",
+      "sourceStrategy": "black studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-navy-front.png",
+      "psd": "psd/tshirt-navy-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-navy-back.png",
+      "psd": "psd/tshirt-navy-back.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-maroon-front.png",
+      "psd": "psd/tshirt-maroon-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-maroon-back.png",
+      "psd": "psd/tshirt-maroon-back.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Olive",
+      "hex": "#4a5240",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-olive-front.png",
+      "psd": "psd/tshirt-olive-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Olive \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Olive",
+      "hex": "#4a5240",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-olive-back.png",
+      "psd": "psd/tshirt-olive-back.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Olive \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-sky-blue-front.png",
+      "psd": "psd/tshirt-sky-blue-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-sky-blue-back.png",
+      "psd": "psd/tshirt-sky-blue-back.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Grey",
+      "hex": "#6b7280",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-grey-front.png",
+      "psd": "psd/tshirt-grey-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Grey \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Grey",
+      "hex": "#6b7280",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-grey-back.png",
+      "psd": "psd/tshirt-grey-back.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Grey \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-red-front.png",
+      "psd": "psd/tshirt-red-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "tshirt",
+      "productName": "Unisex T-Shirt",
+      "category": "tshirt",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 240,
+        "y": 185,
+        "w": 520,
+        "h": 580
+      },
+      "preview": "previews/tshirt-red-back.png",
+      "psd": "psd/tshirt-red-back.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "White",
+      "hex": "#F5F5F3",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-white-front.png",
+      "psd": "psd/longsleeve-white-front.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "White",
+      "hex": "#F5F5F3",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-white-back.png",
+      "psd": "psd/longsleeve-white-back.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Black",
+      "hex": "#1a1a1a",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-black-front.png",
+      "psd": "psd/longsleeve-black-front.psd",
+      "sourceStrategy": "black studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Black",
+      "hex": "#1a1a1a",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-black-back.png",
+      "psd": "psd/longsleeve-black-back.psd",
+      "sourceStrategy": "black cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-navy-front.png",
+      "psd": "psd/longsleeve-navy-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-navy-back.png",
+      "psd": "psd/longsleeve-navy-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-maroon-front.png",
+      "psd": "psd/longsleeve-maroon-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-maroon-back.png",
+      "psd": "psd/longsleeve-maroon-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Olive",
+      "hex": "#4a5240",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-olive-front.png",
+      "psd": "psd/longsleeve-olive-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Olive \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Olive",
+      "hex": "#4a5240",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-olive-back.png",
+      "psd": "psd/longsleeve-olive-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Olive \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Grey",
+      "hex": "#6b7280",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-grey-front.png",
+      "psd": "psd/longsleeve-grey-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Grey \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Grey",
+      "hex": "#6b7280",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-grey-back.png",
+      "psd": "psd/longsleeve-grey-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Grey \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-red-front.png",
+      "psd": "psd/longsleeve-red-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-red-back.png",
+      "psd": "psd/longsleeve-red-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-sky-blue-front.png",
+      "psd": "psd/longsleeve-sky-blue-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-sky-blue-back.png",
+      "psd": "psd/longsleeve-sky-blue-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Burgundy",
+      "hex": "#6b1a2c",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-burgundy-front.png",
+      "psd": "psd/longsleeve-burgundy-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Burgundy \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Burgundy",
+      "hex": "#6b1a2c",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-burgundy-back.png",
+      "psd": "psd/longsleeve-burgundy-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Burgundy \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Forest",
+      "hex": "#166534",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 312,
+        "y": 222,
+        "w": 376,
+        "h": 404
+      },
+      "preview": "previews/longsleeve-forest-front.png",
+      "psd": "psd/longsleeve-forest-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Forest \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "longsleeve",
+      "productName": "Unisex Long Sleeve",
+      "category": "longsleeve",
+      "color": "Forest",
+      "hex": "#166534",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 195,
+        "w": 416,
+        "h": 458
+      },
+      "preview": "previews/longsleeve-forest-back.png",
+      "psd": "psd/longsleeve-forest-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Forest \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "White",
+      "hex": "#F2EFE9",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-white-front.png",
+      "psd": "psd/hoodie-white-front.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "White",
+      "hex": "#F2EFE9",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-white-back.png",
+      "psd": "psd/hoodie-white-back.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Black",
+      "hex": "#1a1a1a",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-black-front.png",
+      "psd": "psd/hoodie-black-front.psd",
+      "sourceStrategy": "black studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Black",
+      "hex": "#1a1a1a",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-black-back.png",
+      "psd": "psd/hoodie-black-back.psd",
+      "sourceStrategy": "black studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-navy-front.png",
+      "psd": "psd/hoodie-navy-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-navy-back.png",
+      "psd": "psd/hoodie-navy-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Grey",
+      "hex": "#6b7280",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-grey-front.png",
+      "psd": "psd/hoodie-grey-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Grey \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Grey",
+      "hex": "#6b7280",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-grey-back.png",
+      "psd": "psd/hoodie-grey-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Grey \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-maroon-front.png",
+      "psd": "psd/hoodie-maroon-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-maroon-back.png",
+      "psd": "psd/hoodie-maroon-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Olive",
+      "hex": "#4a5240",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-olive-front.png",
+      "psd": "psd/hoodie-olive-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Olive \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Olive",
+      "hex": "#4a5240",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-olive-back.png",
+      "psd": "psd/hoodie-olive-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Olive \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-red-front.png",
+      "psd": "psd/hoodie-red-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-red-back.png",
+      "psd": "psd/hoodie-red-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-sky-blue-front.png",
+      "psd": "psd/hoodie-sky-blue-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-sky-blue-back.png",
+      "psd": "psd/hoodie-sky-blue-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Forest",
+      "hex": "#166534",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-forest-front.png",
+      "psd": "psd/hoodie-forest-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Forest \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Forest",
+      "hex": "#166534",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-forest-back.png",
+      "psd": "psd/hoodie-forest-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Forest \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Burgundy",
+      "hex": "#6b1a2c",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 240,
+        "y": 270,
+        "w": 520,
+        "h": 400
+      },
+      "preview": "previews/hoodie-burgundy-front.png",
+      "psd": "psd/hoodie-burgundy-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Burgundy \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "hoodie",
+      "productName": "Unisex Hoodie",
+      "category": "hoodie",
+      "color": "Burgundy",
+      "hex": "#6b1a2c",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 292,
+        "y": 184,
+        "w": 416,
+        "h": 448
+      },
+      "preview": "previews/hoodie-burgundy-back.png",
+      "psd": "psd/hoodie-burgundy-back.psd",
+      "sourceStrategy": "tinted neutral cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Burgundy \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "White",
+      "hex": "#F5F5F5",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-white-front.png",
+      "psd": "psd/mug-white-front.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "White",
+      "hex": "#F5F5F5",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-white-back.png",
+      "psd": "psd/mug-white-back.psd",
+      "sourceStrategy": "mirrored white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Black",
+      "hex": "#1C1917",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-black-front.png",
+      "psd": "psd/mug-black-front.psd",
+      "sourceStrategy": "black studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Black",
+      "hex": "#1C1917",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-black-back.png",
+      "psd": "psd/mug-black-back.psd",
+      "sourceStrategy": "mirrored black studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-navy-front.png",
+      "psd": "psd/mug-navy-front.psd",
+      "sourceStrategy": "tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-navy-back.png",
+      "psd": "psd/mug-navy-back.psd",
+      "sourceStrategy": "mirrored tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-red-front.png",
+      "psd": "psd/mug-red-front.psd",
+      "sourceStrategy": "tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-red-back.png",
+      "psd": "psd/mug-red-back.psd",
+      "sourceStrategy": "mirrored tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Green",
+      "hex": "#16a34a",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-green-front.png",
+      "psd": "psd/mug-green-front.psd",
+      "sourceStrategy": "tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Green \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Green",
+      "hex": "#16a34a",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-green-back.png",
+      "psd": "psd/mug-green-back.psd",
+      "sourceStrategy": "mirrored tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Green \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Purple",
+      "hex": "#7c3aed",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-purple-front.png",
+      "psd": "psd/mug-purple-front.psd",
+      "sourceStrategy": "tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Purple \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Purple",
+      "hex": "#7c3aed",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-purple-back.png",
+      "psd": "psd/mug-purple-back.psd",
+      "sourceStrategy": "mirrored tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Purple \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-sky-blue-front.png",
+      "psd": "psd/mug-sky-blue-front.psd",
+      "sourceStrategy": "tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-sky-blue-back.png",
+      "psd": "psd/mug-sky-blue-back.psd",
+      "sourceStrategy": "mirrored tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Pink",
+      "hex": "#ec4899",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-pink-front.png",
+      "psd": "psd/mug-pink-front.psd",
+      "sourceStrategy": "tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Pink \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Pink",
+      "hex": "#ec4899",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-pink-back.png",
+      "psd": "psd/mug-pink-back.psd",
+      "sourceStrategy": "mirrored tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Pink \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-maroon-front.png",
+      "psd": "psd/mug-maroon-front.psd",
+      "sourceStrategy": "tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-maroon-back.png",
+      "psd": "psd/mug-maroon-back.psd",
+      "sourceStrategy": "mirrored tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Orange",
+      "hex": "#ea580c",
+      "view": "front",
+      "viewLabel": "Left Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-orange-front.png",
+      "psd": "psd/mug-orange-front.psd",
+      "sourceStrategy": "tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Orange \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "mug",
+      "productName": "Coffee Mug",
+      "category": "mug",
+      "color": "Orange",
+      "hex": "#ea580c",
+      "view": "back",
+      "viewLabel": "Right Side",
+      "printZone": {
+        "x": 225,
+        "y": 215,
+        "w": 380,
+        "h": 530
+      },
+      "preview": "previews/mug-orange-back.png",
+      "psd": "psd/mug-orange-back.psd",
+      "sourceStrategy": "mirrored tinted mug cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Orange \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "White",
+      "hex": "#F5F2EC",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-white-front.png",
+      "psd": "psd/cap-white-front.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "White",
+      "hex": "#F5F2EC",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-white-back.png",
+      "psd": "psd/cap-white-back.psd",
+      "sourceStrategy": "generated rear reference",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Black",
+      "hex": "#1a1a1a",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-black-front.png",
+      "psd": "psd/cap-black-front.psd",
+      "sourceStrategy": "tinted cap cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Black",
+      "hex": "#1a1a1a",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-black-back.png",
+      "psd": "psd/cap-black-back.psd",
+      "sourceStrategy": "tinted generated rear reference",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-navy-front.png",
+      "psd": "psd/cap-navy-front.psd",
+      "sourceStrategy": "tinted cap cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-navy-back.png",
+      "psd": "psd/cap-navy-back.psd",
+      "sourceStrategy": "tinted generated rear reference",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-maroon-front.png",
+      "psd": "psd/cap-maroon-front.psd",
+      "sourceStrategy": "tinted cap cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Maroon",
+      "hex": "#7f1d1d",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-maroon-back.png",
+      "psd": "psd/cap-maroon-back.psd",
+      "sourceStrategy": "tinted generated rear reference",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Maroon \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Olive",
+      "hex": "#4a5240",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-olive-front.png",
+      "psd": "psd/cap-olive-front.psd",
+      "sourceStrategy": "tinted cap cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Olive \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Olive",
+      "hex": "#4a5240",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-olive-back.png",
+      "psd": "psd/cap-olive-back.psd",
+      "sourceStrategy": "tinted generated rear reference",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Olive \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-red-front.png",
+      "psd": "psd/cap-red-front.psd",
+      "sourceStrategy": "tinted cap cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-red-back.png",
+      "psd": "psd/cap-red-back.psd",
+      "sourceStrategy": "tinted generated rear reference",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Grey",
+      "hex": "#6b7280",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-grey-front.png",
+      "psd": "psd/cap-grey-front.psd",
+      "sourceStrategy": "tinted cap cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Grey \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Grey",
+      "hex": "#6b7280",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-grey-back.png",
+      "psd": "psd/cap-grey-back.psd",
+      "sourceStrategy": "tinted generated rear reference",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Grey \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Forest",
+      "hex": "#166534",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-forest-front.png",
+      "psd": "psd/cap-forest-front.psd",
+      "sourceStrategy": "tinted cap cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Forest \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "cap",
+      "productName": "Structured Cap",
+      "category": "cap",
+      "color": "Forest",
+      "hex": "#166534",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 302,
+        "y": 222,
+        "w": 396,
+        "h": 252
+      },
+      "preview": "previews/cap-forest-back.png",
+      "psd": "psd/cap-forest-back.psd",
+      "sourceStrategy": "tinted generated rear reference",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Forest \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "White",
+      "hex": "#F4F3F1",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-white-front.png",
+      "psd": "psd/waterbottle-white-front.psd",
+      "sourceStrategy": "white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "White",
+      "hex": "#F4F3F1",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-white-back.png",
+      "psd": "psd/waterbottle-white-back.psd",
+      "sourceStrategy": "mirrored white cutout",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 White \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Black",
+      "hex": "#1C1917",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-black-front.png",
+      "psd": "psd/waterbottle-black-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Black",
+      "hex": "#1C1917",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-black-back.png",
+      "psd": "psd/waterbottle-black-back.psd",
+      "sourceStrategy": "mirrored color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Black \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-navy-front.png",
+      "psd": "psd/waterbottle-navy-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Navy",
+      "hex": "#1e3a5f",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-navy-back.png",
+      "psd": "psd/waterbottle-navy-back.psd",
+      "sourceStrategy": "mirrored color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Navy \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Forest",
+      "hex": "#166534",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-forest-front.png",
+      "psd": "psd/waterbottle-forest-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Forest \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Forest",
+      "hex": "#166534",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-forest-back.png",
+      "psd": "psd/waterbottle-forest-back.psd",
+      "sourceStrategy": "mirrored color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Forest \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-sky-blue-front.png",
+      "psd": "psd/waterbottle-sky-blue-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Sky Blue",
+      "hex": "#0ea5e9",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-sky-blue-back.png",
+      "psd": "psd/waterbottle-sky-blue-back.psd",
+      "sourceStrategy": "mirrored color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Sky Blue \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-red-front.png",
+      "psd": "psd/waterbottle-red-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Red",
+      "hex": "#dc2626",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-red-back.png",
+      "psd": "psd/waterbottle-red-back.psd",
+      "sourceStrategy": "mirrored color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Red \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Pink",
+      "hex": "#f472b6",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-pink-front.png",
+      "psd": "psd/waterbottle-pink-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Pink \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Pink",
+      "hex": "#f472b6",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-pink-back.png",
+      "psd": "psd/waterbottle-pink-back.psd",
+      "sourceStrategy": "mirrored color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Pink \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Teal",
+      "hex": "#0f766e",
+      "view": "front",
+      "viewLabel": "Front",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-teal-front.png",
+      "psd": "psd/waterbottle-teal-front.psd",
+      "sourceStrategy": "color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Teal \u2014 Front",
+        "Print Zone Mask \u2014 Front \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Front \u2014 toggle visibility"
+      ]
+    },
+    {
+      "product": "waterbottle",
+      "productName": "Water Bottle",
+      "category": "waterbottle",
+      "color": "Teal",
+      "hex": "#0f766e",
+      "view": "back",
+      "viewLabel": "Back",
+      "printZone": {
+        "x": 260,
+        "y": 214,
+        "w": 480,
+        "h": 548
+      },
+      "preview": "previews/waterbottle-teal-back.png",
+      "psd": "psd/waterbottle-teal-back.psd",
+      "sourceStrategy": "mirrored color studio photo",
+      "layers": [
+        "Studio Background \u2014 Warm White",
+        "Product Photo \u2014 Teal \u2014 Back",
+        "Print Zone Mask \u2014 Back \u2014 toggle visibility",
+        "Artwork \u2014 Place Design Here",
+        "Placement Guide \u2014 Back \u2014 toggle visibility"
+      ]
+    }
+  ]
+}

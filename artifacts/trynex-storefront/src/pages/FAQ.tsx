@@ -4,6 +4,7 @@ import { ChevronDown, MessageCircle } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SEOHead } from "@/components/SEOHead";
+import { useSiteSettings } from "@/context/SiteSettingsContext";
 
 interface FAQItem {
   question: string;
@@ -40,7 +41,7 @@ const faqs: FAQItem[] = [
   {
     category: "Returns & Refunds",
     question: "How do I get a refund?",
-    answer: "Refunds are processed within 3–5 business days after we receive and inspect the returned item. Refunds are issued via bKash, Nagad, or Rocket — whichever you used to pay.",
+    answer: "Refunds are processed within 3–5 business days after we receive and inspect the returned item. Refunds are issued via bKash, Nagad, or uPay — whichever you used to pay.",
   },
   {
     category: "Returns & Refunds",
@@ -75,22 +76,22 @@ const faqs: FAQItem[] = [
   {
     category: "Custom Orders",
     question: "Do you handle bulk corporate orders?",
-    answer: "Yes! We specialize in bulk corporate orders (50+ pieces) with branded packaging, custom labels, and volume discounts. Contact us via WhatsApp at 01903426915 for a bulk quote.",
+    answer: "Yes! We specialize in bulk corporate orders (50+ pieces) with branded packaging, custom labels, and volume discounts. Contact us via WhatsApp for a bulk quote.",
   },
   {
     category: "Payments",
     question: "What payment methods do you accept?",
-    answer: "We accept bKash, Nagad, Rocket (mobile banking), and Cash on Delivery (COD). For COD, a 15% advance payment is required to confirm your order.",
+    answer: "We accept bKash, Nagad, and uPay. A 25% advance payment is required to confirm your order, with the remaining 75% collected on delivery.",
   },
   {
     category: "Payments",
-    question: "Is Cash on Delivery available?",
-    answer: "Yes, COD is available across Bangladesh. We require a 15% advance via bKash, Nagad, or Rocket to confirm your order. The remaining amount is paid when the product arrives.",
+    question: "Can I pay on delivery?",
+    answer: "We require a 25% advance payment via bKash, Nagad, or uPay to confirm your order. The remaining 75% is collected on delivery.",
   },
   {
     category: "Payments",
     question: "Is my payment information secure?",
-    answer: "We never store your mobile banking credentials. All payments are processed directly through the official bKash, Nagad, and Rocket apps using Send Money. Your financial data stays safe.",
+    answer: "We never store your mobile banking credentials. All payments are processed directly through the official bKash, Nagad, and uPay apps using Send Money. Your financial data stays safe.",
   },
   {
     category: "Account & Orders",
@@ -161,6 +162,8 @@ const faqSchema = {
 
 export default function FAQ() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const settings = useSiteSettings();
+  const waNum = (settings.whatsappNumber || settings.phone || "").replace(/[^0-9]/g, "");
 
   const filtered = activeCategory
     ? faqs.filter((f) => f.category === activeCategory)
@@ -170,9 +173,9 @@ export default function FAQ() {
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title="FAQ — Frequently Asked Questions"
-        description="Answers to common questions about shipping, returns, custom orders, sizing, and payments at TryNex Lifestyle Bangladesh."
+        description="Answers to common questions about shipping, returns, custom orders, sizing, and payments at Trynext Lifestyle Bangladesh."
         canonical="/faq"
-        keywords="trynex faq, shipping bangladesh faq, custom apparel questions, return policy bd"
+        keywords="trynext faq, shipping bangladesh faq, custom apparel questions, return policy bd"
         jsonLd={faqSchema}
       />
       <Navbar />
@@ -195,15 +198,21 @@ export default function FAQ() {
               <span style={{ color: "#E85D04" }}>Questions</span>
             </h1>
             <p className="text-gray-500 text-lg max-w-lg mx-auto">
-              Everything you need to know about TryNex. Can't find the answer?{" "}
-              <a
-                href="https://wa.me/8801903426915"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-orange-500 font-bold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded"
-              >
-                Chat with us on WhatsApp
-              </a>
+              Everything you need to know about Trynext. Can't find the answer?{" "}
+              {waNum ? (
+                <a
+                  href={`https://wa.me/${waNum}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-500 font-bold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded"
+                >
+                  Chat with us on WhatsApp
+                </a>
+              ) : (
+                <a href="/contact" className="text-orange-500 font-bold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded">
+                  Contact our support team
+                </a>
+              )}
             </p>
           </motion.div>
         </div>
@@ -252,16 +261,22 @@ export default function FAQ() {
           >
             <MessageCircle className="w-10 h-10 text-orange-500 mx-auto mb-3" aria-hidden="true" />
             <h3 className="font-black text-gray-900 text-xl mb-2">Still have questions?</h3>
-            <p className="text-gray-500 mb-5">Our team replies within minutes on WhatsApp</p>
-            <a
-              href="https://wa.me/8801903426915?text=Hi%2C%20I%20have%20a%20question%20about%20TryNex"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-black text-sm shadow-lg transition-transform active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-              style={{ background: "#25D366", boxShadow: "0 6px 24px rgba(37,211,102,0.35)" }}
-            >
-              <MessageCircle className="w-4 h-4" aria-hidden="true" /> Chat on WhatsApp
-            </a>
+            <p className="text-gray-500 mb-5">{waNum ? "Our team replies within minutes on WhatsApp" : "Our support team is ready to help."}</p>
+            {waNum ? (
+              <a
+                href={`https://wa.me/${waNum}?text=Hi%2C%20I%20have%20a%20question%20about%20Trynext`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-black text-sm shadow-lg transition-transform active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                style={{ background: "#25D366", boxShadow: "0 6px 24px rgba(37,211,102,0.35)" }}
+              >
+                <MessageCircle className="w-4 h-4" aria-hidden="true" /> Chat on WhatsApp
+              </a>
+            ) : (
+              <a href="/contact" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-black text-sm bg-orange-500 hover:bg-orange-600 transition-colors">
+                Contact support
+              </a>
+            )}
           </motion.div>
         </div>
       </main>

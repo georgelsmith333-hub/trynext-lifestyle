@@ -101,14 +101,14 @@ export default function HamperBuilder() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
-        title="Build Your Own Gift Hamper | TryNex Lifestyle"
+        title="Build Your Own Gift Hamper | Trynext Lifestyle"
         description="Pick any 3+ products and build your custom gift hamper with a personal message. Bangladesh-wide delivery."
         canonical="/hampers/build"
       />
       <Navbar />
 
       <main className="flex-1 pt-header pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center pt-6 pb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4"
               style={{ background: 'rgba(232,93,4,0.08)', border: '1px solid rgba(232,93,4,0.2)' }}>

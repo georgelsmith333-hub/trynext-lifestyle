@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { getAuthHeaders, getApiUrl } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import {
   Bot, Send, Square, Trash2, Copy, Check, Settings, ChevronDown, Zap,
   Code2, Terminal, FileCode, Sparkles, Download, RefreshCw, AlertCircle,
   CheckCircle, Clock, Cpu, Globe, Brain, Plus, X, ChevronRight,
   MessageSquare, Lightbulb, Database, Server, Palette, Upload, Package,
-  BarChart3, ShoppingCart, Users, TrendingUp, Eye, EyeOff, Key, ToggleLeft,
+  BarChart3, ShoppingCart, Users, TrendingUp, Eye, Key, ToggleLeft,
   ToggleRight, Search, Wrench, Activity, Layers, FileText, Image, ChevronUp,
   Hash, Star,
 } from "lucide-react";
@@ -46,19 +47,19 @@ const DEFAULT_FEATURES: FeatureFlags = {
   autoAudit: false,
 };
 
-const TRYNEX_SYSTEM = `You are the TryNex AI Developer Agent — an elite full-stack AI assistant deeply integrated with the TryNex Lifestyle Bangladesh admin panel.
+const TRYNEXT_SYSTEM = `You are the Trynext AI Developer Agent — an elite full-stack AI assistant deeply integrated with the Trynext Lifestyle Bangladesh admin panel.
 
-**About TryNex Lifestyle:**
+**About Trynext Lifestyle:**
 - Premium custom apparel & gift shop in Bangladesh
 - Products: T-Shirts, Hoodies, Mugs, Caps, Water Bottles, Long Sleeves
 - Stack: React+Vite+TailwindCSS frontend, Node+Express+TypeScript+Drizzle+PostgreSQL backend, pnpm monorepo
 - Brand color: #E85D04 (orange), dark sidebar admin (#0f0f0f)
 - Payment: bKash, Nagad, COD — no Stripe/international
 - Key pages: Design Studio (3D product customizer), Shop, Cart, Admin panel
-- Live at: https://trynex.shop
+- Live at: https://trynext.pages.dev
 
 **Your capabilities:**
-- Write production-ready code for TryNex's exact tech stack
+- Write production-ready code for Trynext's exact tech stack
 - Debug TypeScript/React/Express/SQL issues
 - Design responsive Tailwind UI components
 - Query live store data using your built-in tools
@@ -80,14 +81,14 @@ The system will execute the tool and inject the result into the conversation aut
 Always provide complete, working code. Be direct and precise.`;
 
 const QUICK_TEMPLATES = [
-  { label: "Fix Bug", icon: Wrench, prompt: "I have this error in my TryNex code:\n\n```\n[paste error here]\n```\n\nPlease diagnose and fix it." },
-  { label: "Write API Route", icon: Server, prompt: "Write a new Express route for TryNex API server that does: [describe feature]" },
-  { label: "React Component", icon: Palette, prompt: "Create a premium Tailwind+React component for TryNex admin panel: [describe component]" },
-  { label: "DB Query", icon: Database, prompt: "Write a Drizzle ORM query for TryNex PostgreSQL to: [describe query]" },
+  { label: "Fix Bug", icon: Wrench, prompt: "I have this error in my Trynext code:\n\n```\n[paste error here]\n```\n\nPlease diagnose and fix it." },
+  { label: "Write API Route", icon: Server, prompt: "Write a new Express route for Trynext API server that does: [describe feature]" },
+  { label: "React Component", icon: Palette, prompt: "Create a premium Tailwind+React component for Trynext admin panel: [describe component]" },
+  { label: "DB Query", icon: Database, prompt: "Write a Drizzle ORM query for Trynext PostgreSQL to: [describe query]" },
   { label: "Store Audit", icon: Activity, prompt: "Run get_stats and check_health to give me a full store health report with recommendations." },
-  { label: "Product Desc", icon: Package, prompt: "Write an SEO-optimized product description for TryNex. Product: [name]\nKey features: [list features]" },
-  { label: "SEO Help", icon: TrendingUp, prompt: "Give me TryNex Bangladesh e-commerce SEO strategy. Check what categories we have first." },
-  { label: "Code Review", icon: FileCode, prompt: "Review this TryNex code and suggest improvements:\n\n```typescript\n[paste code here]\n```" },
+  { label: "Product Desc", icon: Package, prompt: "Write an SEO-optimized product description for Trynext. Product: [name]\nKey features: [list features]" },
+  { label: "SEO Help", icon: TrendingUp, prompt: "Give me Trynext Bangladesh e-commerce SEO strategy. Check what categories we have first." },
+  { label: "Code Review", icon: FileCode, prompt: "Review this Trynext code and suggest improvements:\n\n```typescript\n[paste code here]\n```" },
 ];
 
 /* ─────────────────── Markdown rendering ─────────── */
@@ -222,20 +223,34 @@ function StatCard({ icon: Icon, label, value, sub, color }: { icon: typeof Packa
 
 /* ─────────────────── Main Component ─────────────────── */
 export default function AdminAIDeveloper() {
+  const { toast } = useToast();
   const [providers,       setProviders]       = useState<Provider[]>([]);
   const [selectedProv,    setSelectedProv]    = useState("pollinations");
   const [selectedModel,   setSelectedModel]   = useState("");
   const [messages,        setMessages]        = useState<ChatMessage[]>(() => {
-    try { return JSON.parse(localStorage.getItem("trynex_ai_dev_chat") ?? "[]"); } catch { return []; }
+    try { return JSON.parse(localStorage.getItem("trynext_ai_dev_chat") ?? "[]"); } catch { return []; }
   });
   const [input,           setInput]           = useState("");
   const [isStreaming,     setIsStreaming]      = useState(false);
   const [temperature,     setTemperature]      = useState(0.7);
-  const [systemPrompt,    setSystemPrompt]    = useState(TRYNEX_SYSTEM);
+  // Fetch system prompt from DB settings on mount; fall back to hardcoded default
+  const [systemPrompt,    setSystemPrompt]    = useState(TRYNEXT_SYSTEM);
+  const [promptLoaded,    setPromptLoaded]    = useState(false);
+  useEffect(() => {
+    fetch(getApiUrl("/api/settings/aiSystemPrompt"), {
+      headers: { ...getAuthHeaders() },
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.value && d.value.trim()) {
+          setSystemPrompt(d.value);
+        }
+      })
+      .catch(() => { /* fall back to hardcoded default */ })
+      .finally(() => setPromptLoaded(true));
+  }, []);
   const [activeTab,       setActiveTab]       = useState<"chat" | "context" | "tools" | "settings">("chat");
   const [features,        setFeatures]        = useState<FeatureFlags>(DEFAULT_FEATURES);
-  const [openAIKey,       setOpenAIKey]       = useState("");
-  const [showOpenAIKey,   setShowOpenAIKey]   = useState(false);
   const [storeContext,    setStoreContext]    = useState<StoreContext | null>(null);
   const [contextLoading,  setContextLoading]  = useState(false);
   const [attachedFiles,   setAttachedFiles]   = useState<AttachedFile[]>([]);
@@ -281,7 +296,7 @@ export default function AdminAIDeveloper() {
   /* Auto-save chat */
   useEffect(() => {
     if (features.chatHistory) {
-      try { localStorage.setItem("trynex_ai_dev_chat", JSON.stringify(messages.slice(-80))); } catch {}
+      try { localStorage.setItem("trynext_ai_dev_chat", JSON.stringify(messages.slice(-80))); } catch {}
     }
   }, [messages, features.chatHistory]);
 
@@ -294,11 +309,6 @@ export default function AdminAIDeveloper() {
     inputRef.current.style.height = "auto";
     inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 160) + "px";
   }, [input]);
-
-  const getAuthHeaders = () => {
-    const token = sessionStorage.getItem("trynex_admin_token");
-    return { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-  };
 
   const currentProvider  = providers.find(p => p.id === selectedProv) ?? providers[0];
   const currentModelObj  = currentProvider?.models.find(m => m.id === selectedModel) ?? currentProvider?.models[0];
@@ -374,7 +384,7 @@ export default function AdminAIDeveloper() {
 Products: ${storeContext.products.total} total, ${storeContext.products.lowStock} low stock
 Orders: ${storeContext.orders.total} recent, ${storeContext.orders.pending} pending, Revenue: ৳${storeContext.orders.totalRevenue.toLocaleString()}
 Categories: ${storeContext.categories.items.map((c: any) => c.name).join(", ")}
-Store name: ${storeContext.settings.siteName ?? "TryNex Lifestyle"}
+Store name: ${storeContext.settings.siteName ?? "Trynext Lifestyle"}
 System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${storeContext.health.memoryMB}MB
 ---`;
     }
@@ -418,20 +428,18 @@ System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${sto
     const history = [...messages, userMsg].slice(-30).map(m => ({ role: m.role, content: m.content }));
 
     try {
-      const useOpenAI = !!openAIKey;
       const endpoint = getApiUrl("/api/ai/developer/chat");
       const body: Record<string, unknown> = {
         messages: history,
-        providerId: useOpenAI ? "openai-direct" : selectedProv,
-        model: useOpenAI ? "gpt-4o" : (selectedModel || undefined),
+        providerId: selectedProv,
+        model: selectedModel || undefined,
         systemPrompt: buildSystemPrompt(),
         temperature,
       };
-      if (openAIKey) body.openAIKey = openAIKey;
 
       const r = await fetch(endpoint, {
         method: "POST",
-        headers: getAuthHeaders(),
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify(body),
         signal: abortRef.current.signal,
       });
@@ -487,7 +495,7 @@ System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${sto
     } finally {
       setIsStreaming(false);
     }
-  }, [input, isStreaming, messages, selectedProv, selectedModel, temperature, attachedFiles, openAIKey, buildSystemPrompt, buildUserContent, parseAndRunTools, features.toolCalling]);
+  }, [input, isStreaming, messages, selectedProv, selectedModel, temperature, attachedFiles, buildSystemPrompt, buildUserContent, parseAndRunTools, features.toolCalling]);
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -495,14 +503,14 @@ System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${sto
 
   const clearHistory = () => {
     setMessages([]); setToolLog([]);
-    try { localStorage.removeItem("trynex_ai_dev_chat"); } catch {}
+    try { localStorage.removeItem("trynext_ai_dev_chat"); } catch {}
   };
 
   const exportChat = () => {
     const text = messages.map(m => `[${m.role.toUpperCase()} - ${new Date(m.timestamp).toLocaleTimeString()}]\n${m.content}\n`).join("\n---\n\n");
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = `trynex-ai-chat-${Date.now()}.txt`; a.click();
+    const a = document.createElement("a"); a.href = url; a.download = `trynext-ai-chat-${Date.now()}.txt`; a.click();
     URL.revokeObjectURL(url);
   };
 
@@ -536,7 +544,7 @@ System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${sto
       ]);
       const lowStock = await executeTool("get_low_stock", { threshold: 10 });
       const report = [
-        `## TryNex Store Audit — ${new Date().toLocaleString("en-BD")}`,
+        `## Trynext Store Audit — ${new Date().toLocaleString("en-BD")}`,
         "",
         `### Products`,
         `- Total: ${(stats as any).products?.total ?? "?"}`,
@@ -583,7 +591,7 @@ System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${sto
               </div>
               <div>
                 <h2 className="text-sm font-bold text-gray-900">AI Developer</h2>
-                <p className="text-[10px] text-gray-400">TryNex Agent v2.0</p>
+                <p className="text-[10px] text-gray-400">Trynext Agent v2.0</p>
               </div>
             </div>
           </div>
@@ -730,7 +738,7 @@ System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${sto
                         <Bot className="w-8 h-8 text-orange-500" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">TryNex AI Developer</h3>
+                        <h3 className="text-lg font-bold text-gray-900">Trynext AI Developer</h3>
                         <p className="text-sm text-gray-400 mt-1 max-w-sm">I know your full tech stack, can query live store data, write code, debug errors, and build features. Ask me anything.</p>
                       </div>
                       <div className="grid grid-cols-2 gap-2 mt-2 max-w-sm">
@@ -1073,24 +1081,24 @@ System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${sto
               <h2 className="text-xl font-bold text-gray-900 mb-6">AI Developer Settings</h2>
 
               <div className="space-y-6 max-w-2xl">
-                {/* OpenAI API Key */}
+                {/* Provider configuration */}
                 <div className="bg-white rounded-xl border border-gray-200 p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <Key className="w-4 h-4 text-orange-500" />
-                    <h3 className="text-sm font-bold text-gray-900">OpenAI API Key (Optional)</h3>
+                    <Settings className="w-4 h-4 text-orange-500" />
+                    <h3 className="text-sm font-bold text-gray-900">Server-managed providers</h3>
                   </div>
-                  <p className="text-xs text-gray-500 mb-3">Enter your key to use GPT-4o directly. Without a key, the system uses free providers automatically.</p>
-                  <div className="flex gap-2">
-                    <div className="flex-1 relative">
-                      <input type={showOpenAIKey ? "text" : "password"} value={openAIKey} onChange={e => setOpenAIKey(e.target.value)}
-                        placeholder="sk-…" className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 font-mono" />
-                      <button onClick={() => setShowOpenAIKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                        {showOpenAIKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    {openAIKey && <button onClick={() => setOpenAIKey("")} className="px-3 py-2 bg-red-50 text-red-500 rounded-xl text-sm hover:bg-red-100 transition-colors"><X className="w-4 h-4" /></button>}
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Providers and credentials are configured on the server. This panel never accepts, stores, or sends provider keys from the browser.
+                    Select a provider marked <strong>Ready</strong>; unavailable providers require secure server configuration by an authorized operator.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {providers.length > 0 ? providers.map(provider => (
+                      <span key={provider.id} className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${provider.available ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+                        <ProviderDot color={provider.color} />
+                        {provider.name}: {provider.available ? "Ready" : "Server key required"}
+                      </span>
+                    )) : <span className="text-xs text-gray-400">Provider status loads after secure admin authentication.</span>}
                   </div>
-                  {openAIKey && <p className="text-xs text-green-600 mt-2 flex items-center gap-1"><CheckCircle className="w-3 h-3" />Key set — GPT-4o will be used for next conversation</p>}
                 </div>
 
                 {/* Feature toggles */}
@@ -1143,7 +1151,21 @@ System uptime: ${Math.floor(storeContext.health.uptime / 60)} min, Memory: ${sto
                     <label className="text-xs font-medium text-gray-600 block mb-2">System Prompt</label>
                     <textarea value={systemPrompt} onChange={e => setSystemPrompt(e.target.value)} rows={8}
                       className="w-full text-xs font-mono bg-gray-900 text-gray-100 rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400 leading-relaxed" />
-                    <button onClick={() => setSystemPrompt(TRYNEX_SYSTEM)} className="mt-2 text-xs text-orange-500 hover:underline">Reset to default</button>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button onClick={async () => {
+                        try {
+                          await fetch(getApiUrl("/api/settings"), {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+                            body: JSON.stringify({ aiSystemPrompt: systemPrompt }),
+                          });
+                          toast({ title: "System prompt saved to settings!" });
+                        } catch {
+                          toast({ title: "Failed to save", variant: "destructive" });
+                        }
+                      }} className="text-xs bg-orange-500 text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition-colors font-bold">Save to Settings</button>
+                      <button onClick={() => setSystemPrompt(TRYNEXT_SYSTEM)} className="text-xs text-orange-500 hover:underline">Reset to default</button>
+                    </div>
                   </div>
                 </div>
 

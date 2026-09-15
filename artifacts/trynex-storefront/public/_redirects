@@ -1,2 +1,2 @@
-/api/*  https://trynex-api.onrender.com/api/:splat  200
+/sitemap.xml  /api/sitemap.xml  301
 /*  /index.html  200

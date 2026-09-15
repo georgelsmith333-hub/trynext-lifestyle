@@ -22,11 +22,11 @@
  */
 
 // Bumped on every meaningful change to client caching behaviour. Compared
-// against localStorage["trynex_build"]. When it differs from the stored
+// against localStorage["trynext_build"]. When it differs from the stored
 // value the user is auto-recovered.
-const CURRENT_BUILD = "2026.05.20-sw-cache-fix";
-const STORAGE_KEY = "trynex_build";
-const RECENT_NUKE_KEY = "trynex_last_nuke";
+const CURRENT_BUILD = "2026.06.16-nav-routing-fix";
+const STORAGE_KEY = "trynext_build";
+const RECENT_NUKE_KEY = "trynext_last_nuke";
 const RECENT_NUKE_WINDOW_MS = 60_000;
 
 let nukeInFlight: Promise<void> | null = null;
@@ -39,14 +39,14 @@ export async function nukeAndReload(reason: string): Promise<void> {
       const last = Number(sessionStorage.getItem(RECENT_NUKE_KEY) || "0");
       if (Date.now() - last < RECENT_NUKE_WINDOW_MS) {
         // eslint-disable-next-line no-console
-        console.warn(`[trynex] Skipping nuke (recent): ${reason}`);
+        console.warn(`[trynext] Skipping nuke (recent): ${reason}`);
         return;
       }
       sessionStorage.setItem(RECENT_NUKE_KEY, String(Date.now()));
     } catch { /* sessionStorage unavailable — proceed anyway */ }
 
     // eslint-disable-next-line no-console
-    console.warn(`[trynex] Recovering from stale cache: ${reason}`);
+    console.warn(`[trynext] Recovering from stale cache: ${reason}`);
 
     try {
       if ("serviceWorker" in navigator) {

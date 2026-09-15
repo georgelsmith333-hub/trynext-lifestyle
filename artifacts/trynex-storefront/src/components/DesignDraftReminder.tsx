@@ -5,8 +5,8 @@ import { Pen, X, Cloud } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getApiUrl } from "@/lib/utils";
 
-const DRAFT_KEY = "trynex-design-draft-v1";
-const REMINDER_SESSION_KEY = "trynex-draft-reminder-shown";
+const DRAFT_KEY = "trynext-design-draft-v1";
+const REMINDER_SESSION_KEY = "trynext-draft-reminder-shown";
 
 /**
  * Appears at bottom-left when user has a saved design draft but is NOT
@@ -19,9 +19,10 @@ export function DesignDraftReminder() {
   const [location] = useLocation();
 
   const isStudio = location.startsWith("/design-studio");
+  const isInteractionRoute = /^\/(products|track|checkout|cart|wishlist|login|register|admin)(\/|$)/.test(location);
 
   useEffect(() => {
-    if (isStudio) return;
+    if (isStudio || isInteractionRoute) return;
     const alreadyShown = sessionStorage.getItem(REMINDER_SESSION_KEY);
     if (alreadyShown) return;
 
@@ -29,7 +30,7 @@ export function DesignDraftReminder() {
 
     async function checkDraft() {
       // 1. Check cloud draft for authenticated users
-      const token = localStorage.getItem("trynex_customer_token");
+      const token = localStorage.getItem("trynext_customer_token");
       if (token) {
         try {
           const res = await fetch(getApiUrl("/api/drafts"), {
@@ -67,7 +68,7 @@ export function DesignDraftReminder() {
 
     checkDraft();
     return () => { cancelled = true; };
-  }, [isStudio]);
+  }, [isStudio, isInteractionRoute]);
 
   const handleDismiss = () => {
     setShow(false);
@@ -81,7 +82,7 @@ export function DesignDraftReminder() {
     return hrs < 24 ? `${hrs}h ago` : "recently";
   })() : "";
 
-  if (typeof document === "undefined") return null;
+  if (typeof document === "undefined" || isInteractionRoute) return null;
 
   return createPortal(
     <AnimatePresence>
@@ -91,8 +92,11 @@ export function DesignDraftReminder() {
           animate={{ opacity: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, x: -40 }}
           transition={{ type: "spring", damping: 24, stiffness: 260 }}
-          className="fixed bottom-24 left-4 z-[500] w-72 rounded-2xl shadow-2xl overflow-hidden"
+          className="fixed bottom-24 left-4 right-4 sm:right-auto z-[500] sm:w-72 rounded-2xl shadow-2xl overflow-hidden"
           style={{
+            width: "min(18rem, calc(100vw - 2rem))",
+            maxHeight: "min(22rem, calc(100dvh - 8rem))",
+            overflowY: "auto",
             background: "linear-gradient(135deg, #1a1a1a, #2d1200)",
             border: "1px solid rgba(232,93,4,0.3)",
           }}

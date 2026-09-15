@@ -9,7 +9,7 @@ const router: IRouter = Router();
 // ── Redis-backed cache (60 seconds TTL) ──────────────────────────────────────
 // public-stats hits the DB 3× per request. Redis survives Render restarts;
 // the in-process fallback inside redis.ts covers dev / Redis-not-configured.
-const STATS_CACHE_KEY = "trynex:public-stats";
+const STATS_CACHE_KEY = "trynext:public-stats";
 const STATS_TTL_S = 60;
 
 async function fetchStats() {

@@ -1,0 +1,36 @@
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@ -34,7 +34,7 @@
+     "flow-enums-runtime": "^0.0.6",
+     "graceful-fs": "^4.2.4",
+     "hermes-parser": "0.32.0",
+-    "image-size": "^1.0.2",
++    "@trynext/image-size-safe": "workspace:*",
+     "invariant": "^2.2.4",
+     "jest-worker": "^29.7.0",
+     "jsc-safe-url": "^0.2.2",
+diff --git a/src/Assets.js b/src/Assets.js
+--- a/src/Assets.js
++++ b/src/Assets.js
+@@ -14,7 +14,7 @@
+ );
+ var _crypto = _interopRequireDefault(require("crypto"));
+ var _fs = _interopRequireDefault(require("fs"));
+-var _imageSize = _interopRequireDefault(require("image-size"));
++var _imageSize = _interopRequireDefault(require("@trynext/image-size-safe"));
+ var _path = _interopRequireDefault(require("path"));
+ function _interopRequireDefault(e) {
+   return e && e.__esModule ? e : { default: e };
+diff --git a/src/Assets.js.flow b/src/Assets.js.flow
+--- a/src/Assets.js.flow
++++ b/src/Assets.js.flow
+@@ -15,7 +15,7 @@
+ import * as AssetPaths from './node-haste/lib/AssetPaths';
+ import crypto from 'crypto';
+ import fs from 'fs';
+-import getImageSize from 'image-size';
++import getImageSize from '@trynext/image-size-safe';
+ import path from 'path';
+ 
+ export type AssetInfo = {

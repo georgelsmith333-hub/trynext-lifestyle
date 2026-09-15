@@ -74,14 +74,33 @@ interface CartActions {
 const CartStateContext = createContext<CartState | undefined>(undefined);
 const CartActionsContext = createContext<CartActions | undefined>(undefined);
 
-const STORAGE_KEY = 'trynex_cart';
+const STORAGE_KEY = 'trynext_cart';
 const FLUSH_DELAY_MS = 250;
+
+/**
+ * Persisted carts can outlive a catalog asset rename. Keep this migration
+ * narrow: repair only the confirmed Tactical Military Grade Canteen legacy
+ * image and do not change quantity, pricing, artwork, or order metadata.
+ */
+function normalizePersistedCartItems(value: unknown): CartItem[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((raw) => {
+    if (!raw || typeof raw !== 'object') return raw as CartItem;
+    const item = raw as CartItem;
+    const normalizedName = String(item.name || '').trim().toLowerCase();
+    const isTacticalCanteen = item.productId === 80 || normalizedName === 'tactical military grade canteen';
+    if (isTacticalCanteen && item.imageUrl !== '/assets/products/bottle_tactical.png') {
+      return { ...item, imageUrl: '/assets/products/bottle_tactical.png' };
+    }
+    return item;
+  });
+}
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      return saved ? normalizePersistedCartItems(JSON.parse(saved)) : [];
     } catch {
       return [];
     }

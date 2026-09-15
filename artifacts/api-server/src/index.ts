@@ -40,13 +40,16 @@ type EnvVarSpec = {
 };
 
 // Core vars that every production deployment requires regardless of backend.
+// NOTE: the database connection string is checked separately below via
+// DB_FAILOVER_CHAIN_VARS, since this project supports a multi-database
+// failover chain (DATABASE_URL_MAIN, DATABASE_FAILOVER, etc.) and does not
+// require the plain "DATABASE_URL" var specifically — see lib/db/src/index.ts.
 const CORE_ENV_VAR_MATRIX: EnvVarSpec[] = [
-  { name: "DATABASE_URL",     required: true,  description: "PostgreSQL connection string" },
   { name: "ADMIN_JWT_SECRET", required: true,  description: "Admin JWT signing secret (32+ chars, must differ from JWT_SECRET)" },
   // JWT_SECRET is required: customerAuth.ts hard-throws at module load in production
   { name: "JWT_SECRET",       required: true,  description: "Customer JWT signing secret (must differ from ADMIN_JWT_SECRET)" },
   { name: "ADMIN_PASSWORD",   required: true,  description: "Initial admin password" },
-  { name: "ALLOWED_ORIGINS",  required: true,  description: "Comma-separated CORS allowlist (e.g. https://trynexshop.com)" },
+  { name: "ALLOWED_ORIGINS",  required: true,  description: "Comma-separated CORS allowlist (e.g. https://trynext.pages.dev)" },
   { name: "PORT",             required: true,  description: "HTTP port for the API server" },
 ];
 
@@ -69,7 +72,7 @@ const STORAGE_ENV_VAR_MATRIX: Record<string, EnvVarSpec[]> = {
   ],
   local: [
     { name: "LOCAL_STORAGE_PATH",   required: false, description: "Local filesystem path for uploads (default: ./uploads)" },
-    { name: "API_BASE_URL",         required: false, description: "Public base URL of this API server, used for local upload URLs (e.g. https://trynexshop.com)" },
+    { name: "API_BASE_URL",         required: false, description: "Public base URL of this API server, used for local upload URLs (e.g. https://trynext.pages.dev)" },
   ],
 };
 
@@ -79,9 +82,22 @@ const OPTIONAL_ENV_VAR_MATRIX: EnvVarSpec[] = [
   { name: "FACEBOOK_APP_ID",  required: false, description: "Facebook App ID (social login)" },
 ];
 
+// Mirrors the failover priority order in lib/db/src/index.ts — any ONE of
+// these being set is sufficient to boot; DATABASE_URL alone is not required.
+const DB_FAILOVER_CHAIN_VARS = ["DATABASE_URL_MAIN", "DATABASE_FAILOVER", "DATABASE_URL_TRYNEXT_DB", "DATABASE_URL"];
+
 if (process.env.NODE_ENV === "production") {
   const missing: string[] = [];
   const present: string[] = [];
+
+  const hasDbConnection = DB_FAILOVER_CHAIN_VARS.some((name) => process.env[name]);
+  if (hasDbConnection) {
+    present.push(...DB_FAILOVER_CHAIN_VARS.filter((name) => process.env[name]));
+  } else {
+    missing.push(
+      `MISSING (required): one of [${DB_FAILOVER_CHAIN_VARS.join(", ")}] — PostgreSQL connection string`,
+    );
+  }
 
   const allSpecs = [
     ...CORE_ENV_VAR_MATRIX,
@@ -113,31 +129,20 @@ if (process.env.NODE_ENV === "production") {
 const server = app.listen(port, "0.0.0.0", async () => {
   logger.info({ port }, "Server listening");
   logActiveStorageBackend(logger);
+  // Wait for the DB failover probe to complete so the correct database
+  // (Neon primary or its failover) is active before running migrations/seed.
+  const { dbReady } = await import("@workspace/db");
+  await dbReady;
   await runMigrations();
   await autoSeedIfEmpty();
   await loadSavedChatId();
   startScheduler();
-  // Auto-save GitHub PAT from env → DB settings so admin push works without
-  // manual config. Only saves when the env var is present and DB entry is empty.
-  const ghPat = process.env["GITHUB_PERSONAL_TOKEN"] || process.env["GITHUB_PERSONAL_ACCESS_TOKEN"] || process.env["GITHUB_TOKEN"];
-  if (ghPat && ghPat.length > 10) {
-    try {
-      const { db, settingsTable } = await import("@workspace/db");
-      const { eq } = await import("drizzle-orm");
-      const existing = await db.select().from(settingsTable)
-        .where(eq(settingsTable.key, "github_token")).limit(1);
-      if (!existing[0]?.value) {
-        const { sql } = await import("drizzle-orm");
-        await db.execute(
-          sql`INSERT INTO settings (key, value) VALUES ('github_token', ${ghPat})
-              ON CONFLICT (key) DO UPDATE SET value = ${ghPat}, updated_at = now()`
-        );
-        logger.info("[startup] GitHub PAT saved to DB settings from env");
-      }
-    } catch (e) {
-      logger.warn({ err: e }, "[startup] Could not auto-save GitHub PAT");
-    }
-  }
+  // NOTE: GitHub PAT is intentionally NOT persisted to the database.
+  // It is read at runtime from environment secrets (GITHUB_PERSONAL_ACCESS_TOKEN
+  // or GITHUB_TOKEN) by the code that needs it. Persisting tokens in the DB
+  // creates a secret-sprawl risk — the DB dump, backups, and any DB admin tool
+  // would expose the PAT. If a PAT is found in the DB settings table from a
+  // prior version, it should be removed via: DELETE FROM settings WHERE key='github_token'
 });
 
 // Graceful shutdown — give in-flight requests up to 10 s to drain before

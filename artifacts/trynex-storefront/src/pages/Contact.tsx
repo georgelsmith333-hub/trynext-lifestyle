@@ -51,21 +51,22 @@ export default function Contact() {
     }
   };
 
-  const phone = settings.phone || "+880 1XXX-XXXXXX";
-  const email = settings.email || "hello@trynex.com.bd";
-  const address = settings.address || "Dhaka, Bangladesh";
+  const phone = settings.phone?.trim() || "";
+  const whatsapp = settings.whatsappNumber?.trim() || phone;
+  const email = settings.email?.trim() || "";
+  const address = settings.address?.trim() || "";
 
   const contactItems = [
-    {
+    ...(phone || whatsapp ? [{
       icon: Phone,
       label: "Phone & WhatsApp",
-      value: phone,
+      value: phone || whatsapp,
       sub: "Available 10AM – 8PM (Sat–Thu)",
       color: "#16a34a",
       bg: "#f0fdf4",
-      href: `https://wa.me/${phone.replace(/\D/g, "")}`,
-    },
-    {
+      href: `https://wa.me/${whatsapp.replace(/\D/g, "")}`,
+    }] : []),
+    ...(email ? [{
       icon: Mail,
       label: "Email",
       value: email,
@@ -73,8 +74,8 @@ export default function Contact() {
       color: "#2563eb",
       bg: "#eff6ff",
       href: `mailto:${email}`,
-    },
-    {
+    }] : []),
+    ...(address ? [{
       icon: MapPin,
       label: "Location",
       value: address,
@@ -82,7 +83,7 @@ export default function Contact() {
       color: "#E85D04",
       bg: "#fff4ee",
       href: undefined,
-    },
+    }] : []),
     {
       icon: Clock,
       label: "Business Hours",
@@ -98,7 +99,7 @@ export default function Contact() {
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title="Contact Us"
-        description="Get in touch with TryNex Lifestyle — Bangladesh's #1 custom apparel brand. We're here to help with orders, custom designs, and any queries."
+        description="Get in touch with Trynext Lifestyle — Bangladesh's #1 custom apparel brand. We're here to help with orders, custom designs, and any queries."
         canonical="/contact"
       />
       <Navbar />
@@ -127,7 +128,7 @@ export default function Contact() {
 
         {/* Contact Info Cards */}
         <section className="py-12 px-4">
-          <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 overflow-hidden">
             {contactItems.map((item, i) => (
               <motion.div key={item.label} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
                 {item.href ? (
@@ -158,11 +159,11 @@ export default function Contact() {
 
         {/* Form + Social */}
         <section className="py-8 pb-20 px-4">
-          <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 w-full">
 
             {/* Contact Form */}
-            <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/60 p-8">
+            <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="w-full">
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/60 p-6 sm:p-8 w-full">
                 {submitted ? (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -219,7 +220,7 @@ export default function Contact() {
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm font-medium focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all resize-none" />
                       </div>
                       <button type="submit" disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-base text-white transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
+                        className="w-full flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold text-base text-white transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 min-h-[48px]"
                         style={{ background: "linear-gradient(135deg,#E85D04,#FB8500)", boxShadow: "0 6px 20px rgba(232,93,4,0.35)" }}>
                         {loading ? (
                           <><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Sending...</>
@@ -237,7 +238,7 @@ export default function Contact() {
             <motion.div initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }} className="space-y-5">
 
               {/* WhatsApp */}
-              <a href={`https://wa.me/${phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
+              {whatsapp && <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
                 className="flex items-center gap-4 p-5 rounded-2xl border transition-all hover:shadow-lg hover:-translate-y-0.5 block"
                 style={{ background: "linear-gradient(135deg,#f0fdf4,#dcfce7)", borderColor: "#bbf7d0" }}>
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#16a34a" }}>
@@ -247,15 +248,15 @@ export default function Contact() {
                   <div className="font-black text-gray-900 text-sm">Chat on WhatsApp</div>
                   <div className="text-xs text-gray-600 mt-0.5">Usually replies within minutes</div>
                 </div>
-              </a>
+              </a>}
 
               {/* Social Links */}
               <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
                 <div className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-4">Follow Us</div>
                 <div className="space-y-3">
                   {[
-                    { icon: Facebook, label: "Facebook Page", sub: "Daily updates & offers", color: "#1877f2", bg: "#eff6ff", href: settings.facebookUrl || "https://facebook.com" },
-                    { icon: Instagram, label: "Instagram", sub: "Behind-the-scenes & designs", color: "#e1306c", bg: "#fff0f6", href: settings.instagramUrl || "https://instagram.com" },
+                    ...(settings.facebookUrl?.trim() ? [{ icon: Facebook, label: "Facebook Page", sub: "Daily updates & offers", color: "#1877f2", bg: "#eff6ff", href: settings.facebookUrl.trim() }] : []),
+                    ...(settings.instagramUrl?.trim() ? [{ icon: Instagram, label: "Instagram", sub: "Behind-the-scenes & designs", color: "#e1306c", bg: "#fff0f6", href: settings.instagramUrl.trim() }] : []),
                   ].map((s) => (
                     <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
                       className="flex items-center gap-3 p-3 rounded-xl transition-all hover:scale-[1.01]"
@@ -269,6 +270,9 @@ export default function Contact() {
                       </div>
                     </a>
                   ))}
+                  {!settings.facebookUrl?.trim() && !settings.instagramUrl?.trim() && (
+                    <p className="text-sm text-gray-500">Social links will appear here when configured.</p>
+                  )}
                 </div>
               </div>
 

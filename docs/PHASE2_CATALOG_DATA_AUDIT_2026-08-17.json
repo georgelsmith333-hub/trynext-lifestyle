@@ -1,0 +1,954 @@
+{
+  "report": {
+    "live_total": 20,
+    "live_api_total": null,
+    "live_categories": {
+      "Water Bottles": 5,
+      "Long Sleeves": 5,
+      "T-Shirts": 3,
+      "Custom Orders": 1,
+      "Caps": 2,
+      "Mugs": 2,
+      "Hoodies": 2
+    },
+    "live_slugs_duplicate": {},
+    "live_names_duplicate": {},
+    "shared_image_refs": {},
+    "seed_slug_literal_count": 67,
+    "seed_unique_slug_literal_count": 67,
+    "seed_name_literal_count": 67,
+    "seed_unique_name_literal_count": 67,
+    "seed_duplicate_slug_literals": {}
+  },
+  "live_products": [
+    {
+      "id": 30,
+      "name": "Minimalist Name Bottle",
+      "slug": "minimalist-name-bottle",
+      "description": "Your bottle, your name. Features a sleek, laser-engraved name of your choice on a matte white base.",
+      "price": 950,
+      "discountPrice": 799,
+      "categoryId": 7,
+      "categoryName": "Water Bottles",
+      "imageUrl": "/assets/products/bottle_name.png",
+      "images": [],
+      "sizes": [],
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 99,
+      "featured": false,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 29,
+      "name": "Galaxy Space Water Bottle",
+      "slug": "galaxy-space-water-bottle",
+      "description": "A stellar design for your daily hydration. Features a high-resolution nebula print and a metallic finish.",
+      "price": 950,
+      "discountPrice": 799,
+      "categoryId": 7,
+      "categoryName": "Water Bottles",
+      "imageUrl": "/assets/products/bottle_space.png",
+      "images": [],
+      "sizes": [],
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 28,
+      "name": "Adventure Series Flask",
+      "slug": "adventure-series-flask",
+      "description": "Built for the rugged outdoors. Heavy-duty vacuum insulated flask with a durable powder-coated finish.",
+      "price": 1450,
+      "discountPrice": 1199,
+      "categoryId": 7,
+      "categoryName": "Water Bottles",
+      "imageUrl": "/assets/products/bottle_adventure.png",
+      "images": [],
+      "sizes": [],
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 27,
+      "name": "Pro Fitness Tracker Bottle",
+      "slug": "pro-fitness-tracker-bottle",
+      "description": "Stay hydrated and track your progress. Features time markers to remind you to drink water throughout the day.",
+      "price": 850,
+      "discountPrice": 699,
+      "categoryId": 7,
+      "categoryName": "Water Bottles",
+      "imageUrl": "/assets/products/bottle_tracker.png",
+      "images": [],
+      "sizes": [],
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 26,
+      "name": "Eco-Friendly Bamboo Water Bottle",
+      "slug": "eco-friendly-bamboo-water-bottle",
+      "description": "Sustainable and stylish. Stainless steel bottle with a real bamboo outer layer. Keeps drinks cold for 24 hours.",
+      "price": 1250,
+      "discountPrice": 999,
+      "categoryId": 7,
+      "categoryName": "Water Bottles",
+      "imageUrl": "/assets/products/bottle_eco.png",
+      "images": [],
+      "sizes": [],
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 25,
+      "name": "Minimalist Corporate Long Sleeve",
+      "slug": "minimalist-corporate-long-sleeve",
+      "description": "The perfect choice for a professional yet casual look. Clean lines and a subtle brand logo on the chest.",
+      "price": 899,
+      "discountPrice": 749,
+      "categoryId": 6,
+      "categoryName": "Long Sleeves",
+      "imageUrl": "/assets/products/longsleeve_corporate.png",
+      "images": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 24,
+      "name": "Cyberpunk Future Long Sleeve",
+      "slug": "cyberpunk-future-long-sleeve",
+      "description": "Step into the future with our cyberpunk-inspired design. Neon accents and tech-focused typography.",
+      "price": 999,
+      "discountPrice": 849,
+      "categoryId": 6,
+      "categoryName": "Long Sleeves",
+      "imageUrl": "/assets/products/longsleeve_space.png",
+      "images": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 23,
+      "name": "Artistic Floral Long Sleeve",
+      "slug": "artistic-floral-long-sleeve",
+      "description": "A touch of nature for your wardrobe. Features a hand-painted floral design on a premium cream base.",
+      "price": 950,
+      "discountPrice": 799,
+      "categoryId": 6,
+      "categoryName": "Long Sleeves",
+      "imageUrl": "/assets/products/longsleeve_floral.png",
+      "images": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 22,
+      "name": "Vintage Travel Long Sleeve",
+      "slug": "vintage-travel-long-sleeve",
+      "description": "For the wanderlust at heart. Features a beautiful vintage-style travel illustration of the Himalayas.",
+      "price": 899,
+      "discountPrice": 749,
+      "categoryId": 6,
+      "categoryName": "Long Sleeves",
+      "imageUrl": "/assets/products/longsleeve_retro.png",
+      "images": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 21,
+      "name": "Modern Geometric Long Sleeve",
+      "slug": "modern-geometric-long-sleeve",
+      "description": "A sophisticated geometric pattern for the modern individual. Soft, breathable fabric for all-day comfort.",
+      "price": 899,
+      "discountPrice": 749,
+      "categoryId": 6,
+      "categoryName": "Long Sleeves",
+      "imageUrl": "/assets/products/longsleeve_artistic.png",
+      "images": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [],
+      "variants": []
+    },
+    {
+      "id": 20,
+      "name": "\u0995\u09be\u09b8\u09cd\u099f\u09ae \u099f\u09bf-\u09b6\u09be\u09b0\u09cd\u099f \u09e8 \u099f\u09bf ( \u09aa\u09cd\u09b0\u09bf\u09ae\u09bf\u09af\u09bc\u09be\u09ae \u0995\u099f\u09a8) ",
+      "slug": "T-Shirt-Combo-2-in-1-Couple-Set",
+      "description": "\ud83d\udda4 Minimal Couple T-Shirt \ud83d\udda4\n\nSimple yet classy matching t-shirt set for couples \u2728\nBlack & White combo with cute minimal heart design \u2014 perfect for everyday wear, couple photos, outings & gifting \ud83d\udc91\n\n\u2714 Soft & comfortable fabric\n\u2714 Trendy oversized fit\n\u2714 Premium quality print\n\u2714 Unisex design\n\n\nStyle your love in the most minimal way \ud83e\udd0d\ud83d\udda4",
+      "price": 1400,
+      "discountPrice": 1200,
+      "categoryId": 1,
+      "categoryName": "T-Shirts",
+      "imageUrl": "https://i.imgur.com/Xc8yXgT.jpeg",
+      "images": [],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Black",
+        "white"
+      ],
+      "stock": 19,
+      "featured": true,
+      "rating": 0,
+      "reviewCount": 0,
+      "customizable": true,
+      "tags": [
+        "special-offer"
+      ],
+      "variants": [
+        {
+          "id": "regular",
+          "name": "Regular Fit",
+          "price": 450,
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+          ],
+          "stock": 19,
+          "active": true,
+          "colors": [
+            "Black",
+            "white"
+          ],
+          "customizationFee": 99
+        },
+        {
+          "id": "drop-shoulder",
+          "name": "Drop-Shoulder 220 GSM",
+          "price": 450,
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+          ],
+          "stock": 19,
+          "active": true,
+          "colors": [
+            "Black",
+            "White",
+            "Off White"
+          ],
+          "inStockColors": [
+            "Black",
+            "White",
+            "Off White"
+          ],
+          "customizationFee": 99
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Couple T-Shirt Set",
+      "slug": "couple-tshirt-set",
+      "description": "Matching couple t-shirt set with custom designs. Perfect for anniversaries and special occasions.",
+      "price": 2690,
+      "discountPrice": 1390,
+      "categoryId": 5,
+      "categoryName": "Custom Orders",
+      "imageUrl": "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&q=80"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "White",
+        "Black"
+      ],
+      "stock": 26,
+      "featured": true,
+      "rating": 5,
+      "reviewCount": 3,
+      "customizable": true,
+      "tags": [
+        "couple",
+        "gift",
+        "special"
+      ],
+      "variants": [
+        {
+          "id": "regular",
+          "name": "Regular Fit",
+          "price": 450,
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 27,
+          "active": true,
+          "colors": [
+            "White",
+            "Black"
+          ],
+          "customizationFee": 99
+        },
+        {
+          "id": "drop-shoulder",
+          "name": "Drop-Shoulder 220 GSM",
+          "price": 450,
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 27,
+          "active": true,
+          "colors": [
+            "White",
+            "Black"
+          ],
+          "inStockColors": [
+            "Black",
+            "White",
+            "Off White"
+          ],
+          "customizationFee": 99
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Classic Dad Hat",
+      "slug": "classic-dad-hat",
+      "description": "Comfortable dad hat with custom text embroidery. Soft and lightweight with adjustable strap.",
+      "price": 649,
+      "categoryId": 4,
+      "categoryName": "Caps",
+      "imageUrl": "https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1533827432537-70133748f5c8?w=600&q=80"
+      ],
+      "sizes": [],
+      "colors": [
+        "Beige",
+        "Black",
+        "White",
+        "Pink"
+      ],
+      "stock": 40,
+      "featured": true,
+      "rating": 4.5,
+      "reviewCount": 42,
+      "customizable": true,
+      "tags": [
+        "cap",
+        "dad-hat",
+        "casual"
+      ],
+      "variants": []
+    },
+    {
+      "id": 7,
+      "name": "Custom Snapback Cap",
+      "slug": "custom-snapback-cap",
+      "description": "Trendy snapback cap with custom embroidery. Adjustable strap fits all head sizes. Premium material.",
+      "price": 799,
+      "discountPrice": 699,
+      "categoryId": 4,
+      "categoryName": "Caps",
+      "imageUrl": "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80"
+      ],
+      "sizes": [],
+      "colors": [
+        "Black",
+        "Navy",
+        "Red",
+        "White"
+      ],
+      "stock": 33,
+      "featured": true,
+      "rating": 4.7,
+      "reviewCount": 67,
+      "customizable": true,
+      "tags": [
+        "cap",
+        "snapback",
+        "custom"
+      ],
+      "variants": []
+    },
+    {
+      "id": 6,
+      "name": "Magic Color-Changing Mug",
+      "slug": "magic-color-changing-mug",
+      "description": "Reveals your custom design when filled with hot liquid! Perfect surprise gift for loved ones.",
+      "price": 599,
+      "categoryId": 3,
+      "categoryName": "Mugs",
+      "imageUrl": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?w=600&q=80"
+      ],
+      "sizes": [],
+      "colors": [
+        "Black"
+      ],
+      "stock": 58,
+      "featured": false,
+      "rating": 4.8,
+      "reviewCount": 89,
+      "customizable": true,
+      "tags": [
+        "gift",
+        "magic",
+        "surprise"
+      ],
+      "variants": [
+        {
+          "id": "general-mug",
+          "name": "General Mug",
+          "price": 449,
+          "stock": 58,
+          "active": true,
+          "oneSize": true,
+          "customizationFee": 99
+        },
+        {
+          "id": "love-handle",
+          "name": "Love Shape Handle",
+          "price": 550,
+          "stock": 58,
+          "active": true,
+          "oneSize": true,
+          "customizationFee": 70
+        },
+        {
+          "id": "blue-rim",
+          "name": "Blue Rim",
+          "price": 550,
+          "stock": 58,
+          "active": true,
+          "oneSize": true,
+          "customizationFee": 70
+        },
+        {
+          "id": "yellow-rim",
+          "name": "Yellow Rim",
+          "price": 550,
+          "stock": 58,
+          "active": true,
+          "oneSize": true,
+          "customizationFee": 70
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Personalized Photo Mug",
+      "slug": "personalized-photo-mug",
+      "description": "High-quality ceramic mug with your custom photo or text. 330ml capacity, microwave and dishwasher safe.",
+      "price": 449,
+      "discountPrice": 399,
+      "categoryId": 3,
+      "categoryName": "Mugs",
+      "imageUrl": "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&q=80"
+      ],
+      "sizes": [],
+      "colors": [
+        "White",
+        "Black"
+      ],
+      "stock": 95,
+      "featured": true,
+      "rating": 4.9,
+      "reviewCount": 203,
+      "customizable": true,
+      "tags": [
+        "gift",
+        "mug",
+        "personalized"
+      ],
+      "variants": [
+        {
+          "id": "general-mug",
+          "name": "General Mug",
+          "price": 449,
+          "stock": 95,
+          "active": true,
+          "oneSize": true,
+          "customizationFee": 99
+        },
+        {
+          "id": "love-handle",
+          "name": "Love Shape Handle",
+          "price": 550,
+          "stock": 95,
+          "active": true,
+          "oneSize": true,
+          "customizationFee": 70
+        },
+        {
+          "id": "blue-rim",
+          "name": "Blue Rim",
+          "price": 550,
+          "stock": 95,
+          "active": true,
+          "oneSize": true,
+          "customizationFee": 70
+        },
+        {
+          "id": "yellow-rim",
+          "name": "Yellow Rim",
+          "price": 550,
+          "stock": 95,
+          "active": true,
+          "oneSize": true,
+          "customizationFee": 70
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Zip-Up Hoodie",
+      "slug": "zip-up-hoodie",
+      "description": "Stylish zip-up hoodie with custom embroidery option. Features kangaroo pocket and adjustable hood.",
+      "price": 1699,
+      "categoryId": 2,
+      "categoryName": "Hoodies",
+      "imageUrl": "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&q=80"
+      ],
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Black",
+        "White"
+      ],
+      "stock": 18,
+      "featured": false,
+      "rating": 4.7,
+      "reviewCount": 34,
+      "customizable": false,
+      "tags": [
+        "hoodie",
+        "zipper"
+      ],
+      "variants": []
+    },
+    {
+      "id": 3,
+      "name": "Premium Pullover Hoodie",
+      "slug": "premium-pullover-hoodie",
+      "description": "Warm and cozy pullover hoodie with custom print. Made from high-quality fleece material. Perfect for winter.",
+      "price": 1499,
+      "discountPrice": 1299,
+      "categoryId": 2,
+      "categoryName": "Hoodies",
+      "imageUrl": "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=80"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "Black",
+        "Grey",
+        "Navy",
+        "Maroon"
+      ],
+      "stock": 24,
+      "featured": true,
+      "rating": 4.9,
+      "reviewCount": 56,
+      "customizable": true,
+      "tags": [
+        "hoodie",
+        "premium",
+        "winter"
+      ],
+      "variants": []
+    },
+    {
+      "id": 2,
+      "name": "Graphic Print Tee",
+      "slug": "graphic-print-tee",
+      "description": "Bold graphic print t-shirt with vibrant colors. Premium quality fabric with full-color printing.",
+      "price": 750,
+      "discountPrice": 649,
+      "categoryId": 1,
+      "categoryName": "T-Shirts",
+      "imageUrl": "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1503341338985-95e740a8ee8a?w=600&q=80"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "colors": [
+        "Black",
+        "White",
+        "Grey"
+      ],
+      "stock": 33,
+      "featured": true,
+      "rating": 4.6,
+      "reviewCount": 87,
+      "customizable": true,
+      "tags": [
+        "graphic",
+        "trendy"
+      ],
+      "variants": [
+        {
+          "id": "regular",
+          "name": "Regular Fit",
+          "price": 450,
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 33,
+          "active": true,
+          "colors": [
+            "Black",
+            "White",
+            "Grey"
+          ],
+          "customizationFee": 99
+        },
+        {
+          "id": "drop-shoulder",
+          "name": "Drop-Shoulder 220 GSM",
+          "price": 450,
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL"
+          ],
+          "stock": 33,
+          "active": true,
+          "colors": [
+            "Black",
+            "White",
+            "Off White"
+          ],
+          "inStockColors": [
+            "Black",
+            "White",
+            "Off White"
+          ],
+          "customizationFee": 99
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Classic White Tee",
+      "slug": "classic-white-tee",
+      "description": "Premium 100% cotton white t-shirt with custom print. Perfect for everyday wear. Comfortable fit with durable print quality.",
+      "price": 599,
+      "discountPrice": 499,
+      "categoryId": 1,
+      "categoryName": "T-Shirts",
+      "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=700&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Red"
+      ],
+      "stock": 40,
+      "featured": true,
+      "rating": 4.8,
+      "reviewCount": 124,
+      "customizable": true,
+      "tags": [
+        "bestseller",
+        "cotton",
+        "custom"
+      ],
+      "variants": [
+        {
+          "id": "regular",
+          "name": "Regular Fit",
+          "price": 450,
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+          ],
+          "stock": 40,
+          "active": true,
+          "colors": [
+            "White",
+            "Black",
+            "Navy",
+            "Red"
+          ],
+          "customizationFee": 99
+        },
+        {
+          "id": "drop-shoulder",
+          "name": "Drop-Shoulder 220 GSM",
+          "price": 450,
+          "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+          ],
+          "stock": 40,
+          "active": true,
+          "colors": [
+            "Black",
+            "White",
+            "Off White"
+          ],
+          "inStockColors": [
+            "Black",
+            "White",
+            "Off White"
+          ],
+          "customizationFee": 99
+        }
+      ]
+    }
+  ],
+  "live_categories_payload": {
+    "categories": [
+      {
+        "id": 4,
+        "name": "Caps",
+        "slug": "caps",
+        "description": "Stylish caps with custom embroidery",
+        "imageUrl": "/images/cat-cap.png",
+        "productCount": 2
+      },
+      {
+        "id": 5,
+        "name": "Custom Orders",
+        "slug": "custom-orders",
+        "description": "Special custom orders tailored to your needs",
+        "imageUrl": "/images/cat-tshirt.png",
+        "productCount": 1
+      },
+      {
+        "id": 2,
+        "name": "Hoodies",
+        "slug": "hoodies",
+        "description": "Premium quality hoodies with custom designs",
+        "imageUrl": "/images/cat-hoodie.png",
+        "productCount": 2
+      },
+      {
+        "id": 6,
+        "name": "Long Sleeves",
+        "slug": "long-sleeves",
+        "description": "Premium long sleeve shirts with custom designs",
+        "imageUrl": "/images/cat-longsleeve.png",
+        "productCount": 5
+      },
+      {
+        "id": 3,
+        "name": "Mugs",
+        "slug": "mugs",
+        "description": "Personalized mugs perfect for gifts",
+        "imageUrl": "/images/cat-mug.png",
+        "productCount": 2
+      },
+      {
+        "id": 1,
+        "name": "T-Shirts",
+        "slug": "t-shirts",
+        "description": "Custom printed t-shirts for all occasions",
+        "imageUrl": "/images/cat-tshirt.png",
+        "productCount": 3
+      },
+      {
+        "id": 7,
+        "name": "Water Bottles",
+        "slug": "water-bottles",
+        "description": "Durable aluminum water bottles with custom prints",
+        "imageUrl": "/images/cat-bottle.png",
+        "productCount": 5
+      }
+    ]
+  }
+}

@@ -1,127 +1,43 @@
 /* ═══════════════════════════════════════════════════════
-   CART VIEWER 3D — compact interactive 3D garment preview
-   Loads pre-composed design texture URLs (stored at cart time)
-   so it never needs raw Layer objects — tiny bundle cost.
-   Uses the shared garment3d helpers so rendering matches the studio exactly.
+   CART VIEWER — 2D photo mockup with design overlay
+   Pure CSS/img compositing. No Three.js/WebGL required.
+   Shows garment photo tinted to the selected colour, with
+   the design texture composited on top.
 ════════════════════════════════════════════════════════ */
-import { useRef, useState, useMemo, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { ContactShadows, Environment } from "@react-three/drei";
-import * as THREE from "three";
-import {
-  PhotoMockupMesh,
-  MugBody,
-  WaterBottleBody,
-  useUrlTexture,
-  ResettableOrbitControls,
-  ViewerLoadingOverlay,
-  NoWebGLFallback,
-  StudioLightRig,
-  hasWebGL2,
-  VIEWER_DEFAULTS,
-  VIEWER_FRAMING,
-  VIEWER_FRAMING_BACK,
-} from "./garment3d";
-
-const tshirtSrc      = "/mockups/white-tshirt-front-cutout.png";
-const longsleeveSrc  = "/mockups/white-longsleeve-front-cutout.png";
-const hoodieSrc      = "/mockups/white-hoodie-front-cutout.png";
-const capSrc         = "/mockups/white-cap-front-cutout.png";
-const mugSrc         = "/mockups/white-mug-front-cutout.png";
-const waterBottleSrc = "/mockups/white-waterbottle-front-cutout.png";
-
-/** Front photo used by the 3D photo-billboard for each garment category. */
-const GARMENT_FRONT_PHOTO: Record<GarmentCategory, string> = {
-  tshirt:      "/mockups/white-tshirt-front-cutout.png",
-  longsleeve:  "/mockups/white-longsleeve-front-cutout.png",
-  hoodie:      "/mockups/white-hoodie-front-cutout.png",
-  cap:         "/mockups/white-cap-front-cutout.png",
-  mug:         "/mockups/white-mug-front-cutout.png",
-  waterbottle: "/mockups/white-waterbottle-front-cutout.png",
-};
-/** Back photo for garments that have a printable back face. */
-const GARMENT_BACK_PHOTO: Partial<Record<GarmentCategory, string>> = {
-  tshirt:     "/mockups/white-tshirt-back-cutout.png",
-  longsleeve: "/mockups/white-longsleeve-back-cutout.png",
-  hoodie:     "/mockups/white-hoodie-back-cutout.png",
-};
+ import { useState, useMemo, useId } from "react";
+import { PRODUCTS, resolveMockup } from "../pages/design-studio/mockups";
 
 type GarmentCategory = "tshirt" | "longsleeve" | "hoodie" | "mug" | "cap" | "waterbottle";
 
-/** Static garment cutout PNG used by the WebGL-less fallback,
- *  layered under the user's design for a faithful 2D mockup. */
-const FALLBACK_GARMENT_BY_CATEGORY: Record<GarmentCategory, string> = {
-  tshirt:      tshirtSrc,
-  longsleeve:  longsleeveSrc,
-  hoodie:      hoodieSrc,
-  cap:         capSrc,
-  mug:         mugSrc,
-  waterbottle: waterBottleSrc,
-};
-
 /**
- * Unified camera controller for garments (non-mug):
- *   Phase 1 (ticks 0–80): brief auto-rotate intro so user sees the 3D shape
- *   Phase 2 (tick > 80):  smoothly lerp to the selected face and hold
- *
- * For mug: always auto-rotate (user never switches face).
+ * Resolve the correct garment photo paths.
+ * Near-black → dedicated dark cutout. Everything else → white cutout + tint.
  */
-function CameraController({
-  activeFace,
-  category,
-}: {
-  activeFace: "front" | "back";
-  category: GarmentCategory;
-}) {
-  const tickRef = useRef(0);
-  const INTRO_TICKS = 80;
-  const f = VIEWER_FRAMING[category];
-  const b = VIEWER_FRAMING_BACK[category] || {};
-  const noBackFace = category === "mug" || category === "cap" || category === "waterbottle";
-
-  useFrame(({ camera }) => {
-    tickRef.current++;
-    const isBack = activeFace === "back" && !noBackFace;
-    const radius = isBack && b.radius !== undefined ? b.radius : f.radius;
-    const camY   = isBack && b.cameraY !== undefined ? b.cameraY : f.cameraY;
-
-    if (noBackFace) {
-      // Mug: keep auto-rotating indefinitely until user grabs OrbitControls
-      const angle = -tickRef.current * 0.008;
-      camera.position.x = Math.sin(angle) * radius;
-      camera.position.z = Math.cos(angle) * radius;
-      camera.position.y = camY;
-      camera.lookAt(0, 0, 0);
-      return;
-    }
-
-    if (tickRef.current <= INTRO_TICKS) {
-      // Garment intro: slow spin to show the 3D shape
-      const angle = -tickRef.current * 0.010;
-      camera.position.x = Math.sin(angle) * radius;
-      camera.position.z = Math.cos(angle) * radius;
-      camera.position.y = camY;
-      camera.lookAt(0, 0, 0);
-    } else {
-      // Garment face lock: lerp toward selected face
-      const targetY = isBack ? Math.PI : 0;
-      const cur  = Math.atan2(camera.position.x, camera.position.z);
-      const next = cur + (targetY - cur) * 0.08;
-      camera.position.x = Math.sin(next) * radius;
-      camera.position.z = Math.cos(next) * radius;
-      camera.position.y = camY;
-      camera.lookAt(0, 0, 0);
-    }
-  });
-  return null;
+function resolvePhotos(
+  category: GarmentCategory,
+  garmentColor: string,
+): {
+  front: string;
+  back?: string;
+  frontRequiresTint: boolean;
+  backRequiresTint: boolean;
+} {
+  const product = PRODUCTS.find((candidate) => candidate.category === category);
+  if (!product) throw new Error(`No design product configured for category "${category}"`);
+  const front = resolveMockup(product, garmentColor, "front");
+  const back = resolveMockup(product, garmentColor, "back");
+  return {
+    front: front.photoKind === "opaque-photo" ? front.photoSrc : front.cutoutSrc,
+    back: back.photoKind === "opaque-photo" ? back.photoSrc : back.cutoutSrc,
+    frontRequiresTint: front.photoKind === "transparent-cutout" && front.requiresTint,
+    backRequiresTint: back.photoKind === "transparent-cutout" && back.requiresTint,
+  };
 }
 
-/* ── Public component ──────────────────────────────── */
 export interface CartViewer3DProps {
   garmentColor: string;
-  /** product category — controls which 3D shape to render */
   category: GarmentCategory;
-  /** Pre-composed design texture URL (transparent bg, design at correct UV position) */
+  /** Pre-composed design texture URL (transparent bg, design at correct position) */
   frontTexUrl?: string;
   /** Back-face design texture URL */
   backTexUrl?: string;
@@ -133,52 +49,58 @@ export default function CartViewer3D({
   frontTexUrl,
   backTexUrl,
 }: CartViewer3DProps) {
-  const isMug         = category === "mug";
-  const isWaterBottle = category === "waterbottle";
-  // Garments with front and back faces — toggle visible for all, even without back design
-  const hasFrontBack = category === "tshirt" || category === "longsleeve" || category === "hoodie";
+  // All reviewed products have face-specific photos. Let customers inspect
+  // both sides after adding a studio design, not only apparel.
+  const hasFrontBack = true;
   const [face, setFace] = useState<"front" | "back">("front");
 
-  const frontTex      = useUrlTexture(frontTexUrl);
-  const backTex       = useUrlTexture(backTexUrl);
-  // Mug / water bottle: design wrap texture (transparent bg)
-  const mugTex        = useUrlTexture(isMug ? frontTexUrl : undefined);
-  const bottleTex     = useUrlTexture(isWaterBottle ? frontTexUrl : undefined);
+  const { front: frontSrc, back: backSrc, frontRequiresTint, backRequiresTint } = useMemo(
+    () => resolvePhotos(category, garmentColor),
+    [category, garmentColor],
+  );
 
-  // WebGL2 capability check — gracefully degrade to 2D mockup if unsupported
-  const supports3D = useMemo(() => hasWebGL2(), []);
-  if (!supports3D) {
-    return (
-      <div style={{ position: "relative", width: "100%", height: "100%" }}>
-        <NoWebGLFallback
-          garmentSrc={FALLBACK_GARMENT_BY_CATEGORY[category]}
-          designSrc={frontTexUrl}
-          garmentColor={garmentColor}
-        />
-      </div>
-    );
-  }
+  const garmentSrc  = face === "front" ? frontSrc : (backSrc ?? frontSrc);
+  // Do not copy the front artwork onto a product's back photo. A back face
+  // without a dedicated texture is an intentionally blank product face.
+  const designSrc   = face === "front" ? frontTexUrl : backTexUrl;
+  const needsTint = face === "front" ? frontRequiresTint : backRequiresTint;
+  const stableId = useId().replace(/:/g, "");
+  const tintFilterId = `cart-garment-tint-${stableId}`;
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      {/* Front/Back toggle — shown for all garments with both faces */}
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+         // Match the normalized opaque photo canvas so no square edge appears.
+         background: "#faf8f5",
+        borderRadius: 12,
+        overflow: "hidden",
+      }}
+    >
+      {/* Front / Back toggle for apparel */}
       {hasFrontBack && (
         <div
           style={{
             position: "absolute",
             top: 8,
             right: 8,
-            zIndex: 2,
+            zIndex: 10,
             display: "flex",
-            gap: 4,
-            background: "rgba(255,255,255,0.9)",
+            gap: 3,
+            background: "rgba(255,255,255,0.92)",
             padding: 3,
             borderRadius: 999,
             fontSize: 11,
             fontWeight: 700,
+            boxShadow: "0 1px 4px rgba(0,0,0,0.10)",
           }}
         >
-          {(["front", "back"] as const).map((f) => (
+          {(["front", "back"] as const).map(f => (
             <button
               key={f}
               onClick={() => setFace(f)}
@@ -189,6 +111,7 @@ export default function CartViewer3D({
                 cursor: "pointer",
                 background: face === f ? "#E85D04" : "transparent",
                 color: face === f ? "#fff" : "#475569",
+                transition: "background 0.15s, color 0.15s",
               }}
             >
               {f === "front" ? "Front" : "Back"}
@@ -197,64 +120,79 @@ export default function CartViewer3D({
         </div>
       )}
 
-      <Canvas
-        shadows
-        dpr={VIEWER_DEFAULTS.dpr}
-        camera={{ position: VIEWER_DEFAULTS.cameraPosition, fov: VIEWER_DEFAULTS.fov }}
-        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: false }}
-        style={{ width: "100%", height: "100%", background: "transparent" }}
+      {/* Mockup composite — garment photo + colour tint + design overlay */}
+      <div
+        style={{
+          position: "relative",
+          width: "88%",
+          aspectRatio: "1 / 1",
+          isolation: "isolate",
+        }}
       >
-        <Suspense fallback={null}>
-          <StudioLightRig rim />
-
-          <Environment preset="city" />
-
-          {/* Unified camera: auto-rotate intro → face lock (or continuous for mug) */}
-          <CameraController activeFace={face} category={category} />
-
-          {category === "mug" && (
-            <MugBody wrapTex={mugTex} garmentColor={garmentColor} />
-          )}
-          {category === "waterbottle" && (
-            <WaterBottleBody wrapTex={bottleTex} garmentColor={garmentColor} />
-          )}
-          {/* Garments — photo billboard (same approach as Design Studio). */}
-          {(category === "tshirt" || category === "longsleeve" ||
-            category === "hoodie" || category === "cap") && (
-            <PhotoMockupMesh
-              frontPhotoSrc={GARMENT_FRONT_PHOTO[category]}
-              backPhotoSrc={GARMENT_BACK_PHOTO[category]}
-              frontTex={frontTex}
-              backTex={backTex}
-              garmentColor={garmentColor}
-              activeFace={face}
+        {/* Garment photo. Exact opaque photos render directly; transparent
+            fallback cutouts use an alpha-clipped SVG tint, never a CSS
+            rectangle over the whole square. */}
+        {garmentSrc && needsTint ? (
+          <svg
+            key={`${garmentSrc}-${face}-tinted`}
+            viewBox="0 0 1024 1024"
+            width="100%"
+            height="100%"
+            style={{ position: "absolute", inset: 0, overflow: "visible", pointerEvents: "none" }}
+            aria-hidden="true"
+          >
+            <defs>
+              <filter id={tintFilterId} x="0%" y="0%" width="100%" height="100%" colorInterpolationFilters="sRGB">
+                <feFlood floodColor={garmentColor} result="flood" />
+                <feBlend in="flood" in2="SourceGraphic" mode="multiply" result="blended" />
+                <feComposite in="blended" in2="SourceGraphic" operator="in" />
+              </filter>
+            </defs>
+            <image
+              href={garmentSrc}
+              x="0"
+              y="0"
+              width="1024"
+              height="1024"
+              preserveAspectRatio="xMidYMid meet"
+              filter={`url(#${tintFilterId})`}
             />
-          )}
-
-          <ContactShadows
-            position={[0, VIEWER_FRAMING[category].shadowY, 0]}
-            opacity={VIEWER_DEFAULTS.shadowOpacity}
-            blur={VIEWER_DEFAULTS.shadowBlur}
-            scale={VIEWER_DEFAULTS.shadowScale}
-            far={VIEWER_DEFAULTS.shadowFar}
+          </svg>
+        ) : garmentSrc ? (
+          <img
+            key={`${garmentSrc}-${face}`}
+            src={garmentSrc}
+            alt="Product"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
           />
+        ) : null}
 
-          <ResettableOrbitControls
-            enablePan={false}
-            enableZoom={true}
-            enableDamping
-            dampingFactor={0.08}
-            rotateSpeed={0.7}
-            zoomSpeed={0.8}
-            minDistance={VIEWER_FRAMING[category].minDistance}
-            maxDistance={VIEWER_FRAMING[category].maxDistance}
-            minPolarAngle={Math.PI * 0.25}
-            maxPolarAngle={Math.PI * 0.65}
-            touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN }}
+        {/* Design overlay */}
+        {designSrc && (
+          <img
+            key={`${designSrc}-${face}`}
+            src={designSrc}
+            alt="Design"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
           />
-        </Suspense>
-      </Canvas>
-      <ViewerLoadingOverlay />
+        )}
+      </div>
     </div>
   );
 }

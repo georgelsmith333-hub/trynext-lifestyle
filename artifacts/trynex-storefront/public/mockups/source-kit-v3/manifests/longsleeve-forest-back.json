@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "longsleeve:forest:back",
+  "category": "longsleeve",
+  "colorSlug": "forest",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/longsleeve-forest-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/longsleeve/forest/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/longsleeve-forest-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    72,
+    113,
+    952,
+    912
+  ],
+  "sha256": "11567b7f07b8a456535af7419fd6be151379147f676838719fd5ab9c0eabac86",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

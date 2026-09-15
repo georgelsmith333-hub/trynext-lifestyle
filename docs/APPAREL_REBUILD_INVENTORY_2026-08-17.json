@@ -1,0 +1,3835 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-18",
+  "output": "/home/ubuntu/trynext-lifestyle/docs/FULL_MOCKUP_MATRIX_INVENTORY_2026-08-17.json",
+  "activeRoot": "/mockups/smart-v4",
+  "provenanceRoot": "/mockups/apparel-v5",
+  "families": [
+    "tshirt",
+    "longsleeve",
+    "hoodie"
+  ],
+  "summary": {
+    "longsleeve": {
+      "required": 50,
+      "activeSmartV4": 50,
+      "missingActiveSmartV4": [],
+      "invalidActiveSmartV4": [],
+      "apparelV5Provenance": 50,
+      "smartV4Provenance": 0,
+      "missingProvenance": [],
+      "sourceKitV3Historical": 20,
+      "canonicalHistorical": 0,
+      "normalizedHistorical": 0,
+      "legacyHistorical": 0
+    },
+    "tshirt": {
+      "required": 40,
+      "activeSmartV4": 40,
+      "missingActiveSmartV4": [],
+      "invalidActiveSmartV4": [],
+      "apparelV5Provenance": 40,
+      "smartV4Provenance": 0,
+      "missingProvenance": [],
+      "sourceKitV3Historical": 16,
+      "canonicalHistorical": 0,
+      "normalizedHistorical": 0,
+      "legacyHistorical": 0
+    },
+    "hoodie": {
+      "required": 50,
+      "activeSmartV4": 50,
+      "missingActiveSmartV4": [],
+      "invalidActiveSmartV4": [],
+      "apparelV5Provenance": 50,
+      "smartV4Provenance": 0,
+      "missingProvenance": [],
+      "sourceKitV3Historical": 20,
+      "canonicalHistorical": 0,
+      "normalizedHistorical": 0,
+      "legacyHistorical": 0
+    }
+  },
+  "rows": [
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "front",
+      "sourceKey": "tshirt:white:front",
+      "activeExpected": "/mockups/smart-v4/tshirt/white/front.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/white/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "back",
+      "sourceKey": "tshirt:white:back",
+      "activeExpected": "/mockups/smart-v4/tshirt/white/back.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/white/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "left-sleeve",
+      "sourceKey": "tshirt:white:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/white/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/white/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "right-sleeve",
+      "sourceKey": "tshirt:white:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/white/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/white/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "neck-label",
+      "sourceKey": "tshirt:white:neck-label",
+      "activeExpected": "/mockups/smart-v4/tshirt/white/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/white/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "front",
+      "sourceKey": "tshirt:black:front",
+      "activeExpected": "/mockups/smart-v4/tshirt/black/front.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/black/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "back",
+      "sourceKey": "tshirt:black:back",
+      "activeExpected": "/mockups/smart-v4/tshirt/black/back.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/black/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "left-sleeve",
+      "sourceKey": "tshirt:black:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/black/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/black/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "right-sleeve",
+      "sourceKey": "tshirt:black:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/black/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/black/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "neck-label",
+      "sourceKey": "tshirt:black:neck-label",
+      "activeExpected": "/mockups/smart-v4/tshirt/black/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/black/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "front",
+      "sourceKey": "tshirt:navy:front",
+      "activeExpected": "/mockups/smart-v4/tshirt/navy/front.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/navy/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "back",
+      "sourceKey": "tshirt:navy:back",
+      "activeExpected": "/mockups/smart-v4/tshirt/navy/back.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/navy/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "left-sleeve",
+      "sourceKey": "tshirt:navy:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/navy/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/navy/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "right-sleeve",
+      "sourceKey": "tshirt:navy:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/navy/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/navy/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "neck-label",
+      "sourceKey": "tshirt:navy:neck-label",
+      "activeExpected": "/mockups/smart-v4/tshirt/navy/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/navy/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "front",
+      "sourceKey": "tshirt:maroon:front",
+      "activeExpected": "/mockups/smart-v4/tshirt/maroon/front.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/maroon/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "back",
+      "sourceKey": "tshirt:maroon:back",
+      "activeExpected": "/mockups/smart-v4/tshirt/maroon/back.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/maroon/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "left-sleeve",
+      "sourceKey": "tshirt:maroon:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/maroon/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/maroon/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "right-sleeve",
+      "sourceKey": "tshirt:maroon:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/maroon/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/maroon/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "neck-label",
+      "sourceKey": "tshirt:maroon:neck-label",
+      "activeExpected": "/mockups/smart-v4/tshirt/maroon/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/maroon/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "front",
+      "sourceKey": "tshirt:olive:front",
+      "activeExpected": "/mockups/smart-v4/tshirt/olive/front.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/olive/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "back",
+      "sourceKey": "tshirt:olive:back",
+      "activeExpected": "/mockups/smart-v4/tshirt/olive/back.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/olive/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "left-sleeve",
+      "sourceKey": "tshirt:olive:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/olive/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/olive/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "right-sleeve",
+      "sourceKey": "tshirt:olive:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/olive/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/olive/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "neck-label",
+      "sourceKey": "tshirt:olive:neck-label",
+      "activeExpected": "/mockups/smart-v4/tshirt/olive/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/olive/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "front",
+      "sourceKey": "tshirt:sky-blue:front",
+      "activeExpected": "/mockups/smart-v4/tshirt/sky-blue/front.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/sky-blue/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "back",
+      "sourceKey": "tshirt:sky-blue:back",
+      "activeExpected": "/mockups/smart-v4/tshirt/sky-blue/back.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/sky-blue/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "left-sleeve",
+      "sourceKey": "tshirt:sky-blue:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/sky-blue/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/sky-blue/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "right-sleeve",
+      "sourceKey": "tshirt:sky-blue:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/sky-blue/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/sky-blue/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "neck-label",
+      "sourceKey": "tshirt:sky-blue:neck-label",
+      "activeExpected": "/mockups/smart-v4/tshirt/sky-blue/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/sky-blue/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "front",
+      "sourceKey": "tshirt:grey:front",
+      "activeExpected": "/mockups/smart-v4/tshirt/grey/front.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/grey/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "back",
+      "sourceKey": "tshirt:grey:back",
+      "activeExpected": "/mockups/smart-v4/tshirt/grey/back.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/grey/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "left-sleeve",
+      "sourceKey": "tshirt:grey:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/grey/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/grey/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "right-sleeve",
+      "sourceKey": "tshirt:grey:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/grey/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/grey/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "neck-label",
+      "sourceKey": "tshirt:grey:neck-label",
+      "activeExpected": "/mockups/smart-v4/tshirt/grey/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/grey/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "front",
+      "sourceKey": "tshirt:red:front",
+      "activeExpected": "/mockups/smart-v4/tshirt/red/front.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/red/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "back",
+      "sourceKey": "tshirt:red:back",
+      "activeExpected": "/mockups/smart-v4/tshirt/red/back.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/red/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "left-sleeve",
+      "sourceKey": "tshirt:red:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/red/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/red/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "right-sleeve",
+      "sourceKey": "tshirt:red:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/tshirt/red/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/red/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "neck-label",
+      "sourceKey": "tshirt:red:neck-label",
+      "activeExpected": "/mockups/smart-v4/tshirt/red/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/tshirt/red/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "front",
+      "sourceKey": "longsleeve:white:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/white/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/white/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "back",
+      "sourceKey": "longsleeve:white:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/white/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/white/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:white:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/white/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/white/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:white:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/white/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/white/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:white:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/white/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/white/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "front",
+      "sourceKey": "longsleeve:black:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/black/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/black/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "back",
+      "sourceKey": "longsleeve:black:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/black/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/black/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:black:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/black/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/black/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:black:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/black/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/black/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:black:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/black/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/black/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "front",
+      "sourceKey": "longsleeve:navy:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/navy/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/navy/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "back",
+      "sourceKey": "longsleeve:navy:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/navy/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/navy/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:navy:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/navy/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/navy/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:navy:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/navy/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/navy/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:navy:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/navy/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/navy/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "front",
+      "sourceKey": "longsleeve:maroon:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/maroon/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/maroon/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "back",
+      "sourceKey": "longsleeve:maroon:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/maroon/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/maroon/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:maroon:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/maroon/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/maroon/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:maroon:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/maroon/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/maroon/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:maroon:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/maroon/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/maroon/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "front",
+      "sourceKey": "longsleeve:olive:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/olive/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/olive/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "back",
+      "sourceKey": "longsleeve:olive:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/olive/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/olive/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:olive:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/olive/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/olive/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:olive:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/olive/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/olive/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:olive:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/olive/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/olive/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "front",
+      "sourceKey": "longsleeve:grey:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/grey/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/grey/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "back",
+      "sourceKey": "longsleeve:grey:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/grey/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/grey/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:grey:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/grey/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/grey/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:grey:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/grey/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/grey/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:grey:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/grey/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/grey/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "front",
+      "sourceKey": "longsleeve:red:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/red/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/red/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "back",
+      "sourceKey": "longsleeve:red:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/red/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/red/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:red:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/red/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/red/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:red:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/red/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/red/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:red:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/red/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/red/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "front",
+      "sourceKey": "longsleeve:sky-blue:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/sky-blue/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/sky-blue/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "back",
+      "sourceKey": "longsleeve:sky-blue:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/sky-blue/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/sky-blue/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:sky-blue:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/sky-blue/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/sky-blue/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:sky-blue:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/sky-blue/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/sky-blue/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:sky-blue:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/sky-blue/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/sky-blue/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "front",
+      "sourceKey": "longsleeve:burgundy:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/burgundy/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/burgundy/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "back",
+      "sourceKey": "longsleeve:burgundy:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/burgundy/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/burgundy/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:burgundy:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/burgundy/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/burgundy/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:burgundy:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/burgundy/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/burgundy/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:burgundy:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/burgundy/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/burgundy/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "front",
+      "sourceKey": "longsleeve:forest:front",
+      "activeExpected": "/mockups/smart-v4/longsleeve/forest/front.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/forest/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "back",
+      "sourceKey": "longsleeve:forest:back",
+      "activeExpected": "/mockups/smart-v4/longsleeve/forest/back.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/forest/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "left-sleeve",
+      "sourceKey": "longsleeve:forest:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/forest/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/forest/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "right-sleeve",
+      "sourceKey": "longsleeve:forest:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/longsleeve/forest/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/forest/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "neck-label",
+      "sourceKey": "longsleeve:forest:neck-label",
+      "activeExpected": "/mockups/smart-v4/longsleeve/forest/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/longsleeve/forest/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "front",
+      "sourceKey": "hoodie:white:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/white/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/white/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "back",
+      "sourceKey": "hoodie:white:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/white/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/white/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:white:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/white/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/white/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:white:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/white/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/white/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "neck-label",
+      "sourceKey": "hoodie:white:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/white/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/white/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "front",
+      "sourceKey": "hoodie:black:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/black/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/black/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "back",
+      "sourceKey": "hoodie:black:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/black/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/black/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:black:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/black/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/black/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:black:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/black/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/black/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "neck-label",
+      "sourceKey": "hoodie:black:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/black/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/black/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "front",
+      "sourceKey": "hoodie:navy:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/navy/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/navy/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "back",
+      "sourceKey": "hoodie:navy:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/navy/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/navy/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:navy:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/navy/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/navy/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:navy:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/navy/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/navy/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "neck-label",
+      "sourceKey": "hoodie:navy:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/navy/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/navy/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "front",
+      "sourceKey": "hoodie:grey:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/grey/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/grey/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "back",
+      "sourceKey": "hoodie:grey:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/grey/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/grey/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:grey:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/grey/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/grey/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:grey:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/grey/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/grey/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "neck-label",
+      "sourceKey": "hoodie:grey:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/grey/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/grey/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "front",
+      "sourceKey": "hoodie:maroon:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/maroon/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/maroon/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "back",
+      "sourceKey": "hoodie:maroon:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/maroon/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/maroon/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:maroon:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/maroon/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/maroon/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:maroon:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/maroon/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/maroon/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "neck-label",
+      "sourceKey": "hoodie:maroon:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/maroon/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/maroon/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "front",
+      "sourceKey": "hoodie:olive:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/olive/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/olive/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "back",
+      "sourceKey": "hoodie:olive:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/olive/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/olive/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:olive:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/olive/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/olive/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:olive:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/olive/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/olive/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "neck-label",
+      "sourceKey": "hoodie:olive:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/olive/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/olive/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "front",
+      "sourceKey": "hoodie:red:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/red/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/red/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "back",
+      "sourceKey": "hoodie:red:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/red/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/red/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:red:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/red/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/red/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:red:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/red/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/red/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "neck-label",
+      "sourceKey": "hoodie:red:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/red/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/red/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "front",
+      "sourceKey": "hoodie:sky-blue:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/sky-blue/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/sky-blue/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "back",
+      "sourceKey": "hoodie:sky-blue:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/sky-blue/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/sky-blue/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:sky-blue:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/sky-blue/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/sky-blue/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:sky-blue:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/sky-blue/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/sky-blue/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "neck-label",
+      "sourceKey": "hoodie:sky-blue:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/sky-blue/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/sky-blue/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "front",
+      "sourceKey": "hoodie:forest:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/forest/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/forest/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "back",
+      "sourceKey": "hoodie:forest:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/forest/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/forest/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:forest:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/forest/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/forest/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:forest:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/forest/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/forest/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "neck-label",
+      "sourceKey": "hoodie:forest:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/forest/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/forest/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "front",
+      "sourceKey": "hoodie:burgundy:front",
+      "activeExpected": "/mockups/smart-v4/hoodie/burgundy/front.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/burgundy/front.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "back",
+      "sourceKey": "hoodie:burgundy:back",
+      "activeExpected": "/mockups/smart-v4/hoodie/burgundy/back.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/burgundy/back.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": true,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "left-sleeve",
+      "sourceKey": "hoodie:burgundy:left-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/burgundy/left-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/burgundy/left-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "right-sleeve",
+      "sourceKey": "hoodie:burgundy:right-sleeve",
+      "activeExpected": "/mockups/smart-v4/hoodie/burgundy/right-sleeve.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/burgundy/right-sleeve.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "neck-label",
+      "sourceKey": "hoodie:burgundy:neck-label",
+      "activeExpected": "/mockups/smart-v4/hoodie/burgundy/neck-label.png",
+      "provenancePath": "/mockups/apparel-v5/hoodie/burgundy/neck-label.png",
+      "provenanceKind": "apparel-v5",
+      "activeExists": true,
+      "provenanceExists": true,
+      "activeDimensions": [
+        1024,
+        1024
+      ],
+      "activeMode": "RGBA",
+      "activeAlphaValid": true,
+      "provenanceDimensions": [
+        1024,
+        1024
+      ],
+      "provenanceMode": "RGBA",
+      "provenanceAlphaValid": true,
+      "sourceKitV3": false,
+      "canonical": false,
+      "normalized": false,
+      "legacy": false
+    }
+  ]
+}

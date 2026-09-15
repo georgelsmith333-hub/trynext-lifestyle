@@ -1,0 +1,8814 @@
+{
+  "inventory_consistency": {
+    "tshirt": {
+      "summary_equal": true,
+      "rebuild_summary": {
+        "required": 40,
+        "sourceKitV3": 16,
+        "canonical": 0,
+        "normalized": 16,
+        "legacy": 0,
+        "missingSourceKitV3": [
+          "white/left-sleeve",
+          "white/right-sleeve",
+          "white/neck-label",
+          "black/left-sleeve",
+          "black/right-sleeve",
+          "black/neck-label",
+          "navy/left-sleeve",
+          "navy/right-sleeve",
+          "navy/neck-label",
+          "maroon/left-sleeve",
+          "maroon/right-sleeve",
+          "maroon/neck-label",
+          "olive/left-sleeve",
+          "olive/right-sleeve",
+          "olive/neck-label",
+          "sky-blue/left-sleeve",
+          "sky-blue/right-sleeve",
+          "sky-blue/neck-label",
+          "grey/left-sleeve",
+          "grey/right-sleeve",
+          "grey/neck-label",
+          "red/left-sleeve",
+          "red/right-sleeve",
+          "red/neck-label"
+        ]
+      },
+      "matrix_summary": {
+        "required": 40,
+        "sourceKitV3": 16,
+        "canonical": 0,
+        "normalized": 16,
+        "legacy": 0,
+        "missingSourceKitV3": [
+          "white/left-sleeve",
+          "white/right-sleeve",
+          "white/neck-label",
+          "black/left-sleeve",
+          "black/right-sleeve",
+          "black/neck-label",
+          "navy/left-sleeve",
+          "navy/right-sleeve",
+          "navy/neck-label",
+          "maroon/left-sleeve",
+          "maroon/right-sleeve",
+          "maroon/neck-label",
+          "olive/left-sleeve",
+          "olive/right-sleeve",
+          "olive/neck-label",
+          "sky-blue/left-sleeve",
+          "sky-blue/right-sleeve",
+          "sky-blue/neck-label",
+          "grey/left-sleeve",
+          "grey/right-sleeve",
+          "grey/neck-label",
+          "red/left-sleeve",
+          "red/right-sleeve",
+          "red/neck-label"
+        ]
+      }
+    },
+    "longsleeve": {
+      "summary_equal": true,
+      "rebuild_summary": {
+        "required": 50,
+        "sourceKitV3": 20,
+        "canonical": 0,
+        "normalized": 20,
+        "legacy": 0,
+        "missingSourceKitV3": [
+          "white/left-sleeve",
+          "white/right-sleeve",
+          "white/neck-label",
+          "black/left-sleeve",
+          "black/right-sleeve",
+          "black/neck-label",
+          "navy/left-sleeve",
+          "navy/right-sleeve",
+          "navy/neck-label",
+          "maroon/left-sleeve",
+          "maroon/right-sleeve",
+          "maroon/neck-label",
+          "olive/left-sleeve",
+          "olive/right-sleeve",
+          "olive/neck-label",
+          "grey/left-sleeve",
+          "grey/right-sleeve",
+          "grey/neck-label",
+          "red/left-sleeve",
+          "red/right-sleeve",
+          "red/neck-label",
+          "sky-blue/left-sleeve",
+          "sky-blue/right-sleeve",
+          "sky-blue/neck-label",
+          "burgundy/left-sleeve",
+          "burgundy/right-sleeve",
+          "burgundy/neck-label",
+          "forest/left-sleeve",
+          "forest/right-sleeve",
+          "forest/neck-label"
+        ]
+      },
+      "matrix_summary": {
+        "required": 50,
+        "sourceKitV3": 20,
+        "canonical": 0,
+        "normalized": 20,
+        "legacy": 0,
+        "missingSourceKitV3": [
+          "white/left-sleeve",
+          "white/right-sleeve",
+          "white/neck-label",
+          "black/left-sleeve",
+          "black/right-sleeve",
+          "black/neck-label",
+          "navy/left-sleeve",
+          "navy/right-sleeve",
+          "navy/neck-label",
+          "maroon/left-sleeve",
+          "maroon/right-sleeve",
+          "maroon/neck-label",
+          "olive/left-sleeve",
+          "olive/right-sleeve",
+          "olive/neck-label",
+          "grey/left-sleeve",
+          "grey/right-sleeve",
+          "grey/neck-label",
+          "red/left-sleeve",
+          "red/right-sleeve",
+          "red/neck-label",
+          "sky-blue/left-sleeve",
+          "sky-blue/right-sleeve",
+          "sky-blue/neck-label",
+          "burgundy/left-sleeve",
+          "burgundy/right-sleeve",
+          "burgundy/neck-label",
+          "forest/left-sleeve",
+          "forest/right-sleeve",
+          "forest/neck-label"
+        ]
+      }
+    },
+    "hoodie": {
+      "summary_equal": true,
+      "rebuild_summary": {
+        "required": 50,
+        "sourceKitV3": 20,
+        "canonical": 0,
+        "normalized": 20,
+        "legacy": 0,
+        "missingSourceKitV3": [
+          "white/left-sleeve",
+          "white/right-sleeve",
+          "white/neck-label",
+          "black/left-sleeve",
+          "black/right-sleeve",
+          "black/neck-label",
+          "navy/left-sleeve",
+          "navy/right-sleeve",
+          "navy/neck-label",
+          "grey/left-sleeve",
+          "grey/right-sleeve",
+          "grey/neck-label",
+          "maroon/left-sleeve",
+          "maroon/right-sleeve",
+          "maroon/neck-label",
+          "olive/left-sleeve",
+          "olive/right-sleeve",
+          "olive/neck-label",
+          "red/left-sleeve",
+          "red/right-sleeve",
+          "red/neck-label",
+          "sky-blue/left-sleeve",
+          "sky-blue/right-sleeve",
+          "sky-blue/neck-label",
+          "forest/left-sleeve",
+          "forest/right-sleeve",
+          "forest/neck-label",
+          "burgundy/left-sleeve",
+          "burgundy/right-sleeve",
+          "burgundy/neck-label"
+        ]
+      },
+      "matrix_summary": {
+        "required": 50,
+        "sourceKitV3": 20,
+        "canonical": 0,
+        "normalized": 20,
+        "legacy": 0,
+        "missingSourceKitV3": [
+          "white/left-sleeve",
+          "white/right-sleeve",
+          "white/neck-label",
+          "black/left-sleeve",
+          "black/right-sleeve",
+          "black/neck-label",
+          "navy/left-sleeve",
+          "navy/right-sleeve",
+          "navy/neck-label",
+          "grey/left-sleeve",
+          "grey/right-sleeve",
+          "grey/neck-label",
+          "maroon/left-sleeve",
+          "maroon/right-sleeve",
+          "maroon/neck-label",
+          "olive/left-sleeve",
+          "olive/right-sleeve",
+          "olive/neck-label",
+          "red/left-sleeve",
+          "red/right-sleeve",
+          "red/neck-label",
+          "sky-blue/left-sleeve",
+          "sky-blue/right-sleeve",
+          "sky-blue/neck-label",
+          "forest/left-sleeve",
+          "forest/right-sleeve",
+          "forest/neck-label",
+          "burgundy/left-sleeve",
+          "burgundy/right-sleeve",
+          "burgundy/neck-label"
+        ]
+      }
+    }
+  },
+  "filesystem": {
+    "tshirt": [
+      [
+        "white",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "white",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "white",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "white",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "white",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      ],
+      [
+        "black",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "black",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "black",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "black",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "black",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      ],
+      [
+        "navy",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "navy",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "navy",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "navy",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "navy",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      ],
+      [
+        "olive",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "olive",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "olive",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "olive",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "olive",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      ],
+      [
+        "grey",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "grey",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "grey",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "grey",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "grey",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      ],
+      [
+        "red",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 516466,
+          "alpha_255": 522252,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "red",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 540466,
+          "alpha_255": 496233,
+          "bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        }
+      ],
+      [
+        "red",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "red",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 570385,
+          "alpha_255": 463332,
+          "bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        }
+      ],
+      [
+        "red",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 740455,
+          "alpha_255": 299474,
+          "bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      ]
+    ],
+    "longsleeve": [
+      [
+        "white",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "white",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "white",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "white",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "white",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "black",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "black",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "black",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "black",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "black",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "navy",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "navy",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "navy",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "navy",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "navy",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "olive",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "olive",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "olive",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "olive",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "olive",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "grey",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "grey",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "grey",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "grey",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "grey",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "red",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "red",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "red",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "red",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "red",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ],
+      [
+        "forest",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 465218,
+          "alpha_255": 568244,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "forest",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 441166,
+          "alpha_255": 594042,
+          "bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        }
+      ],
+      [
+        "forest",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "forest",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 761221,
+          "alpha_255": 276025,
+          "bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        }
+      ],
+      [
+        "forest",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 750482,
+          "alpha_255": 288821,
+          "bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      ]
+    ],
+    "hoodie": [
+      [
+        "white",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "white",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "white",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "white",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "white",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "black",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "black",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "black",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "black",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "black",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "navy",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "navy",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "navy",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "navy",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "navy",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "grey",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "grey",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "grey",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "grey",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "grey",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "maroon",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "olive",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "olive",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "olive",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "olive",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "olive",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "red",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "red",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "red",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "red",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "red",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "sky-blue",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "forest",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "forest",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "forest",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "forest",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "forest",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "front",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 528464,
+          "alpha_255": 503205,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "back",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 509015,
+          "alpha_255": 525646,
+          "bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "left-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "right-sleeve",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 694065,
+          "alpha_255": 339513,
+          "bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        }
+      ],
+      [
+        "burgundy",
+        "neck-label",
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        },
+        {
+          "exists": true,
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "alpha_min": 0,
+          "alpha_max": 255,
+          "alpha_0": 689330,
+          "alpha_255": 335504,
+          "bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      ]
+    ],
+    "tshirt_promotion": [
+      {
+        "surface": "white/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      }
+    ],
+    "longsleeve_promotion": [
+      {
+        "surface": "white/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      }
+    ],
+    "hoodie_promotion": [
+      {
+        "surface": "white/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "white/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "black/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "navy/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "grey/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "maroon/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "olive/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "red/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "sky-blue/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "forest/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/front",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/back",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/left-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/right-sleeve",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      },
+      {
+        "surface": "burgundy/neck-label",
+        "v5_exists": true,
+        "v4_exists": true,
+        "byte_equal": true
+      }
+    ]
+  },
+  "duplicates": {
+    "tshirt": {
+      "unique_hashes": 40,
+      "total": 40,
+      "hash_collisions": {}
+    },
+    "longsleeve": {
+      "unique_hashes": 50,
+      "total": 50,
+      "hash_collisions": {}
+    },
+    "hoodie": {
+      "unique_hashes": 50,
+      "total": 50,
+      "hash_collisions": {}
+    }
+  },
+  "visual_metrics": {
+    "tshirt": {
+      "white/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 516466,
+        "alpha_255": 522252
+      },
+      "white/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 540466,
+        "alpha_255": 496233
+      },
+      "white/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "white/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "white/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          301,
+          911,
+          723
+        ],
+        "alpha_0": 740455,
+        "alpha_255": 299474
+      },
+      "black/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 516466,
+        "alpha_255": 522252
+      },
+      "black/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 540466,
+        "alpha_255": 496233
+      },
+      "black/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "black/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "black/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          301,
+          911,
+          723
+        ],
+        "alpha_0": 740455,
+        "alpha_255": 299474
+      },
+      "navy/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 516466,
+        "alpha_255": 522252
+      },
+      "navy/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 540466,
+        "alpha_255": 496233
+      },
+      "navy/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "navy/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "navy/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          301,
+          911,
+          723
+        ],
+        "alpha_0": 740455,
+        "alpha_255": 299474
+      },
+      "maroon/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 516466,
+        "alpha_255": 522252
+      },
+      "maroon/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 540466,
+        "alpha_255": 496233
+      },
+      "maroon/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "maroon/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "maroon/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          301,
+          911,
+          723
+        ],
+        "alpha_0": 740455,
+        "alpha_255": 299474
+      },
+      "olive/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 516466,
+        "alpha_255": 522252
+      },
+      "olive/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 540466,
+        "alpha_255": 496233
+      },
+      "olive/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "olive/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "olive/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          301,
+          911,
+          723
+        ],
+        "alpha_0": 740455,
+        "alpha_255": 299474
+      },
+      "sky-blue/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 516466,
+        "alpha_255": 522252
+      },
+      "sky-blue/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 540466,
+        "alpha_255": 496233
+      },
+      "sky-blue/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "sky-blue/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "sky-blue/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          301,
+          911,
+          723
+        ],
+        "alpha_0": 740455,
+        "alpha_255": 299474
+      },
+      "grey/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 516466,
+        "alpha_255": 522252
+      },
+      "grey/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 540466,
+        "alpha_255": 496233
+      },
+      "grey/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "grey/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "grey/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          301,
+          911,
+          723
+        ],
+        "alpha_0": 740455,
+        "alpha_255": 299474
+      },
+      "red/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 516466,
+        "alpha_255": 522252
+      },
+      "red/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          84,
+          962,
+          940
+        ],
+        "alpha_0": 540466,
+        "alpha_255": 496233
+      },
+      "red/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "red/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          129,
+          112,
+          894,
+          911
+        ],
+        "alpha_0": 570385,
+        "alpha_255": 463332
+      },
+      "red/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          301,
+          911,
+          723
+        ],
+        "alpha_0": 740455,
+        "alpha_255": 299474
+      }
+    },
+    "longsleeve": {
+      "white/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "white/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "white/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "white/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "white/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "black/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "black/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "black/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "black/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "black/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "navy/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "navy/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "navy/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "navy/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "navy/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "maroon/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "maroon/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "maroon/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "maroon/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "maroon/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "olive/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "olive/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "olive/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "olive/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "olive/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "grey/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "grey/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "grey/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "grey/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "grey/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "red/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "red/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "red/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "red/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "red/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "sky-blue/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "sky-blue/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "sky-blue/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "sky-blue/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "sky-blue/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "burgundy/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "burgundy/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "burgundy/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "burgundy/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "burgundy/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      },
+      "forest/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 465218,
+        "alpha_255": 568244
+      },
+      "forest/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          62,
+          101,
+          962,
+          922
+        ],
+        "alpha_0": 441166,
+        "alpha_255": 594042
+      },
+      "forest/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "forest/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          249,
+          112,
+          774,
+          911
+        ],
+        "alpha_0": 761221,
+        "alpha_255": 276025
+      },
+      "forest/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          307,
+          911,
+          717
+        ],
+        "alpha_0": 750482,
+        "alpha_255": 288821
+      }
+    },
+    "hoodie": {
+      "white/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "white/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "white/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "white/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "white/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "black/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "black/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "black/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "black/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "black/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "navy/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "navy/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "navy/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "navy/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "navy/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "grey/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "grey/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "grey/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "grey/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "grey/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "maroon/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "maroon/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "maroon/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "maroon/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "maroon/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "olive/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "olive/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "olive/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "olive/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "olive/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "red/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "red/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "red/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "red/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "red/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "sky-blue/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "sky-blue/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "sky-blue/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "sky-blue/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "sky-blue/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "forest/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "forest/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "forest/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "forest/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "forest/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      },
+      "burgundy/front": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 528464,
+        "alpha_255": 503205
+      },
+      "burgundy/back": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          72,
+          62,
+          952,
+          962
+        ],
+        "alpha_0": 509015,
+        "alpha_255": 525646
+      },
+      "burgundy/left-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "burgundy/right-sleeve": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          169,
+          112,
+          854,
+          911
+        ],
+        "alpha_0": 694065,
+        "alpha_255": 339513
+      },
+      "burgundy/neck-label": {
+        "size": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_bbox": [
+          112,
+          229,
+          911,
+          794
+        ],
+        "alpha_0": 689330,
+        "alpha_255": 335504
+      }
+    }
+  }
+}

@@ -49,7 +49,7 @@ const STACK_SECTIONS = [
       { name: "Pino", desc: "High-performance JSON logger" },
       { name: "JWT (jsonwebtoken)", desc: "Authentication tokens — httpOnly cookie + Bearer header" },
       { name: "Cookie Parser", desc: "HTTP cookie handling" },
-      { name: "CORS", desc: "Credential-based origin whitelisting (trynexshop.com + Expo mobile)" },
+      { name: "CORS", desc: "Credential-based origin whitelisting (trynext.pages.dev + Expo mobile)" },
       { name: "Multer", desc: "Multipart file upload handling (images up to 10 MB)" },
       { name: "Sharp", desc: "Server-side image resizing & WebP conversion" },
       { name: "Upstash Redis SDK", desc: "Distributed rate limiting and session caching" },
@@ -123,9 +123,9 @@ const STACK_SECTIONS = [
     color: "bg-indigo-50 text-indigo-600",
     items: [
       { name: "pnpm Monorepo", desc: "Single workspace — storefront, API, mobile, promo" },
-      { name: "Cloudflare Pages", desc: "Global CDN & static hosting for the storefront (trynexshop.com)" },
+      { name: "Cloudflare Pages", desc: "Global CDN & static hosting for the storefront (trynext.pages.dev)" },
       { name: "Cloudflare R2", desc: "S3-compatible object storage for product & upload images" },
-      { name: "Cloudflare DNS", desc: "Authoritative DNS + DDoS protection for trynexshop.com" },
+      { name: "Cloudflare DNS", desc: "Cloudflare Pages hosting for trynext.pages.dev" },
       { name: "Replit Autoscale", desc: "API server hosting — auto-scales on demand, always-on deployment" },
       { name: "Neon PostgreSQL", desc: "Serverless Postgres — branching, pooled connections, zero cold-start" },
       { name: "Upstash Redis", desc: "Serverless Redis for rate limiting, session cache, API response cache" },
@@ -190,7 +190,7 @@ export default function AdminTechStack() {
             <Code2 className="w-7 h-7 text-orange-500" />
             Site Tech Stack & Configuration
           </h1>
-          <p className="text-gray-500 mt-1">Complete technical overview of the TryNex Lifestyle platform</p>
+          <p className="text-gray-500 mt-1">Complete technical overview of the Trynext Lifestyle platform</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">

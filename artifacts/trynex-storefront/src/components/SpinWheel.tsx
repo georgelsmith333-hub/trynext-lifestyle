@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Gift, Sparkles, X, Copy, Check } from "lucide-react";
 import { useSiteSettings } from "@/context/SiteSettingsContext";
+import { lockBodyScroll } from "@/lib/scrollLock";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Prize = {
   id: string;
@@ -150,10 +152,12 @@ interface Props {
 
 export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose }: Props) {
   const settings = useSiteSettings();
+  const isMobile = useIsMobile();
   const enabled = settings.spinWheelEnabled !== false;
   const delaySeconds = Math.max(1, settings.spinWheelDelay ?? 20);
   const title = settings.spinWheelTitle || "Spin & Win an Offer!";
   const subtitle = settings.spinWheelSubtitle || "One free spin — no purchase needed.";
+  const allowAutoOpen = autoOpen && !isMobile;
 
   const [open, setOpen] = useState(false);
   const [spinning, setSpinning] = useState(false);
@@ -161,14 +165,54 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
   const [result, setResult] = useState<Prize | null>(null);
   const [copied, setCopied] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const [spinError, setSpinError] = useState<string | null>(null);
   const spunTodayRef = useRef(false);
+  const pendingPrizeRef = useRef<Prize | null>(null);
+  const spinSettledRef = useRef(false);
+  const spinWatchdogRef = useRef<number | null>(null);
+  const reducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const resetAt = settings.spinWheelResetAt ?? 0;
   const cooldownHours = Math.max(1, settings.spinWheelCooldownHours ?? 24);
+
+  const clearSpinWatchdog = () => {
+    if (spinWatchdogRef.current !== null) {
+      window.clearTimeout(spinWatchdogRef.current);
+      spinWatchdogRef.current = null;
+    }
+  };
+
+  const settleSpin = () => {
+    const prize = pendingPrizeRef.current;
+    if (!spinning || spinSettledRef.current || !prize) return;
+    spinSettledRef.current = true;
+    pendingPrizeRef.current = null;
+    clearSpinWatchdog();
+    setSpinning(false);
+    setResult(prize);
+    if (prize.code) setShowConfetti(true);
+    try {
+      localStorage.setItem(STORAGE_LAST_SPIN, todayKey());
+      if (prize.code) {
+        localStorage.setItem(STORAGE_REWARD, JSON.stringify({
+          code: prize.code,
+          label: prize.label,
+          wonAt: Date.now(),
+        }));
+      }
+    } catch {}
+    spunTodayRef.current = true;
+  };
+
+  useEffect(() => () => clearSpinWatchdog(), []);
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || dismissed) return;
     if (forceOpen) { setOpen(true); return; }
-    if (!autoOpen) return;
+    // A full-screen promotion before the mobile visitor sees the storefront
+    // blocks the primary value proposition. Keep desktop campaign timing
+    // configurable, while mobile opens only from an explicit user action.
+    if (!allowAutoOpen) return;
     try {
       const stored = localStorage.getItem(STORAGE_SHOWN);
       if (stored) {
@@ -187,27 +231,35 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
       try { localStorage.setItem(STORAGE_SHOWN, String(Date.now())); } catch {}
     }, delaySeconds * 1000);
     return () => clearTimeout(t);
-  }, [autoOpen, forceOpen, enabled, delaySeconds, resetAt, cooldownHours]);
+  }, [allowAutoOpen, forceOpen, enabled, delaySeconds, resetAt, cooldownHours, dismissed]);
 
   useEffect(() => {
     try { spunTodayRef.current = localStorage.getItem(STORAGE_LAST_SPIN) === todayKey(); } catch {}
   }, [open]);
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => { document.body.style.overflow = ""; };
+    if (!open) return;
+    const unlock = lockBodyScroll();
+    return unlock;
   }, [open]);
 
   const close = () => {
+    if (spinning) return;
+    clearSpinWatchdog();
+    pendingPrizeRef.current = null;
     setOpen(false);
     setResult(null);
     setCopied(false);
     setShowConfetti(false);
+    setSpinError(null);
     onClose?.();
+  };
+
+  const dismissPromo = () => {
+    if (spinning) return;
+    setDismissed(true);
+    close();
+    try { localStorage.setItem(STORAGE_SHOWN, String(Date.now())); } catch {}
   };
 
   const spin = () => {
@@ -221,25 +273,24 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
     const fullSpins = 6 + Math.floor(Math.random() * 3);
     const finalRotation = rotation + fullSpins * 360 + (targetAngle - (rotation % 360));
 
+    setSpinError(null);
+    spinSettledRef.current = false;
+    pendingPrizeRef.current = prize;
     setSpinning(true);
     setRotation(finalRotation);
 
-    setTimeout(() => {
+    if (reducedMotion) {
+      window.requestAnimationFrame(settleSpin);
+      return;
+    }
+
+    clearSpinWatchdog();
+    spinWatchdogRef.current = window.setTimeout(() => {
+      if (spinSettledRef.current) return;
+      pendingPrizeRef.current = null;
       setSpinning(false);
-      setResult(prize);
-      if (prize.code) setShowConfetti(true);
-      try {
-        localStorage.setItem(STORAGE_LAST_SPIN, todayKey());
-        if (prize.code) {
-          localStorage.setItem(STORAGE_REWARD, JSON.stringify({
-            code: prize.code,
-            label: prize.label,
-            wonAt: Date.now(),
-          }));
-        }
-      } catch {}
-      spunTodayRef.current = true;
-    }, 5200);
+      setSpinError("The wheel animation did not finish. No reward was issued; please try again.");
+    }, 7_000);
   };
 
   const copyCode = async () => {
@@ -261,7 +312,7 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
     return { background: `conic-gradient(from 0deg, ${stops.join(", ")})` };
   }, []);
 
-  if (!enabled && !forceOpen) return null;
+  if ((!enabled && !forceOpen) || dismissed) return null;
   if (typeof document === "undefined") return null;
 
   const WHEEL_SIZE = 320;
@@ -276,15 +327,19 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-          style={{ background: "rgba(0,0,0,0.75)" }}
+          style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
           onClick={() => !spinning && close()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="spinwheel-title"
+          aria-describedby="spinwheel-description"
         >
           <motion.div
-            initial={{ scale: 0.85, y: 20, opacity: 0 }}
+            initial={reducedMotion ? { opacity: 0 } : { scale: 0.85, y: 20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 220, damping: 22 }}
-            className="relative w-full max-w-md rounded-3xl shadow-2xl overflow-hidden"
+            exit={reducedMotion ? { opacity: 0 } : { scale: 0.9, opacity: 0 }}
+            transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 220, damping: 22 }}
+            className="relative w-full max-w-md rounded-3xl shadow-2xl overflow-hidden max-h-[calc(100dvh-2rem)] overflow-y-auto"
             style={{ background: "linear-gradient(180deg, #fff7ed 0%, #ffffff 60%)" }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -293,10 +348,20 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
             <button
               onClick={close}
               disabled={spinning}
-              aria-label="Close"
+              aria-label="Close spin wheel"
+              type="button"
               className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors z-30 disabled:opacity-40 shadow-md"
             >
               <X className="w-4 h-4" />
+            </button>
+            <button
+              onClick={dismissPromo}
+              type="button"
+              disabled={spinning}
+              aria-label="Dismiss promotion"
+              className="absolute top-3 left-3 rounded-full bg-white/90 hover:bg-white px-3 h-9 text-xs font-bold text-gray-600 hover:text-gray-900 transition-colors z-30 shadow-md disabled:opacity-40"
+            >
+              Dismiss
             </button>
 
             <div className="px-6 pt-7 pb-4 text-center">
@@ -304,8 +369,8 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
                 style={{ background: "linear-gradient(90deg, #ea580c, #f97316)" }}>
                 <Sparkles className="w-3 h-3" /> Free Spin
               </div>
-              <h2 className="text-2xl font-black font-display text-gray-900 mt-3">{title}</h2>
-              <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+              <h2 id="spinwheel-title" className="text-2xl font-black font-display text-gray-900 mt-3">{title}</h2>
+              <p id="spinwheel-description" className="text-sm text-gray-500 mt-1">{subtitle}</p>
             </div>
 
             <div className="relative mx-auto" style={{ width: WHEEL_SIZE, height: WHEEL_SIZE }}>
@@ -321,7 +386,8 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
               {/* Wheel */}
               <motion.div
                 animate={{ rotate: rotation }}
-                transition={{ duration: 5, ease: [0.17, 0.67, 0.21, 0.99] }}
+                transition={reducedMotion ? { duration: 0 } : { duration: 5, ease: [0.17, 0.67, 0.21, 0.99] }}
+                onAnimationComplete={settleSpin}
                 className="absolute inset-0 rounded-full shadow-xl"
                 style={{
                   ...conicStyle,
@@ -400,12 +466,14 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
                     data-testid="button-spin-wheel"
                     className="w-full py-4 rounded-2xl font-black text-white text-base disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
                     style={{ background: spinning ? "#9ca3af" : "linear-gradient(135deg, #E85D04, #FB8500)", boxShadow: "0 6px 16px rgba(232,93,4,0.35)" }}
+                    type="button"
                   >
                     {spinning ? "Spinning…" : spunTodayRef.current ? "Come back tomorrow!" : "SPIN NOW 🎰"}
                   </button>
                   <p className="text-[10px] text-gray-400 mt-3 uppercase tracking-widest font-bold">
                     One spin per day &middot; T&amp;Cs apply
                   </p>
+                  {spinError && <p role="status" className="mt-2 text-xs font-semibold text-red-600">{spinError}</p>}
                 </>
               ) : (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
@@ -419,6 +487,7 @@ export default function SpinWheel({ autoOpen = true, forceOpen = false, onClose 
                         onClick={copyCode}
                         className="mx-auto inline-flex items-center gap-2 px-5 py-3 rounded-xl font-black border-2 border-dashed text-base transition-all active:scale-95"
                         style={{ borderColor: "#E85D04", color: "#E85D04", background: "#fff7ed" }}
+                        type="button"
                       >
                         {result.code}
                         {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}

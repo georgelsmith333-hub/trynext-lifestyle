@@ -17,8 +17,9 @@ interface DbNodeStatus {
   status: "ok" | "error" | "timeout" | "unconfigured";
   latencyMs: number | null;
   isActive: boolean;
+  schemaStatus: "transactional" | "catalog" | "incomplete" | "unknown";
   error?: string;
-}
+};
 
 interface ClusterResponse {
   checkedAt: string;
@@ -112,6 +113,9 @@ function ChainCard({
               <span className="text-sm font-semibold text-white truncate">{node.label}</span>
             </div>
             <p className="text-[11px] text-gray-500 mb-2 leading-tight">{node.role}</p>
+            <span className={`inline-flex mb-2 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide ${node.schemaStatus === "transactional" ? "bg-emerald-500/10 text-emerald-300" : node.schemaStatus === "catalog" ? "bg-blue-500/10 text-blue-300" : "bg-red-500/10 text-red-300"}`}>
+              {node.schemaStatus === "transactional" ? "Transactional schema" : node.schemaStatus === "catalog" ? "Catalog schema" : node.schemaStatus === "incomplete" ? "Incomplete schema" : "Schema unknown"}
+            </span>
             <div className="font-mono text-[10px] text-gray-600 bg-gray-900/50 rounded px-2 py-1 truncate mb-2">
               {node.host}
             </div>

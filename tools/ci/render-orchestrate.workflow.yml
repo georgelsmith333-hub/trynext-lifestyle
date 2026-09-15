@@ -1,0 +1,142 @@
+# Trynext Render orchestrator workflow — SOURCE OF TRUTH COPY
+#
+# The Arena/Claude GitHub App used by the agent cannot create or update files
+# under `.github/workflows/` (GitHub blocks workflow writes for Apps without the
+# `workflows` permission), so the workflow is versioned here and installed by the
+# owner with one GitHub-UI step:
+#
+#   1. GitHub -> Code -> Add file -> Create new file
+#   2. Name it exactly: .github/workflows/render-orchestrate.yml
+#   3. Paste the full contents of this file (everything below this block) and commit.
+#
+# Required repository secret: RENDER_API_KEY
+#   Settings -> Secrets and variables -> Actions -> New repository secret
+#
+# Runbook: docs/FOUR_RENDER_MULTI_ROUTE_CONTRACT_2026-08-29.md
+# ----------------------------------------------------------------------------
+#
+# What the workflow does:
+#   apply=false -> read-only Render inventory (owners, services, roles, last deploy)
+#   apply=true  -> promotes the target service to PRIMARY: copies env from the old
+#                  primary, forces TRYNEXT_RUNTIME_ROLE=primary, SCHEDULER_ENABLED
+#                  (mirrored), BACKUP_SYNC_ENABLED=false, deploys main, waits, and
+#                  probes readiness + sitemap. Never prints the API key or secret values.
+# After apply=true the job summary prints the primary URL to paste into
+# PRODUCTION_ORIGINS.primary in functions/gateway-config.ts (and its artifacts copy).
+name: Render orchestrator (4th main)
+
+# Manual-only operator tooling for the 4-Render multi-route topology.
+#   apply=false  -> read-only inventory (owners, services, roles, last deploy)
+#   apply=true   -> promote the target service to PRIMARY (copy env from the old
+#                   primary, force TRYNEXT_RUNTIME_ROLE=primary, disable backup
+#                   sync, deploy main, wait, probe readiness + sitemap)
+# The Render API token lives only in the `RENDER_API_KEY` repository secret and
+# is never printed. See docs/FOUR_RENDER_MULTI_ROUTE_CONTRACT_2026-08-29.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "false = inventory only (safe). true = promote + deploy (mutates Render)."
+        type: boolean
+        required: false
+        default: false
+      target:
+        description: "Render service id / name / URL to promote. Empty = newest Trynext service."
+        type: string
+        required: false
+        default: ""
+      source_primary:
+        description: "Service name to copy env from (the old primary)."
+        type: string
+        required: false
+        default: "trynext-api"
+
+run-name: "Render orchestrator — ${{ inputs.apply && 'PROMOTE' || 'inventory' }} (${{ inputs.target || 'newest' }})"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-orchestrate
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    name: Inventory / promote 4th Render as primary
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      APPLY: ${{ inputs.apply && 'true' || 'false' }}
+      APPLY_TARGET: ${{ inputs.target }}
+      SOURCE_PRIMARY: ${{ inputs.source_primary }}
+    outputs:
+      primary_url: ${{ steps.summary.outputs.primary_url }}
+      primary_name: ${{ steps.summary.outputs.primary_name }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Guard — RENDER_API_KEY secret must exist
+        env:
+          KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          if [ -z "${KEY}" ]; then
+            echo "::error::Repository secret RENDER_API_KEY is not set. Add it in Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          echo "secret present (${#KEY} chars, value not printed)"
+
+      - name: Run orchestrator
+        run: |
+          set -euo pipefail
+          chmod +x tools/render-orchestrate.sh
+          bash tools/render-orchestrate.sh "$([ "$APPLY" = "true" ] && echo apply || echo inventory)" 2>&1 | tee render-orchestrate.log
+
+      - name: Publish summary (primary URL to paste into functions/gateway-config.ts)
+        id: summary
+        run: |
+          set -euo pipefail
+          JSON=$(awk '/RENDER_SUMMARY_JSON_BEGIN/{f=1;next} /RENDER_SUMMARY_JSON_END/{f=0} f' render-orchestrate.log) || true
+          PRIMARY_URL=$(echo "$JSON" | jq -r '.primary.url // empty' 2>/dev/null || true)
+          PRIMARY_NAME=$(echo "$JSON" | jq -r '.primary.name // empty' 2>/dev/null || true)
+          {
+            echo "## Render orchestration ($([ "$APPLY" = "true" ] && echo 'promoted' || echo 'dry run'))"
+            echo
+            echo '```json'
+            echo "$JSON" | jq . 2>/dev/null || echo "$JSON"
+            echo '```'
+            echo
+            echo "Paste into \`functions/gateway-config.ts\` -> \`PRODUCTION_ORIGINS.primary\`:"
+            echo
+            echo '```ts'
+            echo "primary: [\"${PRIMARY_URL:-<unknown>\"}],"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "primary_url=${PRIMARY_URL}" >> "$GITHUB_OUTPUT"
+          echo "primary_name=${PRIMARY_NAME}" >> "$GITHUB_OUTPUT"
+          if [ -z "$PRIMARY_URL" ]; then
+            echo "::warning::Could not read a primary URL from the orchestrator summary"
+          fi
+
+      - name: Post-promotion probes
+        if: ${{ inputs.apply }}
+        env:
+          PRIMARY_URL: ${{ steps.summary.outputs.primary_url }}
+        run: |
+          set -uo pipefail
+          if [ -z "${PRIMARY_URL:-}" ]; then
+            echo "::warning::no primary URL reported; skipping probes"
+            exit 0
+          fi
+          echo "probing $PRIMARY_URL"
+          echo "-- liveness (expect runtimeRole=primary) --"
+          curl -fsS --max-time 60 "$PRIMARY_URL/api/health/liveness" || echo "liveness probe failed"
+          echo
+          echo "-- unprovisioned write route (expect 404 JSON, not 503: writes reach the primary) --"
+          curl -sS -o /dev/null -w 'HTTP %{http_code}\n' --max-time 60 -X POST -H 'content-type: application/json' -d '{}' "$PRIMARY_URL/api/__probe" || true
+          echo "-- admin health without credentials (expect 401/403, not 5xx) --"
+          curl -sS -o /dev/null -w 'HTTP %{http_code}\n' --max-time 60 "$PRIMARY_URL/api/admin/system/health" || true
+          echo "-- sitemap (expect 200) --"
+          curl -sS -o /dev/null -w 'HTTP %{http_code}\n' --max-time 60 "$PRIMARY_URL/api/sitemap.xml" || true

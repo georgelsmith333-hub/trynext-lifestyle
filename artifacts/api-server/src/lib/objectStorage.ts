@@ -146,6 +146,59 @@ function parseObjectPath(p: string): { bucketName: string; objectName: string } 
   return { bucketName: parts[1], objectName: parts.slice(2).join("/") };
 }
 
+/**
+ * Storage paths come from request data and must be rejected when they are not
+ * a single, normalized object key. Removing ".." is unsafe because it turns a
+ * malicious path into a different, potentially valid object name.
+ */
+function validateStorageRelativePath(value: string, label: string): string {
+  let candidate: string;
+  try {
+    candidate = decodeURIComponent(value.trim());
+  } catch {
+    throw new ObjectNotFoundError();
+  }
+  if (
+    !candidate ||
+    candidate.includes("\0") ||
+    candidate.includes("\\") ||
+    candidate.startsWith("/") ||
+    candidate.endsWith("/") ||
+    candidate.split("/").some((segment) => segment === "" || segment === "." || segment === "..")
+  ) {
+    throw new ObjectNotFoundError();
+  }
+  if (candidate.length > 512) throw new ObjectNotFoundError();
+  if (!candidate.split("/").every((segment) => /^[A-Za-z0-9._-]+$/.test(segment))) {
+    throw new ObjectNotFoundError();
+  }
+  return candidate;
+}
+
+function validatePrivateObjectKey(value: string): string {
+  const candidate = validateStorageRelativePath(value, "private object path");
+  const segments = candidate.split("/");
+  const isDirectUpload = segments.length === 1 && /^[A-Za-z0-9_-]{8,128}$/.test(candidate);
+  const isOrderAsset =
+    segments.length === 4 &&
+    segments[0] === "orders" &&
+    /^[A-Za-z0-9_-]{1,100}$/.test(segments[1]) &&
+    /^\d{1,9}$/.test(segments[2]) &&
+    /^[A-Za-z0-9._-]{1,100}$/.test(segments[3]);
+  if (!isDirectUpload && !isOrderAsset) throw new ObjectNotFoundError();
+  return candidate;
+}
+
+function resolveLocalStoragePath(root: string, relativePath: string, label: string): string {
+  const safePath = validateStorageRelativePath(relativePath, label);
+  const resolvedRoot = path.resolve(root);
+  const resolvedPath = path.resolve(resolvedRoot, safePath);
+  if (resolvedPath !== resolvedRoot && !resolvedPath.startsWith(`${resolvedRoot}${path.sep}`)) {
+    throw new ObjectNotFoundError();
+  }
+  return resolvedPath;
+}
+
 /* ─── Public API used by routes ─────────────────────────────────────────── */
 export class ObjectStorageService {
   constructor() {}
@@ -183,34 +236,42 @@ export class ObjectStorageService {
 
   /* ── Convert any storage URL / path into the canonical /objects/<id> path ── */
   normalizeObjectEntityPath(rawPath: string): string {
+    const directUploadMatch = rawPath.match(/\/api\/storage\/upload-direct\/([^?#]+)/);
+    if (directUploadMatch) return `/objects/${validatePrivateObjectKey(directUploadMatch[1])}`;
+
     if (BACKEND === "r2" || BACKEND === "s3") {
+      let url: URL;
       try {
-        const url = new URL(rawPath);
+        url = new URL(rawPath);
+      } catch {
+        /* not a URL — fall through */
+        url = null as unknown as URL;
+      }
+      if (url) {
         const parts = url.pathname.split("/").filter(Boolean);
         const idx = parts.indexOf("uploads");
         if (idx >= 0 && parts[idx + 1]) {
-          return `/objects/${parts.slice(idx + 1).join("/")}`;
+          return `/objects/${validatePrivateObjectKey(parts.slice(idx + 1).join("/"))}`;
         }
-      } catch {
-        /* not a URL — fall through */
       }
-      if (rawPath.startsWith("/objects/")) return rawPath;
+      if (rawPath.startsWith("/objects/")) {
+        return `/objects/${validatePrivateObjectKey(rawPath.slice("/objects/".length))}`;
+      }
       return rawPath;
     }
 
-    // Local backend — extract uuid from the direct-upload URL
-    const localPattern = /\/api\/storage\/upload-direct\/([^?#]+)/;
-    const match = rawPath.match(localPattern);
-    if (match) return `/objects/${match[1]}`;
-    if (rawPath.startsWith("/objects/")) return rawPath;
+    if (rawPath.startsWith("/objects/")) {
+      return `/objects/${validatePrivateObjectKey(rawPath.slice("/objects/".length))}`;
+    }
     return rawPath;
   }
 
   /* ── Stream a public object back to the client ── */
   async streamPublicObject(filePath: string, res: import("express").Response): Promise<void> {
+    const safeFilePath = validateStorageRelativePath(filePath, "public path");
     if (BACKEND === "r2" || BACKEND === "s3") {
       const { client, bucket } = ensureS3Client();
-      const key = `public/${filePath}`;
+      const key = `public/${safeFilePath}`;
       try {
         const out = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
         await streamS3ObjectToResponse(out, res, true);
@@ -226,8 +287,7 @@ export class ObjectStorageService {
     }
 
     // Local backend
-    const safeFilePath = filePath.replace(/\.\./g, "").replace(/^\/+/, "");
-    const fullPath = path.join(localPublicDir(), safeFilePath);
+    const fullPath = resolveLocalStoragePath(localPublicDir(), safeFilePath, "public path");
     if (!fs.existsSync(fullPath)) {
       res.status(404).json({ error: "File not found" });
       return;
@@ -238,8 +298,7 @@ export class ObjectStorageService {
   /* ── Stream a private uploaded object back to the client ── */
   async streamPrivateObject(objectPath: string, res: import("express").Response): Promise<void> {
     if (!objectPath.startsWith("/objects/")) throw new ObjectNotFoundError();
-    const entityId = objectPath.slice("/objects/".length);
-    if (!entityId) throw new ObjectNotFoundError();
+    const entityId = validatePrivateObjectKey(objectPath.slice("/objects/".length));
 
     if (BACKEND === "r2" || BACKEND === "s3") {
       const { client, bucket } = ensureS3Client();
@@ -258,16 +317,61 @@ export class ObjectStorageService {
     }
 
     // Local backend
-    const safeId = entityId.replace(/\.\./g, "");
-    const fullPath = path.join(localUploadsDir(), safeId);
+    const fullPath = resolveLocalStoragePath(localUploadsDir(), entityId, "object id");
     if (!fs.existsSync(fullPath)) throw new ObjectNotFoundError();
     await streamLocalFileToResponse(fullPath, res, false);
+  }
+
+  /* ── Fetch an object into memory as a buffer ── */
+  async getObjectBuffer(objectPath: string): Promise<Buffer> {
+    if (objectPath.startsWith("/public/")) {
+      const filePath = validateStorageRelativePath(objectPath.slice("/public/".length), "public path");
+      if (BACKEND === "r2" || BACKEND === "s3") {
+        const { client, bucket } = ensureS3Client();
+        const out = await client.send(new GetObjectCommand({ Bucket: bucket, Key: `public/${filePath}` }));
+        if (!out.Body) throw new ObjectNotFoundError();
+        const chunks: Buffer[] = [];
+        for await (const chunk of out.Body as unknown as AsyncIterable<Buffer>) chunks.push(chunk);
+        return Buffer.concat(chunks);
+      }
+      const fullPath = resolveLocalStoragePath(localPublicDir(), filePath, "public path");
+      if (!fs.existsSync(fullPath)) throw new ObjectNotFoundError();
+      return fs.promises.readFile(fullPath);
+    }
+
+    if (!objectPath.startsWith("/objects/")) throw new ObjectNotFoundError();
+    const entityId = validatePrivateObjectKey(objectPath.slice("/objects/".length));
+
+    if (BACKEND === "r2" || BACKEND === "s3") {
+      const { client, bucket } = ensureS3Client();
+      const key = `uploads/${entityId}`;
+      try {
+        const out = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+        if (!out.Body) throw new ObjectNotFoundError();
+        const chunks: Buffer[] = [];
+        for await (const chunk of out.Body as unknown as AsyncIterable<Buffer>) {
+          chunks.push(chunk);
+        }
+        return Buffer.concat(chunks);
+      } catch (err) {
+        const e = err as { name?: string; $metadata?: { httpStatusCode?: number } };
+        if (e?.name === "NoSuchKey" || e?.$metadata?.httpStatusCode === 404) {
+          throw new ObjectNotFoundError();
+        }
+        throw err;
+      }
+    }
+
+    // Local backend
+    const fullPath = resolveLocalStoragePath(localUploadsDir(), entityId, "object id");
+    if (!fs.existsSync(fullPath)) throw new ObjectNotFoundError();
+    return fs.promises.readFile(fullPath);
   }
 
   /* ── Issue a temporary download URL ── */
   async getObjectDownloadURL(objectPath: string, ttlSec = 900): Promise<string> {
     if (!objectPath.startsWith("/objects/")) throw new ObjectNotFoundError();
-    const entityId = objectPath.slice("/objects/".length);
+    const entityId = validatePrivateObjectKey(objectPath.slice("/objects/".length));
 
     if (BACKEND === "r2" || BACKEND === "s3") {
       const { client, bucket } = ensureS3Client();
@@ -303,12 +407,18 @@ export class ObjectStorageService {
     if (!objectPath.startsWith("/objects/")) return objectPath;
     const entityId = objectPath.slice("/objects/".length);
     if (!entityId) throw new Error(`moveObjectToOrderPrefix: empty entityId for ${objectPath}`);
+    const safeEntityId = validatePrivateObjectKey(entityId);
+    const safeOrderNumber = validateStorageRelativePath(String(orderNumber), "order number");
+    if (safeOrderNumber.includes("/")) throw new Error("moveObjectToOrderPrefix: invalid order number");
+    if (!Number.isInteger(itemIdx) || itemIdx < 0 || itemIdx > 999_999_999) {
+      throw new Error(`moveObjectToOrderPrefix: invalid item index ${itemIdx}`);
+    }
 
     if (BACKEND === "r2" || BACKEND === "s3") {
       const { client, bucket } = ensureS3Client();
-      const srcKey = `uploads/${entityId}`;
+      const srcKey = `uploads/${safeEntityId}`;
       const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 100) || "original";
-      const dstKey = `uploads/orders/${orderNumber}/${itemIdx}/${safeFilename}`;
+      const dstKey = `uploads/orders/${safeOrderNumber}/${itemIdx}/${safeFilename}`;
       await client.send(
         new CopyObjectCommand({
           Bucket: bucket,
@@ -323,13 +433,16 @@ export class ObjectStorageService {
     }
 
     // Local backend — rename file to include order info
-    const safeId = entityId.replace(/\.\./g, "");
-    const srcPath = path.join(localUploadsDir(), safeId);
+    const srcPath = resolveLocalStoragePath(localUploadsDir(), safeEntityId, "object id");
     if (!fs.existsSync(srcPath)) {
       throw new Error(`moveObjectToOrderPrefix: source file missing at ${srcPath}`);
     }
     const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 100) || "original";
-    const orderDir = path.join(localUploadsDir(), "orders", orderNumber, String(itemIdx));
+    const orderDir = resolveLocalStoragePath(
+      localUploadsDir(),
+      `orders/${safeOrderNumber}/${itemIdx}`,
+      "order asset directory",
+    );
     ensureLocalDir(orderDir);
     const dstPath = path.join(orderDir, safeFilename);
     fs.renameSync(srcPath, dstPath);

@@ -1,7 +1,7 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { useListProducts } from "@workspace/api-client-react";
-import { getAuthHeaders } from "@/lib/utils";
+import { getAuthHeaders, getApiUrl } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ImageIcon, Upload, Trash2, Pencil, X, Check, Plus, Search,
@@ -23,14 +23,29 @@ interface Mockup {
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
+  isCanonical?: boolean;
+  masterFileUrl?: string | null;
+  masterFileName?: string | null;
+  masterFileMime?: string | null;
+  masterFileSize?: number | null;
+  masterFileSha256?: string | null;
+  sourceKitKey?: string | null;
+  face?: string | null;
+  color?: string | null;
+  manifestJson?: Record<string, unknown> | null;
+  ingestionStatus?: "preview-only" | "pending" | "ready" | "failed";
+  ingestionError?: string | null;
 }
 
-const API = import.meta.env.VITE_API_URL ?? "";
-
 async function apiFetch(path: string, opts: RequestInit = {}) {
-  const res = await fetch(`${API}${path}`, {
+  const res = await fetch(getApiUrl(path), {
     ...opts,
-    headers: { "Content-Type": "application/json", ...getAuthHeaders(), ...(opts.headers ?? {}) },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+      ...getAuthHeaders(),
+      ...(opts.headers ?? {}),
+    },
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -39,14 +54,110 @@ async function apiFetch(path: string, opts: RequestInit = {}) {
   return res.json();
 }
 
-async function uploadFile(file: File): Promise<string> {
+function isMasterFile(file: File): boolean {
+  return /\.(psd|psb)$/i.test(file.name) || [
+    "image/vnd.adobe.photoshop",
+    "application/vnd.adobe.photoshop",
+    "image/x-photoshop",
+  ].includes(file.type);
+}
+
+function contentTypeFor(file: File): string {
+  if (/\.psb$/i.test(file.name)) return "application/vnd.adobe.photoshop";
+  if (/\.psd$/i.test(file.name)) return "image/vnd.adobe.photoshop";
+  if (file.type) return file.type;
+  return "application/octet-stream";
+}
+
+async function uploadFile(file: File, visibility: "public" | "private" = "public"): Promise<string> {
+  const contentType = contentTypeFor(file);
   const { uploadURL, objectPath } = await apiFetch("/api/storage/uploads/request-url", {
     method: "POST",
-    body: JSON.stringify({ contentType: file.type, size: file.size }),
+    body: JSON.stringify({
+      name: `mockup-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80)}`,
+      contentType,
+      size: file.size,
+    }),
   });
-  await fetch(uploadURL, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
-  const base = import.meta.env.VITE_R2_PUBLIC_URL ?? import.meta.env.VITE_CDN_URL ?? "";
-  return base ? `${base}/${objectPath}` : `${API}/api/storage/public-objects/${objectPath}`;
+  const put = await fetch(uploadURL, { method: "PUT", body: file, headers: { "Content-Type": contentType } });
+  if (!put.ok) throw new Error(`Storage upload failed (${put.status})`);
+  if (visibility === "private") return objectPath;
+  return getApiUrl(`/api/storage/public-objects/${objectPath}`);
+}
+
+async function sha256File(file: File): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function buildIngestionManifest(masterFile: File | null, sourceKitKey: string | null | undefined, masterFileSha256: string | null) {
+  if (!masterFile || !sourceKitKey || !masterFileSha256) return null;
+  try {
+    const response = await fetch("/mockups/psd-master-v10/runtime-roles/manifest.json", { cache: "no-store" });
+    if (!response.ok) return null;
+    const release = await response.json() as {
+      surfaces?: Array<{
+        surfaceKey: string;
+        family: string;
+        color: string;
+        view: string;
+        masterPath: string;
+        masterChecksum: string;
+        printZone: { x: number; y: number; w: number; h: number };
+        normalizedFrame?: { canvasWidth: number; canvasHeight: number };
+        smartObject?: { layerName: string };
+        roles: Record<string, { path: string; sha256: string; sourceLayerPrefix: string }>;
+      }>;
+    };
+    const surface = release.surfaces?.find((candidate) => candidate.surfaceKey === sourceKitKey);
+    if (!surface || !surface.roles) return null;
+    const runtimeRoles = Object.fromEntries(
+      Object.entries(surface.roles).map(([role, asset]) => [
+        role,
+        {
+          ...asset,
+          path: `/mockups/psd-master-v10/runtime-roles/${surface.family}/${surface.color}/${asset.path.split("/").pop()}`,
+        },
+      ]),
+    );
+    return {
+      schema: "trynext-smart-mockup-ingestion/v1",
+      releaseVersion: "smart-v10.3",
+      sourceKitKey,
+      category: surface.family,
+      color: surface.color,
+      face: surface.view,
+      master: {
+        fileName: masterFile.name,
+        mime: contentTypeFor(masterFile),
+        size: masterFile.size,
+        // The server recomputes and binds this checksum to the uploaded bytes.
+        // Never use the catalog checksum here: an uploaded replacement master
+        // must be validated from its actual contents.
+        sha256: masterFileSha256,
+        provenance: "catalog-psd-smart-object",
+         smartObjectLayer: surface.smartObject?.layerName ?? "",
+         geometry: {
+           canvasWidth: surface.normalizedFrame?.canvasWidth ?? 1024,
+           canvasHeight: surface.normalizedFrame?.canvasHeight ?? 1024,
+           x: surface.printZone.x,
+           y: surface.printZone.y,
+           w: surface.printZone.w,
+           h: surface.printZone.h,
+         },
+      },
+      runtimeRoles,
+      printZone: {
+        x: surface.printZone.x / 1024,
+        y: surface.printZone.y / 1024,
+        w: surface.printZone.w / 1024,
+        h: surface.printZone.h / 1024,
+      },
+      blendModes: { shadow: "multiply", highlight: "screen", protected: "source-over" },
+    };
+  } catch {
+    return null;
+  }
 }
 
 function TagBadge({ tag, onRemove }: { tag: string; onRemove?: () => void }) {
@@ -69,6 +180,7 @@ interface EditModal {
 export default function AdminMockups() {
   const [mockups, setMockups] = useState<Mockup[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState("");
   const [filterProduct, setFilterProduct] = useState<string>("");
@@ -83,7 +195,9 @@ export default function AdminMockups() {
   const [editActive, setEditActive] = useState(true);
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [uploadTarget, setUploadTarget] = useState<Mockup | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: productsData } = useListProducts({ limit: 200 });
@@ -91,6 +205,7 @@ export default function AdminMockups() {
 
   const fetchMockups = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const params = new URLSearchParams();
       if (search) params.set("q", search);
@@ -99,37 +214,85 @@ export default function AdminMockups() {
       const data = await apiFetch(`/api/admin/mockups?${params}`);
       setMockups(Array.isArray(data) ? data : []);
     } catch (err: any) {
+      setLoadError(err.message || "Could not load mockups.");
       toast({ title: "Failed to load mockups", description: err.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
   }, [search, filterProduct, filterActive]);
 
-  useState(() => {
+  useEffect(() => {
     void fetchMockups();
-  });
+  }, [fetchMockups]);
 
   const handleUpload = async (files: FileList | null) => {
     if (!files?.length) return;
+    const target = uploadTarget;
+    const selected = Array.from(files);
+    const masters = selected.filter(isMasterFile);
+    const previews = selected.filter(file => file.type.startsWith("image/"));
+    if (masters.length > 0 && previews.length === 0 && !target?.imageUrl) {
+      toast({ title: "PSD/PSB preview required", description: "Select the editable PSD/PSB together with a PNG, JPG, or WebP preview.", variant: "destructive" });
+      return;
+    }
     setUploading(true);
     try {
-      for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/")) continue;
-        const imageUrl = await uploadFile(file);
-        const name = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
-        await apiFetch("/api/admin/mockups", {
+      const previewFiles = previews.length ? previews : [null];
+      for (let i = 0; i < Math.max(previewFiles.length, masters.length || 1); i++) {
+        const previewFile = previewFiles[i] ?? previewFiles[0] ?? null;
+        const masterFile = masters[i] ?? masters[0] ?? null;
+        const imageUrl = previewFile ? await uploadFile(previewFile, "public") : target?.imageUrl;
+        if (!imageUrl) throw new Error("A preview image is required for every gallery record.");
+        const masterFileUrl = masterFile ? await uploadFile(masterFile, "private") : null;
+        const masterFileSha256 = masterFile ? await sha256File(masterFile) : null;
+        const manifestJson = await buildIngestionManifest(masterFile, target?.sourceKitKey, masterFileSha256);
+        const fileName = (masterFile ?? previewFile)?.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ") ?? "Mockup";
+        const name = target ? `${target.name} — override` : fileName;
+        const tags = Array.from(new Set([...(target?.tags ?? []), ...(target ? ["override"] : ["uploaded"]), ...(masterFile ? ["psd-master"] : [])]));
+        const created = await apiFetch("/api/admin/mockups", {
           method: "POST",
-          body: JSON.stringify({ name, imageUrl }),
+          body: JSON.stringify({
+            name,
+            description: masterFile ? `Editable ${/\.psb$/i.test(masterFile.name) ? "PSB" : "PSD"} master with preview` : target ? `Editable override for ${target.name}` : null,
+            productId: target?.productId ?? null,
+            productName: target?.productName ?? null,
+            imageUrl,
+            masterFileUrl,
+            masterFileName: masterFile?.name ?? null,
+            masterFileMime: masterFile ? contentTypeFor(masterFile) : null,
+            masterFileSize: masterFile?.size ?? null,
+            masterFileSha256,
+            sourceKitKey: target?.sourceKitKey ?? null,
+            face: target?.face ?? null,
+            color: target?.color ?? null,
+            manifestJson,
+            // The API decides readiness only after the complete source-kit
+            // manifest and all six runtime roles have been validated.
+            ingestionStatus: masterFile ? "pending" : "preview-only",
+            tags,
+            isActive: true,
+            sortOrder: target?.sortOrder ?? 0,
+          }),
         });
-        toast({ title: "Mockup uploaded", description: name });
+        toast({
+          title: masterFile ? (created.ingestionStatus === "ready" ? "Validated PSD/PSB master uploaded" : "PSD/PSB queued for validation") : target ? "Live override uploaded" : "Mockup uploaded",
+          description: created.ingestionStatus === "failed" ? created.ingestionError : name,
+          variant: created.ingestionStatus === "failed" ? "destructive" : "default",
+        });
       }
       await fetchMockups();
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });
     } finally {
       setUploading(false);
+      setUploadTarget(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const startUpload = (target: Mockup | null = null) => {
+    setUploadTarget(target);
+    window.setTimeout(() => fileInputRef.current?.click(), 0);
   };
 
   const openEdit = (m: Mockup) => {
@@ -182,6 +345,7 @@ export default function AdminMockups() {
   };
 
   const deleteMockup = async (id: number) => {
+    setDeletingId(id);
     try {
       await apiFetch(`/api/admin/mockups/${id}`, { method: "DELETE" });
       toast({ title: "Mockup deleted" });
@@ -189,10 +353,14 @@ export default function AdminMockups() {
       setConfirmDelete(null);
     } catch (err: any) {
       toast({ title: "Delete failed", description: err.message, variant: "destructive" });
+    } finally {
+      setDeletingId(null);
     }
   };
 
   const moveSort = async (id: number, direction: "up" | "down") => {
+    const current = mockups.find(m => m.id === id);
+    if (current?.isCanonical) return;
     const idx = mockups.findIndex(m => m.id === id);
     if (idx < 0) return;
     const newMockups = [...mockups];
@@ -225,7 +393,9 @@ export default function AdminMockups() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={fetchMockups}
+              type="button"
+              onClick={() => void fetchMockups()}
+              aria-label="Refresh mockup gallery"
               disabled={loading}
               className="p-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
               title="Refresh"
@@ -235,13 +405,13 @@ export default function AdminMockups() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,.psd,.psb"
               multiple
               className="hidden"
               onChange={e => handleUpload(e.target.files)}
             />
             <button
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => startUpload()}
               disabled={uploading}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm text-white disabled:opacity-60"
               style={{ background: "linear-gradient(135deg, #E85D04, #FB8500)" }}
@@ -300,14 +470,22 @@ export default function AdminMockups() {
         >
           <ImageIcon className="w-8 h-8 text-gray-300 mx-auto mb-2" />
           <p className="text-sm text-gray-400 font-medium">Drag & drop mockup images here, or click <strong className="text-orange-500">Upload Mockups</strong></p>
-          <p className="text-xs text-gray-300 mt-1">PNG, JPG, WebP · Multiple files supported</p>
+              <p className="text-xs text-gray-300 mt-1">PNG, JPG, WebP · PSD/PSB master + preview pair · Multiple files supported</p>
         </div>
 
         {/* Grid */}
-        {loading ? (
+         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
           </div>
+         ) : loadError ? (
+           <div className="rounded-2xl border border-red-200 bg-red-50 px-6 py-12 text-center">
+             <p className="font-black text-red-700">Could not load mockups</p>
+             <p className="mt-1 text-sm text-red-600">{loadError}</p>
+             <button type="button" onClick={() => void fetchMockups()} className="mt-4 rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-100">
+               Try again
+             </button>
+           </div>
         ) : mockups.length === 0 ? (
           <div className="text-center py-20">
             <ImageIcon className="w-12 h-12 text-gray-200 mx-auto mb-4" />
@@ -318,7 +496,7 @@ export default function AdminMockups() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             <AnimatePresence>
               {mockups.map((m, idx) => (
-                <motion.div
+               <motion.div
                   key={m.id}
                   layout
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -344,8 +522,8 @@ export default function AdminMockups() {
                         <span className="text-[10px] font-black text-gray-400 bg-white/80 px-2 py-0.5 rounded-full">INACTIVE</span>
                       </div>
                     )}
-                    {/* Sort arrows */}
-                    <div className="absolute left-1 top-1/2 -translate-y-1/2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {/* Database-upload controls are intentionally hidden for canonical source-kit rows. */}
+                    {!m.isCanonical && <div className="absolute left-1 top-1/2 -translate-y-1/2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={e => { e.stopPropagation(); moveSort(m.id, "up"); }}
                         disabled={idx === 0}
@@ -360,9 +538,9 @@ export default function AdminMockups() {
                       >
                         <ChevronDown className="w-3 h-3" />
                       </button>
-                    </div>
+                    </div>}
                     {/* Action buttons */}
-                    <div className="absolute top-1 right-1 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {!m.isCanonical && <div className="absolute top-1 right-1 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={e => { e.stopPropagation(); openEdit(m); }}
                         className="p-1 rounded-lg bg-white/90 text-gray-700 hover:bg-white shadow-sm"
@@ -384,7 +562,21 @@ export default function AdminMockups() {
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
-                    </div>
+                    </div>}
+                    {m.isCanonical && (
+                      <>
+                        <button
+                          onClick={e => { e.stopPropagation(); startUpload(m); }}
+                          className="absolute top-1 right-1 p-1 rounded-lg bg-orange-500 text-white opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                          title="Upload editable live override"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                        <span className="absolute bottom-2 left-2 text-[8px] font-black uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-white/90 text-orange-600 shadow-sm">
+                          Source kit · click pencil to override
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   {/* Info */}
@@ -395,6 +587,21 @@ export default function AdminMockups() {
                         <Package className="w-2.5 h-2.5 shrink-0" /> {m.productName}
                       </p>
                     )}
+                    {m.masterFileName && (
+                      <p className="text-[9px] text-purple-600 mt-1 truncate" title={m.masterFileName}>Editable master: {m.masterFileName}</p>
+                    )}
+                     {m.ingestionStatus && (
+                       <div className="mt-1">
+                         <span className={`inline-flex text-[8px] font-bold px-1.5 py-0.5 rounded-full ${m.ingestionStatus === "ready" ? "bg-emerald-50 text-emerald-700" : m.ingestionStatus === "failed" ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700"}`}>
+                           {m.ingestionStatus}
+                         </span>
+                         {m.ingestionError && (
+                           <p className="mt-1 line-clamp-3 text-[9px] leading-3 text-red-600" title={m.ingestionError}>
+                             {m.ingestionError}
+                           </p>
+                         )}
+                       </div>
+                     )}
                     {Array.isArray(m.tags) && m.tags.length > 0 && (
                       <div className="flex flex-wrap gap-0.5 mt-1">
                         {m.tags.slice(0, 3).map(t => (
@@ -511,6 +718,25 @@ export default function AdminMockups() {
                   </div>
                 </div>
 
+                 {editModal.mockup.masterFileUrl && (
+                  <div className="p-3 rounded-xl bg-purple-50 border border-purple-100 space-y-2">
+                    <div>
+                      <p className="text-sm font-bold text-purple-900">Editable master binding</p>
+                       <p className="text-[11px] text-purple-700">Only a complete PSD/PSB source package with matching six-role runtime assets can become ready. Readiness is controlled by server validation.</p>
+                    </div>
+                     <div className="flex items-center justify-between rounded-lg border border-purple-100 bg-white px-3 py-2">
+                       <span className="text-[11px] font-bold text-purple-700">Validation status</span>
+                       <span className={`text-[11px] font-black ${editModal.mockup.ingestionStatus === "ready" ? "text-emerald-700" : editModal.mockup.ingestionStatus === "failed" ? "text-red-700" : "text-amber-700"}`}>
+                         {editModal.mockup.ingestionStatus ?? "pending"}
+                       </span>
+                     </div>
+                     {editModal.mockup.ingestionError && (
+                       <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[10px] leading-4 text-red-700">{editModal.mockup.ingestionError}</p>
+                     )}
+                    <p className="text-[10px] text-purple-700 truncate" title={editModal.mockup.masterFileName ?? undefined}>Master: {editModal.mockup.masterFileName ?? "attached"}</p>
+                  </div>
+                )}
+
                 {/* Active */}
                 <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
                   <div>
@@ -576,8 +802,8 @@ export default function AdminMockups() {
               <h3 className="font-black text-gray-800 mb-2">Delete Mockup?</h3>
               <p className="text-sm text-gray-500 mb-5">This cannot be undone.</p>
               <div className="flex gap-2">
-                <button onClick={() => setConfirmDelete(null)} className="flex-1 py-2.5 rounded-xl text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50">Cancel</button>
-                <button onClick={() => deleteMockup(confirmDelete!)} className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600">Delete</button>
+               <button type="button" onClick={() => deletingId === null && setConfirmDelete(null)} disabled={deletingId !== null} className="flex-1 py-2.5 rounded-xl text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50">Cancel</button>
+                <button type="button" onClick={() => deleteMockup(confirmDelete!)} disabled={deletingId !== null} className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 disabled:opacity-60">{deletingId !== null ? "Deleting…" : "Delete"}</button>
               </div>
             </motion.div>
           </motion.div>

@@ -1,6 +1,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db, settingsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { validateBackgroundRemovalOutput } from "../lib/transformedImageValidation";
 
 const router: IRouter = Router();
 
@@ -11,6 +12,7 @@ const router: IRouter = Router();
 const MAX_CALLS = 60;          // max remove-bg calls per IP per window (server API key calls only)
 const WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const MAX_PAYLOAD_BYTES = 10 * 1024 * 1024; // 10 MB base64 image cap
+const REMOVE_BG_UPSTREAM_TIMEOUT_MS = 15_000;
 
 interface RateBucket { count: number; resetAt: number }
 const rateBuckets = new Map<string, RateBucket>();
@@ -86,11 +88,24 @@ router.post("/remove-bg", async (req: Request, res: Response) => {
     formData.append("image_file", blob, "image.png");
     formData.append("size", "auto");
 
-    const response = await fetch("https://api.remove.bg/v1.0/removebg", {
-      method: "POST",
-      headers: { "X-Api-Key": apiKey },
-      body: formData,
-    });
+    let response: globalThis.Response;
+    try {
+      response = await fetch("https://api.remove.bg/v1.0/removebg", {
+        method: "POST",
+        headers: { "X-Api-Key": apiKey },
+        body: formData,
+        signal: AbortSignal.timeout(REMOVE_BG_UPSTREAM_TIMEOUT_MS),
+      });
+    } catch (err) {
+      if ((err as DOMException).name === "TimeoutError") {
+        req.log?.warn?.({ timeoutMs: REMOVE_BG_UPSTREAM_TIMEOUT_MS }, "remove.bg request timed out");
+        return res.status(504).json({
+          error: "remove_bg_timeout",
+          message: "Background removal took too long. Your original artwork was kept; please retry.",
+        });
+      }
+      throw err;
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -108,8 +123,16 @@ router.post("/remove-bg", async (req: Request, res: Response) => {
     }
 
     const resultBuffer = Buffer.from(await response.arrayBuffer());
+    const validation = await validateBackgroundRemovalOutput(resultBuffer);
+    if (!validation.valid) {
+      req.log?.warn?.({ reason: validation.reason }, "remove.bg returned an unaccepted transformed image");
+      return res.status(422).json({
+        error: "invalid_transformed_output",
+        message: "The background-removal output did not pass transparency and image validation. Your original artwork was kept.",
+      });
+    }
     const resultBase64 = `data:image/png;base64,${resultBuffer.toString("base64")}`;
-    return res.json({ result: resultBase64 });
+    return res.json({ result: resultBase64, validation });
   } catch (err) {
     req.log?.error?.({ err }, "remove-bg error");
     return res.status(500).json({ error: "internal_error", message: "Failed to remove background — please try again." });

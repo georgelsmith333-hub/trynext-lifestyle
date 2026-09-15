@@ -1,0 +1,1655 @@
+{
+  "count": 50,
+  "products": [
+    {
+      "name": "Birthday Celebration Tee",
+      "slug": "birthday-celebration-tee",
+      "description": "Celebrate in style with our vibrant 'Happy Birthday' typography T-shirt. Made from 100% premium cotton, it's the perfect gift for your special day.",
+      "price": 699.0,
+      "discountPrice": 599.0,
+      "imageUrl": "/assets/products/tshirt_birthday.png",
+      "images": [
+        "/assets/products/tshirt_birthday.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "birthday",
+        "celebration",
+        "gift"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Apology Kitten Tee",
+      "slug": "apology-kitten-tee",
+      "description": "Say 'I'm Sorry' with this adorable sad kitten illustration. A soft and comfortable way to mend any relationship.",
+      "price": 699.0,
+      "discountPrice": 599.0,
+      "imageUrl": "/assets/products/tshirt_sorry.png",
+      "images": [
+        "/assets/products/tshirt_sorry.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "sorry",
+        "cute",
+        "gift"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Keep Going Motivational Tee",
+      "slug": "keep-going-motivational-tee",
+      "description": "Stay inspired with our minimalist 'Keep Going' T-shirt. Elegant white typography on a premium navy blue base.",
+      "price": 699.0,
+      "discountPrice": 599.0,
+      "imageUrl": "/assets/products/tshirt_motivational.png",
+      "images": [
+        "/assets/products/tshirt_motivational.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "motivational",
+        "minimalist",
+        "inspiration"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Viral Meme Culture Tee",
+      "slug": "viral-meme-culture-tee",
+      "description": "Wear the internet's favorite moments. This trendy T-shirt features a viral meme illustration that's sure to start conversations.",
+      "price": 750.0,
+      "discountPrice": 649.0,
+      "imageUrl": "/assets/products/tshirt_meme.png",
+      "images": [
+        "/assets/products/tshirt_meme.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "meme",
+        "trendy",
+        "viral"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Minimalist Face Line Art Tee",
+      "slug": "minimalist-face-line-art-tee",
+      "description": "A touch of modern art for your wardrobe. Features a continuous line drawing of a human face for a sophisticated, artistic look.",
+      "price": 750.0,
+      "discountPrice": 649.0,
+      "imageUrl": "/assets/products/tshirt_lineart.png",
+      "images": [
+        "/assets/products/tshirt_lineart.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "art",
+        "minimalist",
+        "lineart"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Urban Explorer Streetwear Hoodie",
+      "slug": "urban-explorer-streetwear-hoodie",
+      "description": "Dominate the streets with our 'Urban Explorer' graffiti-style hoodie. Premium fleece for maximum warmth and style.",
+      "price": 1599.0,
+      "discountPrice": 1399.0,
+      "imageUrl": "/assets/products/hoodie_streetwear.png",
+      "images": [
+        "/assets/products/hoodie_streetwear.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "streetwear",
+        "graffiti",
+        "urban"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Cozy Winter Wishes Hoodie",
+      "slug": "cozy-winter-wishes-hoodie",
+      "description": "Stay warm this winter with our 'Winter Wishes' snowflake design. Soft fleece and a cozy fit for those chilly nights.",
+      "price": 1599.0,
+      "discountPrice": 1399.0,
+      "imageUrl": "/assets/products/hoodie_winter.png",
+      "images": [
+        "/assets/products/hoodie_winter.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "winter",
+        "cozy",
+        "snowflake"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Pro Gamer Neon Hoodie",
+      "slug": "pro-gamer-neon-hoodie",
+      "description": "Level up your style with our 'Pro Gamer' neon controller design. Perfect for long gaming sessions and late-night streams.",
+      "price": 1699.0,
+      "discountPrice": 1499.0,
+      "imageUrl": "/assets/products/hoodie_gaming.png",
+      "images": [
+        "/assets/products/hoodie_gaming.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "gaming",
+        "neon",
+        "pro"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Aesthetic Anime Girl Hoodie",
+      "slug": "aesthetic-anime-girl-hoodie",
+      "description": "A minimalist anime-inspired design for the modern fan. Clean lines and a sleek aesthetic on a premium white hoodie.",
+      "price": 1699.0,
+      "discountPrice": 1499.0,
+      "imageUrl": "/assets/products/hoodie_anime.png",
+      "images": [
+        "/assets/products/hoodie_anime.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "anime",
+        "aesthetic",
+        "minimalist"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Stay Wild Nature Hoodie",
+      "slug": "stay-wild-nature-hoodie",
+      "description": "Connect with the outdoors. Our 'Stay Wild' hoodie features nature-inspired typography on a deep forest green base.",
+      "price": 1599.0,
+      "discountPrice": 1399.0,
+      "imageUrl": "/assets/products/hoodie_quote.png",
+      "images": [
+        "/assets/products/hoodie_quote.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "nature",
+        "wild",
+        "outdoors"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Morning Coffee Magic Mug",
+      "slug": "morning-coffee-magic-mug",
+      "description": "Start your day with a touch of magic. This heat-sensitive mug reveals a beautiful sunrise design when filled with hot liquid.",
+      "price": 499.0,
+      "discountPrice": 399.0,
+      "imageUrl": "/assets/products/mug_coffee.png",
+      "images": [
+        "/assets/products/mug_coffee.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "coffee",
+        "magic",
+        "morning"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Best Boss Ever Mug",
+      "slug": "best-boss-ever-mug",
+      "description": "The classic office favorite. High-quality ceramic mug with bold 'Best Boss Ever' typography. A perfect gift for your mentor.",
+      "price": 450.0,
+      "discountPrice": 349.0,
+      "imageUrl": "/assets/products/mug_boss.png",
+      "images": [
+        "/assets/products/mug_boss.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "boss",
+        "office",
+        "gift"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Cute Cat Lover Mug",
+      "slug": "cute-cat-lover-mug",
+      "description": "For the feline enthusiasts. Features a whimsical cat illustration and a 'Purr-fect Morning' message.",
+      "price": 450.0,
+      "discountPrice": 349.0,
+      "imageUrl": "/assets/products/mug_cat.png",
+      "images": [
+        "/assets/products/mug_cat.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "cat",
+        "cute",
+        "pet"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Gaming Over Mug",
+      "slug": "gaming-over-mug",
+      "description": "The ultimate mug for gamers. Features a retro 'Game Over' pixel art design and a controller-shaped handle.",
+      "price": 550.0,
+      "discountPrice": 449.0,
+      "imageUrl": "/assets/products/mug_gameover.png",
+      "images": [
+        "/assets/products/mug_gameover.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "gaming",
+        "retro",
+        "pixel"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Inspirational Dream Mug",
+      "slug": "inspirational-dream-mug",
+      "description": "Chase your dreams with every sip. Elegant gold foil lettering on a matte black ceramic base.",
+      "price": 550.0,
+      "discountPrice": 449.0,
+      "imageUrl": "/assets/products/mug_dream.png",
+      "images": [
+        "/assets/products/mug_dream.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "inspiration",
+        "dream",
+        "elegant"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Classic Streetwear Snapback",
+      "slug": "classic-streetwear-snapback",
+      "description": "A staple for any streetwear collection. Premium 6-panel snapback with a clean, minimalist design.",
+      "price": 850.0,
+      "discountPrice": 699.0,
+      "imageUrl": "/assets/products/cap_street.png",
+      "images": [
+        "/assets/products/cap_street.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "streetwear",
+        "snapback",
+        "classic"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Retro 90s Dad Hat",
+      "slug": "retro-90s-dad-hat",
+      "description": "Bring back the 90s vibe with this washed cotton dad hat. Comfortable, stylish, and perfectly vintage.",
+      "price": 750.0,
+      "discountPrice": 599.0,
+      "imageUrl": "/assets/products/cap_retro.png",
+      "images": [
+        "/assets/products/cap_retro.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "retro",
+        "dadhat",
+        "vintage"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Performance Sports Cap",
+      "slug": "performance-sports-cap",
+      "description": "Designed for athletes. Moisture-wicking fabric and a breathable mesh back to keep you cool during intense workouts.",
+      "price": 950.0,
+      "discountPrice": 799.0,
+      "imageUrl": "/assets/products/cap_sports.png",
+      "images": [
+        "/assets/products/cap_sports.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "sports",
+        "performance",
+        "fitness"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Urban Graffiti Trucker Hat",
+      "slug": "urban-graffiti-trucker-hat",
+      "description": "Make a statement with our 'Urban Graffiti' trucker hat. Features a vibrant, hand-drawn graffiti design on the front panel.",
+      "price": 850.0,
+      "discountPrice": 699.0,
+      "imageUrl": "/assets/products/cap_logo.png",
+      "images": [
+        "/assets/products/cap_logo.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "urban",
+        "graffiti",
+        "trucker"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Minimalist Initial Cap",
+      "slug": "minimalist-initial-cap",
+      "description": "Personalize your look. Features a single, elegantly embroidered initial of your choice on a premium cotton base.",
+      "price": 850.0,
+      "discountPrice": 699.0,
+      "imageUrl": "/assets/products/cap_initial.png",
+      "images": [
+        "/assets/products/cap_initial.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "minimalist",
+        "initial",
+        "personalized"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Abstract Splash Art Tee",
+      "slug": "abstract-splash-art-tee",
+      "description": "Express your creativity with this vibrant abstract splash art T-shirt. A unique piece for the modern artist.",
+      "price": 750.0,
+      "discountPrice": 649.0,
+      "imageUrl": "/assets/products/tshirt_abstract.png",
+      "images": [
+        "/assets/products/tshirt_abstract.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "art",
+        "abstract",
+        "vibrant"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Cyberpunk Dhaka City Tee",
+      "slug": "cyberpunk-dhaka-city-tee",
+      "description": "Dhaka meets the future. A stunning cyberpunk-inspired illustration of the city skyline on a premium black T-shirt.",
+      "price": 799.0,
+      "discountPrice": 699.0,
+      "imageUrl": "/assets/products/tshirt_retro.png",
+      "images": [
+        "/assets/products/tshirt_retro.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "dhaka",
+        "cyberpunk",
+        "future"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Retro Gaming Controller Tee",
+      "slug": "retro-gaming-controller-tee",
+      "description": "For the old-school gamers. Features a classic 8-bit controller design for a nostalgic trip back to the 90s.",
+      "price": 699.0,
+      "discountPrice": 599.0,
+      "imageUrl": "/assets/products/tshirt_gaming.png",
+      "images": [
+        "/assets/products/tshirt_gaming.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "gaming",
+        "retro",
+        "8bit"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Minimalist Nature Leaf Tee",
+      "slug": "minimalist-nature-leaf-tee",
+      "description": "Simple, clean, and elegant. A single leaf line drawing on a premium organic cotton base.",
+      "price": 699.0,
+      "discountPrice": 599.0,
+      "imageUrl": "/assets/products/tshirt_floral.png",
+      "images": [
+        "/assets/products/tshirt_floral.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "nature",
+        "minimalist",
+        "organic"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Cute Panda Hug Tee",
+      "slug": "cute-panda-hug-tee",
+      "description": "Spread the love with this adorable panda hug illustration. Soft, comfortable, and guaranteed to make you smile.",
+      "price": 750.0,
+      "discountPrice": 649.0,
+      "imageUrl": "/assets/products/tshirt_space.png",
+      "images": [
+        "/assets/products/tshirt_space.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "panda",
+        "cute",
+        "love"
+      ],
+      "categoryId": 1
+    },
+    {
+      "name": "Galactic Nebula Fleece Hoodie",
+      "slug": "galactic-nebula-fleece-hoodie",
+      "description": "Wrap yourself in the stars. A high-resolution nebula print on a premium heavy fleece hoodie.",
+      "price": 1799.0,
+      "discountPrice": 1599.0,
+      "imageUrl": "/assets/products/hoodie_explore.png",
+      "images": [
+        "/assets/products/hoodie_explore.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "galaxy",
+        "space",
+        "fleece"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Vintage Varsity Letter Hoodie",
+      "slug": "vintage-varsity-letter-hoodie",
+      "description": "Classic campus style. Features a bold varsity letter patch and a comfortable, relaxed fit.",
+      "price": 1699.0,
+      "discountPrice": 1499.0,
+      "imageUrl": "/assets/products/hoodie_essential.png",
+      "images": [
+        "/assets/products/hoodie_essential.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "varsity",
+        "vintage",
+        "campus"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Minimalist Wave Line Art Hoodie",
+      "slug": "minimalist-wave-line-art-hoodie",
+      "description": "Inspired by the ocean. A continuous line drawing of a wave for a calm, sophisticated look.",
+      "price": 1599.0,
+      "discountPrice": 1399.0,
+      "imageUrl": "/assets/products/hoodie_abstract.png",
+      "images": [
+        "/assets/products/hoodie_abstract.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "ocean",
+        "minimalist",
+        "art"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Retro Synthwave Sun Hoodie",
+      "slug": "retro-synthwave-sun-hoodie",
+      "description": "80s vibes all the way. A vibrant synthwave sun design on a premium charcoal hoodie.",
+      "price": 1699.0,
+      "discountPrice": 1499.0,
+      "imageUrl": "/assets/products/hoodie_retro.png",
+      "images": [
+        "/assets/products/hoodie_retro.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "80s",
+        "synthwave",
+        "retro"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Cozy Oversized Cloud Hoodie",
+      "slug": "cozy-oversized-cloud-hoodie",
+      "description": "Like wearing a cloud. Super soft, oversized fit for the ultimate lounging experience.",
+      "price": 1899.0,
+      "discountPrice": 1699.0,
+      "imageUrl": "/assets/products/hoodie_love.png",
+      "images": [
+        "/assets/products/hoodie_love.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "cozy",
+        "oversized",
+        "soft"
+      ],
+      "categoryId": 2
+    },
+    {
+      "name": "Boss Lady Floral Mug",
+      "slug": "boss-lady-floral-mug",
+      "description": "For the women who lead. Elegant floral design with bold 'Boss Lady' typography.",
+      "price": 550.0,
+      "discountPrice": 449.0,
+      "imageUrl": "/assets/products/mug_plant.png",
+      "images": [
+        "/assets/products/mug_plant.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "boss",
+        "floral",
+        "gift"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Programmer Code Fuel Mug",
+      "slug": "programmer-code-fuel-mug",
+      "description": "Turn coffee into code. Features a 'Code Fuel' message and a syntax-highlighted code snippet.",
+      "price": 499.0,
+      "discountPrice": 399.0,
+      "imageUrl": "/assets/products/mug_initial.png",
+      "images": [
+        "/assets/products/mug_initial.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "programming",
+        "code",
+        "coffee"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Minimalist Mountain Peak Mug",
+      "slug": "minimalist-mountain-peak-mug",
+      "description": "For the explorers. A simple mountain peak silhouette on a clean white ceramic base.",
+      "price": 450.0,
+      "discountPrice": 349.0,
+      "imageUrl": "/assets/products/mug_love.png",
+      "images": [
+        "/assets/products/mug_love.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "mountain",
+        "minimalist",
+        "adventure"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Retro Pixel Heart Mug",
+      "slug": "retro-pixel-heart-mug",
+      "description": "Show your love in 8-bit. A classic red pixel heart design for a nostalgic touch.",
+      "price": 450.0,
+      "discountPrice": 349.0,
+      "imageUrl": "/assets/products/mug_birthday.png",
+      "images": [
+        "/assets/products/mug_birthday.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "love",
+        "retro",
+        "pixel"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Cute Shiba Inu Mug",
+      "slug": "cute-shiba-inu-mug",
+      "description": "Much wow. Very coffee. An adorable Shiba Inu illustration to brighten your morning.",
+      "price": 550.0,
+      "discountPrice": 449.0,
+      "imageUrl": "/assets/products/mug_abstract.png",
+      "images": [
+        "/assets/products/mug_abstract.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "shiba",
+        "cute",
+        "dog"
+      ],
+      "categoryId": 3
+    },
+    {
+      "name": "Vintage Denim Dad Hat",
+      "slug": "vintage-denim-dad-hat",
+      "description": "Effortlessly cool. Premium washed denim for a perfectly worn-in look and feel.",
+      "price": 899.0,
+      "discountPrice": 749.0,
+      "imageUrl": "/assets/products/cap_travel.png",
+      "images": [
+        "/assets/products/cap_travel.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "denim",
+        "vintage",
+        "cool"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Modern Mesh Trucker Cap",
+      "slug": "modern-mesh-trucker-cap",
+      "description": "Stay cool and stylish. Features a breathable mesh back and a sleek front panel design.",
+      "price": 799.0,
+      "discountPrice": 649.0,
+      "imageUrl": "/assets/products/cap_gaming.png",
+      "images": [
+        "/assets/products/cap_gaming.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "trucker",
+        "modern",
+        "breathable"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Minimalist Peak Snapback",
+      "slug": "minimalist-peak-snapback",
+      "description": "Clean and sharp. A minimalist snapback with a focus on quality and fit.",
+      "price": 850.0,
+      "discountPrice": 699.0,
+      "imageUrl": "/assets/products/cap_space.png",
+      "images": [
+        "/assets/products/cap_space.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "minimalist",
+        "snapback",
+        "sharp"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Retro Stripe Baseball Cap",
+      "slug": "retro-stripe-baseball-cap",
+      "description": "Classic athletic style. Features retro stripes and a comfortable cotton construction.",
+      "price": 750.0,
+      "discountPrice": 599.0,
+      "imageUrl": "/assets/products/cap_floral.png",
+      "images": [
+        "/assets/products/cap_floral.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "retro",
+        "baseball",
+        "athletic"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Tactical Outdoor Performance Cap",
+      "slug": "tactical-outdoor-performance-cap",
+      "description": "Built for the elements. Water-resistant fabric and a secure fit for all your adventures.",
+      "price": 999.0,
+      "discountPrice": 849.0,
+      "imageUrl": "/assets/products/cap_hairday.png",
+      "images": [
+        "/assets/products/cap_hairday.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "tactical",
+        "outdoor",
+        "performance"
+      ],
+      "categoryId": 4
+    },
+    {
+      "name": "Artistic Brush Stroke Long Sleeve",
+      "slug": "artistic-brush-stroke-long-sleeve",
+      "description": "A wearable canvas. Features bold, hand-painted brush strokes for a truly unique look.",
+      "price": 999.0,
+      "discountPrice": 849.0,
+      "imageUrl": "/assets/products/longsleeve_artistic.png",
+      "images": [
+        "/assets/products/longsleeve_artistic.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "art",
+        "brushstroke",
+        "unique"
+      ],
+      "categoryId": 6
+    },
+    {
+      "name": "Vintage Map Explorer Long Sleeve",
+      "slug": "vintage-map-explorer-long-sleeve",
+      "description": "For the world travelers. Features a beautiful vintage map illustration across the chest.",
+      "price": 950.0,
+      "discountPrice": 799.0,
+      "imageUrl": "/assets/products/longsleeve_nature.png",
+      "images": [
+        "/assets/products/longsleeve_nature.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "travel",
+        "map",
+        "explorer"
+      ],
+      "categoryId": 6
+    },
+    {
+      "name": "Minimalist Stripe Sleeve Long Sleeve",
+      "slug": "minimalist-stripe-sleeve-long-sleeve",
+      "description": "Clean and modern. Features subtle stripes on the sleeves for a sophisticated touch.",
+      "price": 899.0,
+      "discountPrice": 749.0,
+      "imageUrl": "/assets/products/longsleeve_typographic.png",
+      "images": [
+        "/assets/products/longsleeve_typographic.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "minimalist",
+        "stripe",
+        "modern"
+      ],
+      "categoryId": 6
+    },
+    {
+      "name": "Retro 80s Grid Long Sleeve",
+      "slug": "retro-80s-grid-long-sleeve",
+      "description": "Back to the future. A vibrant 80s grid design for a bold, nostalgic statement.",
+      "price": 950.0,
+      "discountPrice": 799.0,
+      "imageUrl": "/assets/products/longsleeve_retro80s.png",
+      "images": [
+        "/assets/products/longsleeve_retro80s.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "80s",
+        "grid",
+        "retro"
+      ],
+      "categoryId": 6
+    },
+    {
+      "name": "Cozy Waffle Knit Long Sleeve",
+      "slug": "cozy-waffle-knit-long-sleeve",
+      "description": "The ultimate layering piece. Soft waffle knit fabric for warmth and texture.",
+      "price": 1099.0,
+      "discountPrice": 899.0,
+      "imageUrl": "/assets/products/longsleeve_initial.png",
+      "images": [
+        "/assets/products/longsleeve_initial.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "cozy",
+        "waffle",
+        "texture"
+      ],
+      "categoryId": 6
+    },
+    {
+      "name": "Sleek Matte Black Flask",
+      "slug": "sleek-matte-black-flask",
+      "description": "Sophisticated and stealthy. A premium matte black finish on a double-walled insulated flask.",
+      "price": 1350.0,
+      "discountPrice": 1099.0,
+      "imageUrl": "/assets/products/bottle_retro.png",
+      "images": [
+        "/assets/products/bottle_retro.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "matte",
+        "black",
+        "flask"
+      ],
+      "categoryId": 7
+    },
+    {
+      "name": "Vibrant Ombre Sport Bottle",
+      "slug": "vibrant-ombre-sport-bottle",
+      "description": "Add a splash of color to your workout. A beautiful ombre finish on a lightweight aluminum bottle.",
+      "price": 899.0,
+      "discountPrice": 749.0,
+      "imageUrl": "/assets/products/bottle_floral.png",
+      "images": [
+        "/assets/products/bottle_floral.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "ombre",
+        "sport",
+        "vibrant"
+      ],
+      "categoryId": 7
+    },
+    {
+      "name": "Minimalist Clear Glass Bottle",
+      "slug": "minimalist-clear-glass-bottle",
+      "description": "Pure and clean. High-quality borosilicate glass with a protective silicone sleeve.",
+      "price": 1150.0,
+      "discountPrice": 899.0,
+      "imageUrl": "/assets/products/bottle_initial.png",
+      "images": [
+        "/assets/products/bottle_initial.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": false,
+      "customizable": true,
+      "tags": [
+        "glass",
+        "minimalist",
+        "clean"
+      ],
+      "categoryId": 7
+    },
+    {
+      "name": "Retro 8-Bit Heart Bottle",
+      "slug": "retro-8-bit-heart-bottle",
+      "description": "Level up your hydration. A classic red pixel heart design for the gaming enthusiast.",
+      "price": 950.0,
+      "discountPrice": 799.0,
+      "imageUrl": "/assets/products/bottle_gaming.png",
+      "images": [
+        "/assets/products/bottle_gaming.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "pixel",
+        "heart",
+        "gaming"
+      ],
+      "categoryId": 7
+    },
+    {
+      "name": "Tactical Military Grade Canteen",
+      "slug": "tactical-military-grade-canteen",
+      "description": "Built to survive anything. A heavy-duty canteen with a rugged finish and a secure cap.",
+      "price": 1450.0,
+      "discountPrice": 1199.0,
+      "imageUrl": "/assets/products/bottle_fitness.png",
+      "images": [
+        "/assets/products/bottle_fitness.png"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Grey"
+      ],
+      "stock": 100,
+      "featured": true,
+      "customizable": true,
+      "tags": [
+        "tactical",
+        "canteen",
+        "rugged"
+      ],
+      "categoryId": 7
+    }
+  ]
+}

@@ -8,7 +8,7 @@ export default function TermsOfService() {
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title="Terms of Service"
-        description="TryNex Lifestyle terms of service. Read our terms and conditions for using our website and purchasing products."
+        description="Trynext Lifestyle terms of service. Read our terms and conditions for using our website and purchasing products."
         canonical="/terms-of-service"
       />
       <Navbar />
@@ -20,7 +20,7 @@ export default function TermsOfService() {
             </span>
             <h1 className="section-heading mt-4">Terms of Service</h1>
             <p className="text-gray-500 mt-4 max-w-2xl">
-              By using TryNex Lifestyle's website and services, you agree to the following terms and conditions.
+              By using Trynext Lifestyle's website and services, you agree to the following terms and conditions.
             </p>
             <p className="text-xs text-gray-400 mt-2">Last updated: April 7, 2026</p>
           </div>
@@ -29,7 +29,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-xl font-black text-gray-900 mb-3">1. General</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
-                These Terms of Service govern your use of the TryNex Lifestyle website (trynexshop.com) and all related services. By placing an order, you confirm that you are at least 18 years old (or have parental consent) and agree to be bound by these terms.
+                These Terms of Service govern your use of the Trynext Lifestyle website (trynext.pages.dev) and all related services. By placing an order, you confirm that you are at least 18 years old (or have parental consent) and agree to be bound by these terms.
               </p>
             </section>
 
@@ -43,14 +43,14 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-xl font-black text-gray-900 mb-3">3. Orders & Payment</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
-                An order is confirmed once we verify the advance payment (15% for COD, full amount for mobile banking). We reserve the right to cancel any order due to stock availability, pricing errors, or suspicious activity. Accepted payment methods include bKash, Nagad, Rocket, and Cash on Delivery (COD).
+                An order is confirmed once we verify the 25% advance payment. We reserve the right to cancel any order due to stock availability, pricing errors, or suspicious activity. Accepted payment methods include bKash, Nagad, and uPay. The remaining 75% balance is collected upon delivery.
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-black text-gray-900 mb-3">4. Custom Orders</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
-                Custom-designed products are made to your specifications. Once production begins, custom orders cannot be cancelled. Please review your design details carefully before confirming. TryNex is not responsible for errors in customer-provided designs or text.
+                Custom-designed products are made to your specifications. Once production begins, custom orders cannot be cancelled. Please review your design details carefully before confirming. Trynext is not responsible for errors in customer-provided designs or text.
               </p>
             </section>
 
@@ -75,14 +75,14 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-xl font-black text-gray-900 mb-3">7. Intellectual Property</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
-                All content on this website — including logos, images, text, designs, and graphics — is the property of TryNex Lifestyle and is protected by intellectual property laws. You may not reproduce, distribute, or use any content without our written permission.
+                All content on this website — including logos, images, text, designs, and graphics — is the property of Trynext Lifestyle and is protected by intellectual property laws. You may not reproduce, distribute, or use any content without our written permission.
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-black text-gray-900 mb-3">8. Limitation of Liability</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
-                TryNex Lifestyle shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products. Our total liability for any claim shall not exceed the amount paid for the specific product in question.
+                Trynext Lifestyle shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products. Our total liability for any claim shall not exceed the amount paid for the specific product in question.
               </p>
             </section>
 
@@ -97,7 +97,7 @@ export default function TermsOfService() {
               <h2 className="text-xl font-black text-gray-900 mb-3">10. Contact</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
                 For any questions about these terms, please contact us at{" "}
-                <a href="mailto:hello@trynexshop.com" className="text-orange-600 font-bold hover:underline">hello@trynexshop.com</a>.
+                <a href="mailto:hello@trynextshop.com" className="text-orange-600 font-bold hover:underline">hello@trynextshop.com</a>.
               </p>
             </section>
           </div>

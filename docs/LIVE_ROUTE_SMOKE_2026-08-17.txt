@@ -1,0 +1,18 @@
+/                                          200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/products                                  200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/product/premium-pullover-hoodie           200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/design-studio                             200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/cart                                      200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/checkout                                  200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/track                                     200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/admin/login                               200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/hampers                                   200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+/blog                                      200 Trynext Lifestyle | Premium Custom Apparel Bangladesh
+
+Representative assets
+/assets/products/hoodie_abstract.png                              200 image/png
+/assets/products/longsleeve_stripe.png                            200 image/png
+/assets/products/longsleeve_typographic.png                       200 image/png
+/mockups/canonical/hoodie/white/front.png                         200 image/png
+/mockups/canonical/hoodie/white/back.png                          200 image/png
+/images/product-placeholder.svg                                   200 image/svg+xml

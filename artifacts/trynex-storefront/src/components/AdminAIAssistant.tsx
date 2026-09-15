@@ -18,6 +18,18 @@ interface ChatMessage {
   ts?: number;
 }
 
+async function readApiPayload<T>(res: Response): Promise<T> {
+  const raw = await res.text();
+  if (!raw.trim()) return {} as T;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    const contentType = res.headers.get("content-type") ?? "unknown";
+    const preview = raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 240);
+    throw new Error(`API returned non-JSON (${contentType}, HTTP ${res.status}): ${preview || "empty response"}`);
+  }
+}
+
 interface ExecuteResult {
   id: string;
   command: string;
@@ -46,26 +58,26 @@ interface PreviewData {
 type Tab = "chat" | "execute" | "help";
 type ExecPhase = "idle" | "previewing" | "preview" | "executing";
 
-const CHAT_HISTORY_KEY = "trynex-ai-chat-v2";
-const EXEC_HISTORY_KEY = "trynex-ai-exec-v2";
+const CHAT_HISTORY_KEY = "trynext-ai-chat-v2";
+const EXEC_HISTORY_KEY = "trynext-ai-exec-v2";
 const MAX_HISTORY = 60;
 
 /* ── Chat presets ──────────────────────────────────── */
 const PRESETS = [
   { icon: FileText, label: "Blog Post", color: "#3b82f6", bg: "#eff6ff", border: "#bfdbfe",
-    prompt: "Write a compelling SEO-optimized blog post (700+ words) for TryNex Lifestyle about custom printed t-shirts for Eid in Bangladesh. Include: an engaging intro, tips for choosing the right design, fabric quality (320 GSM), why custom apparel makes great Eid gifts, and a clear call-to-action. Add a meta description suggestion at the end." },
+    prompt: "Write a compelling SEO-optimized blog post (700+ words) for Trynext Lifestyle about custom printed t-shirts for Eid in Bangladesh. Include: an engaging intro, tips for choosing the right design, fabric quality (320 GSM), why custom apparel makes great Eid gifts, and a clear call-to-action. Add a meta description suggestion at the end." },
   { icon: Package, label: "Product Desc", color: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe",
     prompt: "Write 3 product description variants (short, medium, long) for our premium 320 GSM custom t-shirt. Highlight: DTG/screen print quality, AI design studio, upload-your-own artwork, 24-hour production, free delivery above ৳1,500, and delivery across all 64 districts." },
   { icon: MessageSquare, label: "Ad Copy", color: "#E85D04", bg: "#fff7ed", border: "#fed7aa",
-    prompt: "Write 3 Facebook/Instagram ad copy variations for TryNex Lifestyle custom t-shirts targeting Bangladeshis aged 18-35. Include: a short hook (15 words), 2-3 benefit bullets, a CTA, and mention free delivery on orders over ৳1,500." },
+    prompt: "Write 3 Facebook/Instagram ad copy variations for Trynext Lifestyle custom t-shirts targeting Bangladeshis aged 18-35. Include: a short hook (15 words), 2-3 benefit bullets, a CTA, and mention free delivery on orders over ৳1,500." },
   { icon: Sparkles, label: "Design Ideas", color: "#059669", bg: "#ecfdf5", border: "#a7f3d0",
     prompt: "Give me 12 creative custom t-shirt & mug design ideas that will sell well in Bangladesh this season. Consider: Eid, cricket world cup, Bengali new year, retro Dhaka, hip-hop Bangla, couple sets." },
   { icon: TrendingUp, label: "Growth Plan", color: "#0ea5e9", bg: "#f0f9ff", border: "#bae6fd",
-    prompt: "Create a 30-day growth strategy for TryNex Lifestyle to increase sales by 40%. Include: daily social media schedule, Facebook group marketing, WhatsApp broadcast strategy, referral program tactics, and specific promo code strategies." },
+    prompt: "Create a 30-day growth strategy for Trynext Lifestyle to increase sales by 40%. Include: daily social media schedule, Facebook group marketing, WhatsApp broadcast strategy, referral program tactics, and specific promo code strategies." },
   { icon: Tag, label: "Promo Strategy", color: "#d97706", bg: "#fffbeb", border: "#fde68a",
-    prompt: "Design a complete promotional calendar for TryNex Lifestyle for the next 3 months covering Eid, Puja, Pohela Boishakh, and Valentine's Day. Include: discount %, promo code, minimum order, ad copy headline, and duration for each." },
+    prompt: "Design a complete promotional calendar for Trynext Lifestyle for the next 3 months covering Eid, Puja, Pohela Boishakh, and Valentine's Day. Include: discount %, promo code, minimum order, ad copy headline, and duration for each." },
   { icon: Mail, label: "Email Campaign", color: "#8b5cf6", bg: "#f5f3ff", border: "#ddd6fe",
-    prompt: "Write a 5-email welcome sequence for TryNex Lifestyle newsletter subscribers. Email 1: Welcome + 10% off code. Email 2: How the Design Studio works. Email 3: Customer success story. Email 4: Festival design inspiration. Email 5: Referral program intro." },
+    prompt: "Write a 5-email welcome sequence for Trynext Lifestyle newsletter subscribers. Email 1: Welcome + 10% off code. Email 2: How the Design Studio works. Email 3: Customer success story. Email 4: Festival design inspiration. Email 5: Referral program intro." },
   { icon: Users, label: "Customer Reply", color: "#ef4444", bg: "#fef2f2", border: "#fecaca",
     prompt: "Write 5 professional customer service response templates in English AND Bangla for: (1) delayed order, (2) design revision, (3) refund inquiry, (4) quality complaint, (5) post-delivery thank you." },
 ];
@@ -134,10 +146,10 @@ const HELP_CATEGORIES = [
     color: "#059669",
     bg: "#ecfdf5",
     commands: [
-      { label: "Google ranking tips", example: "How do I get TryNex to rank on Google?", desc: "Step-by-step SEO guide" },
+      { label: "Google ranking tips", example: "How do I get Trynext to rank on Google?", desc: "Step-by-step SEO guide" },
       { label: "Target keywords", example: "What keywords should I target for ranking?", desc: "Keyword strategy for Bangladesh" },
       { label: "Site speed advice", example: "How do I improve site speed?", desc: "Core Web Vitals & performance tips" },
-      { label: "Facebook ad strategy", example: "Write a complete Facebook ad strategy for TryNex custom t-shirts", desc: "Ad targeting & budget for Bangladesh market" },
+      { label: "Facebook ad strategy", example: "Write a complete Facebook ad strategy for Trynext custom t-shirts", desc: "Ad targeting & budget for Bangladesh market" },
     ],
   },
   {
@@ -281,7 +293,7 @@ export function AdminAIAssistant() {
     if (open && messages.length === 0) {
       setMessages([{
         role: "assistant",
-        content: "Hi! I'm your TryNex AI assistant. I **stream responses in real-time** and remember our conversation across sessions.\n\nSwitch to **Execute** to run store commands like creating products, updating orders, or managing promo codes. Check the **Help** tab for all available commands.",
+        content: "Hi! I'm your Trynext AI assistant. I **stream responses in real-time** and remember our conversation across sessions.\n\nSwitch to **Execute** to run store commands like creating products, updating orders, or managing promo codes. Check the **Help** tab for all available commands.",
         ts: Date.now(),
       }]);
     }
@@ -334,7 +346,7 @@ export function AdminAIAssistant() {
       });
 
       if (!res.ok || !res.body) {
-        const data = await res.json().catch(() => ({})) as { error?: string };
+        const data = await readApiPayload<{ error?: string }>(res).catch((err: unknown) => ({ error: err instanceof Error ? err.message : "Invalid API response" }));
         throw new Error(data.error || `HTTP ${res.status}`);
       }
 
@@ -417,7 +429,7 @@ export function AdminAIAssistant() {
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({ command }),
       });
-      const data = await res.json() as PreviewData & { error?: string };
+      const data = await readApiPayload<PreviewData & { error?: string }>(res);
       if (!res.ok || data.error) {
         /* Fall through to direct execute on preview failure */
         setExecPhase("idle");
@@ -449,14 +461,14 @@ export function AdminAIAssistant() {
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({ command }),
       });
-      const data = await res.json() as {
+      const data = await readApiPayload<{
         success?: boolean;
         description?: string;
         error?: string;
         details?: string;
         suggestions?: string[];
         undoInfo?: Record<string, unknown>;
-      };
+      }>(res);
 
       if (!res.ok || !data.success) {
         const errMsg = data.error || "Execution failed";
@@ -606,7 +618,7 @@ export function AdminAIAssistant() {
                 <Bot className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-white leading-none">TryNex AI Assistant</p>
+                <p className="text-sm font-black text-white leading-none">Trynext AI Assistant</p>
                 <p className="text-[10px] text-purple-200 mt-0.5">
                   {chatLoading && activeModelLabel
                     ? `Streaming via ${activeModelLabel}…`
@@ -886,7 +898,7 @@ export function AdminAIAssistant() {
                           { label: "Feature a product", ex: "Feature the product 'Black Graphic Custom Tee'" },
                           { label: "Update stock", ex: "Set stock of 'Classic White Custom Tee' to 200" },
                           { label: "Find order", ex: "Find order by customer Rahim" },
-                          { label: "SEO advice", ex: "How do I get TryNex to rank on Google?" },
+                          { label: "SEO advice", ex: "How do I get Trynext to rank on Google?" },
                         ].map(item => (
                           <button key={item.label}
                             onClick={() => { setCmdInput(item.ex); cmdInputRef.current?.focus(); }}

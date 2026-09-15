@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import { getApiUrl, formatPrice, getAuthHeaders } from "@/lib/utils";
 import { Gift, Plus, Trash2, Edit3, X, Save, Star, RefreshCw } from "lucide-react";
@@ -65,10 +66,15 @@ export default function AdminHampers() {
   const { toast } = useToast();
   const [hampers, setHampers] = useState<Hamper[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Partial<Hamper> | null>(null);
+  const [deleteHamperConfirm, setDeleteHamperConfirm] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const res = await fetch(getApiUrl("/api/admin/hampers"), {
         headers: getAuthHeaders(),
@@ -76,7 +82,8 @@ export default function AdminHampers() {
       if (!res.ok) throw new Error("Server error");
       const data = await res.json();
       setHampers(data.hampers || []);
-    } catch {
+    } catch (err: unknown) {
+      setLoadError(err instanceof Error ? err.message : "Could not load hampers.");
       toast({ title: "Failed to load hampers", variant: "destructive" });
     } finally {
       setLoading(false);
@@ -96,6 +103,7 @@ export default function AdminHampers() {
       toast({ title: "Missing fields", description: "Name, slug, and base price are required.", variant: "destructive" });
       return;
     }
+    setSaving(true);
     try {
       const isUpdate = !!editing.id;
       const url = isUpdate ? getApiUrl(`/api/admin/hampers/${editing.id}`) : getApiUrl("/api/admin/hampers");
@@ -114,16 +122,32 @@ export default function AdminHampers() {
       void load();
     } catch {
       toast({ title: "Network error", variant: "destructive" });
+    } finally {
+      setSaving(false);
     }
   };
 
-  const remove = async (id: number) => {
-    if (!confirm("Delete this hamper?")) return;
-    await fetch(getApiUrl(`/api/admin/hampers/${id}`), {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    void load();
+  const remove = (id: number) => setDeleteHamperConfirm(id);
+  const doRemoveHamper = async () => {
+    if (!deleteHamperConfirm) return;
+    setDeletingId(deleteHamperConfirm);
+    try {
+      const res = await fetch(getApiUrl(`/api/admin/hampers/${deleteHamperConfirm}`), {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Could not delete hamper.");
+      }
+      toast({ title: "Hamper deleted" });
+      setDeleteHamperConfirm(null);
+      void load();
+    } catch (err: unknown) {
+      toast({ title: "Delete failed", description: err instanceof Error ? err.message : "Could not delete hamper.", variant: "destructive" });
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const updateItem = (idx: number, patch: Partial<HamperItem>) => {
@@ -179,6 +203,14 @@ export default function AdminHampers() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map(i => <HamperSkeleton key={i} />)}
           </div>
+        ) : loadError ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-6 py-12 text-center">
+            <p className="font-black text-red-700">Could not load gift hampers</p>
+            <p className="mt-1 text-sm text-red-600">{loadError}</p>
+            <button type="button" onClick={() => void load()} className="mt-4 rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-100">
+              Try again
+            </button>
+          </div>
         ) : hampers.length === 0 ? (
           <div className="col-span-full text-center py-16 rounded-2xl bg-gray-50 border border-dashed border-gray-200">
             <Gift className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -226,6 +258,8 @@ export default function AdminHampers() {
                   <button
                     type="button"
                     onClick={() => remove(h.id)}
+                    aria-label={`Delete ${h.name}`}
+                    disabled={deletingId !== null}
                     className="px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold flex items-center transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -236,12 +270,12 @@ export default function AdminHampers() {
           </div>
         )}
 
-        {editing && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto" onClick={e => e.target === e.currentTarget && setEditing(null)}>
-            <div className="bg-white rounded-2xl max-w-2xl w-full my-8 max-h-[90vh] overflow-y-auto shadow-2xl">
+          {editing && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto" onClick={e => e.target === e.currentTarget && !saving && setEditing(null)}>
+            <div className="bg-white rounded-2xl max-w-2xl w-full my-8 max-h-[90vh] overflow-y-auto shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="hamper-editor-title">
               <div className="sticky top-0 bg-white p-4 border-b border-gray-100 flex items-center justify-between z-10">
-                <h2 className="text-xl font-black text-gray-900">{editing.id ? "Edit" : "New"} Hamper</h2>
-                <button type="button" onClick={() => setEditing(null)} className="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+                <h2 id="hamper-editor-title" className="text-xl font-black text-gray-900">{editing.id ? "Edit" : "New"} Hamper</h2>
+                <button type="button" aria-label="Close hamper editor" onClick={() => !saving && setEditing(null)} className="p-1 rounded-lg hover:bg-gray-100 transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -353,16 +387,25 @@ export default function AdminHampers() {
                 </div>
               </div>
               <div className="sticky bottom-0 bg-white p-4 border-t border-gray-100 flex justify-end gap-2">
-                <button type="button" onClick={() => setEditing(null)} className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-sm transition-colors">Cancel</button>
-                <button type="button" onClick={save} className="px-4 py-2 rounded-lg text-white font-bold text-sm flex items-center gap-1.5 transition-all hover:scale-105"
+                <button type="button" onClick={() => !saving && setEditing(null)} disabled={saving} className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-sm transition-colors disabled:opacity-50">Cancel</button>
+                <button type="button" onClick={save} disabled={saving} className="px-4 py-2 rounded-lg text-white font-bold text-sm flex items-center gap-1.5 transition-all hover:scale-105 disabled:opacity-60"
                   style={{ background: "linear-gradient(135deg, #E85D04, #FB8500)" }}>
-                  <Save className="w-4 h-4" /> Save
+                  <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save"}
                 </button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteHamperConfirm !== null}
+        title="Delete Hamper"
+        description="This hamper will be permanently removed."
+        confirmText="Delete"
+        onConfirm={doRemoveHamper}
+        onCancel={() => deletingId === null && setDeleteHamperConfirm(null)}
+      />
     </AdminLayout>
   );
 }

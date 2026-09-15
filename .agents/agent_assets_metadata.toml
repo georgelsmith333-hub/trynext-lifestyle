@@ -1,0 +1,213 @@
+uploads = []
+
+[[generated]]
+id = "-IMnz3uVfQtTxvIlVXyYc"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-waterbottle-real.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "JFrI7hw73jns-JAoHpp7u"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-waterbottle-real-cutout.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "zmvxiu-lTvbu01qhA-CSo"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-hoodie-back-real.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Z9I3ZEgJcvjscf8285Tas"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-longsleeve-front-real.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "SAv2qY1UdDGRR4_ckBXzp"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-longsleeve-back-real.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bY_1gRutBB6TSpOeVLYU4"
+uri = "file://artifacts/trynex-storefront/public/mockups/black-tshirt-front-real.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "DoVBcoTc_JXdQ9kjUGgX5"
+uri = "file://artifacts/trynex-storefront/public/mockups/black-tshirt-back-real.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "aMz9a1jIYLGuV5Um1WknL"
+uri = "file://artifacts/trynex-storefront/public/mockups/black-hoodie-front-real.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "2jYNglQ_vB7l2mPC8UNux"
+uri = "file://artifacts/trynex-storefront/public/mockups/black-hoodie-back-real.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "LHkru5fH3OyXuYf1um5nn"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-tshirt-back.png"
+type = "image"
+title = "White t-shirt back"
+
+[[generated]]
+id = "A_pgMO0FYzuHdc_Acl02y"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-hoodie-front.png"
+type = "image"
+title = "White hoodie front"
+
+[[generated]]
+id = "ZH7XNjMsNad2eEWR2q_j_"
+uri = "file://artifacts/trynex-storefront/public/mockups/black-tshirt-front.png"
+type = "image"
+title = "Black t-shirt front"
+
+[[generated]]
+id = "L_n8KnlYYYJNYcQ4Vr4JL"
+uri = "file://artifacts/trynex-storefront/public/mockups/black-hoodie-front.png"
+type = "image"
+title = "Black hoodie front"
+
+[[generated]]
+id = "GmjNTq1Glk8O6RwjqgA4M"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-longsleeve-front.png"
+type = "image"
+title = "White long sleeve front"
+
+[[generated]]
+id = "ZsHiVWoqOaYLu8qIM2K-c"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-longsleeve-back.png"
+type = "image"
+title = "White long sleeve back"
+
+[[generated]]
+id = "qBJgL29CIkMuxQeoRvKAg"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-cap-front.png"
+type = "image"
+title = "White cap front"
+
+[[generated]]
+id = "48ZrtsGK8q8rbSy-gsL58"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-mug-front.png"
+type = "image"
+title = "White mug side"
+
+[[generated]]
+id = "3ma7NSUGGdr1XkqZLIcVK"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-waterbottle-front.png"
+type = "image"
+title = "White water bottle front"
+
+[[generated]]
+id = "O6wTCB1fGIebbkWYYZJ3_"
+uri = "file://artifacts/trynex-storefront/public/mockups/black-mug-front.png"
+type = "image"
+title = "Black mug side"
+
+[[generated]]
+id = "0EskMQ19U2K51ZQbzQU9i"
+uri = "file://artifacts/trynex-storefront/public/mockups/white-tshirt-front-new.png"
+type = "image"
+title = "generated_image"
+
+[[outputs]]
+id = "MC6gfx4CAEVELR0DuNTVC"
+uri = "file://trynext-report.tar.gz"
+type = "unspecified"
+title = "Trynext Lifestyle — Comprehensive A-Z Technical Report (HTML)"
+logical_id = "dbe83b25-8d0d-4cce-b7e5-c403f1121793"
+
+[[outputs]]
+id = "t944LzLLmITVlhl1uJ6Aw"
+uri = "file://artifacts/trynex-storefront/public/screenshots/garment-preview.jpg"
+type = "image"
+title = "GarmentSVG Preview — all products × colors (new background)"
+logical_id = "17a9ac21-7d44-4fca-800a-07d3e325c7e1"
+
+[[outputs]]
+id = "d2tWF2y13N9HSoXqfhWuF"
+uri = "file://artifacts/trynex-storefront/public/screenshots/design-studio.jpg"
+type = "image"
+title = "Design Studio after usability fixes"
+logical_id = "aa5c3cbf-e49f-4d83-acb5-5bf541aef52a"
+
+[[outputs]]
+id = "WTezKnuAfRksu6n6icAK-"
+uri = "file://artifacts/trynex-storefront/public/redesign-shots/garment-preview.jpg"
+type = "image"
+title = "All products on clean white background"
+logical_id = "7a172542-1648-47f2-a4c7-9658af458bee"
+
+[[outputs]]
+id = "qgQ5sueToaqXGbFpYOA9n"
+uri = "file://artifacts/trynex-storefront/public/redesign-shots/design-studio.jpg"
+type = "image"
+title = "Design Studio — white mockups, auto-curve, auto-fix"
+logical_id = "6e3935f3-d957-4f59-ae5a-1b50c3fc22f4"
+
+[[outputs]]
+id = "J8ntLumiN0M57tapXbQD-"
+uri = "file://reports/Trynext_Audit_and_Fix_Plan.pdf"
+type = "pdf"
+title = "Trynext Lifestyle — A-to-Z Audit & Fix Plan PDF"
+logical_id = "efb86a54-1505-4ec5-917e-17842acb9f2d"
+
+[[outputs]]
+id = "tkoZ-4z41S2eTZNbNaEAr"
+uri = "file://SUPER_COMMAND.txt"
+type = "text"
+title = "Trynext Super Command Briefing"
+logical_id = "b70f3d58-bba0-4599-93e6-80e779076f0f"
+
+[[outputs]]
+id = "sX3NiHZhNiv6fbpB6cQWr"
+uri = "file://Trynext_DesignStudio_MasterPlan.pdf"
+type = "pdf"
+title = "Trynext Design Studio — Master Rebuild & Fix Plan"
+logical_id = "c40ba833-693f-49cb-b964-f2102668d2a0"
+
+[[outputs]]
+id = "_cf4ZNLyvIu7NB6tiqgMe"
+uri = "file://reports/trynext-complete-overview-2026-09-01.pdf"
+type = "pdf"
+title = "Trynext complete deployment and audit overview"
+description = "Four-page PDF covering architecture, code changes, automated and live verification, and the remaining GitHub, Cloudflare, DNS, and Upstash release blockers."
+logical_id = "8bd72534-7699-4c4a-90ed-24d5d6414afd"
+
+[[outputs]]
+id = "RGEggmd-o0DJh7YCBLEoB"
+uri = "file://verification/trynext-full-stack-audit-2026-09-02.pdf"
+type = "pdf"
+title = "Trynext Lifestyle Full-Stack Audit - 02 Sep 2026"
+description = "Evidence-backed 15-page overview of architecture, product/mockup matrix, PSD/PSB Smart Object status, security, deployment, verification, limitations, and remaining risks."
+logical_id = "c8a2195f-1899-4ff0-8010-41f84be15956"
+content_hash = "sha256:2e6cb6d5a73afebcc56e05b3d34a1f23828caa18b187e519669b875483971265"
+size = 43222
+mtime_ms = 1788295850171
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:e4be849f-caca-4522-84bf-2fdc68a94de8/c8a2195f-1899-4ff0-8010-41f84be15956/ab97a6bc-7170-4d23-be1e-14057db5c63e"
+storage_version_token = "1788295865761427"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "8U-uXZ1jxh5ZEonvzoaTt"
+uri = "file://verification/trynext-full-stack-audit-2026-09-03.pdf"
+type = "pdf"
+title = "Trynext Lifestyle full-stack audit — September 3, 2026"
+description = "Regenerated 12-page audit evidence PDF covering the 188-surface Smart v9 quarantine gate, commerce/payment/mobile verification, dependency audit, protected routes, and the remaining visual-approval limitation."
+logical_id = "a56ee804-3a31-44e2-82eb-2742f2a04dc5"
+content_hash = "sha256:f10fe4d4a710d35013228cd7aa94212679bedf23bd30cdb312f1c2a1d13ffeb9"
+size = 1334621
+mtime_ms = 1788400732012
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:93fcfc3e-9531-4b79-82c3-bffd85d9441b/a56ee804-3a31-44e2-82eb-2742f2a04dc5/44eed155-c528-4070-b7a5-0751c2241a32"
+storage_version_token = "1788401991940358"
+content_type = "application/pdf"

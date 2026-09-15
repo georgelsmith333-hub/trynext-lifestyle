@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "cap:forest:front",
+  "category": "cap",
+  "colorSlug": "forest",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/cap-forest-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/cap/forest/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/cap-forest-front.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    162,
+    184,
+    862,
+    839
+  ],
+  "sha256": "12faed203db137087daf6e1a8cf0b8a5ccbf8453f44a9fd0c9cfc8a4df34f640",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

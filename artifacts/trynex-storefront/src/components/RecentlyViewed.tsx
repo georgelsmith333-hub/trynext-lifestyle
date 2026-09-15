@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
-import { formatPrice, getApiUrl } from "@/lib/utils";
+import { formatPrice, resolveImageUrl } from "@/lib/utils";
 import { Clock, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -11,7 +11,7 @@ export function RecentlyViewed() {
 
   return (
     <section className="py-16 px-4" style={{ background: '#FAFAFA' }}>
-      <div className="max-w-7xl mx-auto">
+      <div className="container-wide mx-auto">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
             style={{ background: 'rgba(232,93,4,0.06)', border: '1px solid rgba(232,93,4,0.12)' }}>
@@ -29,12 +29,12 @@ export function RecentlyViewed() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
             >
-              <Link href={`/product/${item.id}`}>
+              <Link href={`/product/${(item as any).slug || item.id}`}>
                 <div className="group bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
                   style={{ border: '1px solid #f0f0f0', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
                   <div className="aspect-square overflow-hidden bg-gray-50" style={{ aspectRatio: '1/1' }}>
                     <img
-                      src={item.imageUrl?.startsWith('http') ? item.imageUrl : (item.imageUrl ? getApiUrl(item.imageUrl) : '')}
+                      src={resolveImageUrl(item.imageUrl)}
                       alt={item.name}
                       width={400}
                       height={400}

@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "waterbottle:navy:back",
+  "category": "waterbottle",
+  "colorSlug": "navy",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/waterbottle-navy-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/waterbottle/navy/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psb/waterbottle-navy-back.psb",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    351,
+    78,
+    673,
+    944
+  ],
+  "sha256": "5606052b517207835c82c897080a5415c51d7b5f383702c141af074c841ebfb4",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

@@ -6,6 +6,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { composeGarmentMockup } from "@/pages/design-studio/composer";
 import type { ComposerPrintZone } from "@/pages/design-studio/composer";
+import { PRODUCTS, resolveMockup } from "@/pages/design-studio/mockups";
 
 export type GarmentCategory = "tshirt" | "longsleeve" | "hoodie" | "mug" | "cap" | "waterbottle";
 
@@ -52,9 +53,26 @@ function parseMeta(note?: string): Record<string, unknown> | null {
 export function useCartItemPreview(item: CartItemPreviewInput): CartItemPreviewPayload {
   const meta = useMemo(() => parseMeta(item.customNote), [item.customNote]);
   const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
+  const resolvedMockup = useMemo(() => {
+    const category = toCategory(meta?.category);
+    const product = PRODUCTS.find((candidate) => candidate.category === category);
+    if (!product || !meta?.colorHex) return null;
+    const face = meta.previewFace === "back"
+      || (category === "mug" && meta.mugMode === "side2")
+      ? "back"
+      : "front";
+    return resolveMockup(product, meta.colorHex as string, face);
+  }, [meta]);
 
   useEffect(() => {
-    if (item.imageUrl || !meta?.mockupSrc || !meta?.colorHex || !meta?.printZone) {
+    // Re-resolve every fallback through the accepted v10.3 catalog. Persisted
+    // cart notes can outlive a release and must never reintroduce an old
+    // source-kit path or silently substitute a different garment color.
+    const garmentSrc = resolvedMockup?.runtimeStatus === "approved"
+      ? resolvedMockup.cutoutSrc
+      : undefined;
+    const printZone = (meta?.printZone as ComposerPrintZone | undefined) ?? resolvedMockup?.printZone;
+    if (item.imageUrl || !garmentSrc || !meta?.colorHex || !printZone) {
       setFallbackSrc(null);
       return;
     }
@@ -64,17 +82,21 @@ export function useCartItemPreview(item: CartItemPreviewInput): CartItemPreviewP
         const canvas = document.createElement("canvas");
         await composeGarmentMockup({
           canvas,
-          garmentSrc: meta.mockupSrc as string,
+          garmentSrc,
           garmentColor: meta.colorHex as string,
-          printZone: meta.printZone as ComposerPrintZone,
+          printZone,
           layers: [],
           outSize: 400,
+          runtimeRoles: resolvedMockup?.smartObject.assets.runtimeRoles,
+          isColorPhoto: meta.mockupIsColorPhoto === true
+            || (resolvedMockup?.isColorPhoto === true && !meta.mockupSrc),
+          requiresTint: resolvedMockup?.requiresTint === true,
         });
         if (!cancelled) setFallbackSrc(canvas.toDataURL("image/png"));
       } catch { /* no-op — component will show its own placeholder */ }
     })();
     return () => { cancelled = true; };
-  }, [item.imageUrl, meta]);
+  }, [item.imageUrl, meta, resolvedMockup]);
 
   return {
     thumbnailSrc: item.imageUrl ?? fallbackSrc,

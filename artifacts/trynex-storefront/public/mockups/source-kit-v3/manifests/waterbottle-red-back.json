@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "waterbottle:red:back",
+  "category": "waterbottle",
+  "colorSlug": "red",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/waterbottle-red-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/waterbottle/red/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psb/waterbottle-red-back.psb",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    351,
+    78,
+    673,
+    944
+  ],
+  "sha256": "42443d1c8f9317eec21b6ec909eb18d08d2f072249851e989881ec2e18c9ef05",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

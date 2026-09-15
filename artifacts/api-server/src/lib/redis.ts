@@ -1,27 +1,17 @@
 /**
- * Upstash Redis client with graceful in-process fallback.
+ * Upstash Redis cache with bounded multi-backend failover.
  *
- * If UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN are both set, all
- * cache ops go through the Upstash Redis REST API — which survives Render
- * restarts and is shared across any future horizontal instances.
+ * PostgreSQL remains the source of truth. Redis is an optional, disposable
+ * cache, so a provider outage must never block a catalog request or a write.
+ * Configure the primary and optional secondary with:
  *
- * If either env var is missing, or credentials are invalid, the module falls
- * back to a plain in-process Map so the server still works without Redis.
- *
- * Usage:
- *   import { redisCacheGet, redisCacheSet, redisCacheDel } from "./redis";
- *
- *   const cached = await redisCacheGet<MyType>("my-key");
- *   if (!cached) {
- *     const data = await expensiveQuery();
- *     await redisCacheSet("my-key", data, 60);   // TTL in seconds
- *   }
- *   await redisCacheDel("my-key");               // on write/invalidation
+ *   UPSTASH_REDIS_REST_URL
+ *   UPSTASH_REDIS_REST_TOKEN
+ *   UPSTASH_REDIS_REST_URL_SECONDARY
+ *   UPSTASH_REDIS_REST_TOKEN_SECONDARY
  */
 
 import { logger } from "./logger";
-
-// ── Types ──────────────────────────────────────────────────────────────────
 
 interface RedisClient {
   get: <T>(key: string) => Promise<T | null>;
@@ -29,132 +19,242 @@ interface RedisClient {
   del: (...keys: string[]) => Promise<unknown>;
 }
 
-// ── Client initialisation (singleton promise — prevents race at startup) ───
+type BackendName = "primary" | "secondary";
 
-// null  = not yet attempted
-// false = permanently disabled (bad config or connection failed — stop retrying)
-// RedisClient = connected and verified
-let _redis: RedisClient | null | false = null;
+interface BackendState {
+  name: BackendName;
+  urlEnv: string;
+  tokenEnv: string;
+  client: RedisClient | null;
+  initPromise: Promise<RedisClient | null> | null;
+  retryAt: number;
+  failures: number;
+  lastLogAt: number;
+}
 
-// Singleton in-flight promise — all concurrent callers await the same attempt.
-let _initPromise: Promise<RedisClient | null> | null = null;
+const BACKENDS: BackendState[] = [
+  {
+    name: "primary",
+    urlEnv: "UPSTASH_REDIS_REST_URL",
+    tokenEnv: "UPSTASH_REDIS_REST_TOKEN",
+    client: null,
+    initPromise: null,
+    retryAt: 0,
+    failures: 0,
+    lastLogAt: 0,
+  },
+  {
+    name: "secondary",
+    urlEnv: "UPSTASH_REDIS_REST_URL_SECONDARY",
+    tokenEnv: "UPSTASH_REDIS_REST_TOKEN_SECONDARY",
+    client: null,
+    initPromise: null,
+    retryAt: 0,
+    failures: 0,
+    lastLogAt: 0,
+  },
+];
 
-/** Known placeholder / example URLs that must not be dialled. */
+const INIT_TIMEOUT_MS = 1_500;
+const OP_TIMEOUT_MS = 1_200;
+const FAILURE_RETRY_MS = 30_000;
+const MAX_DEL_KEYS_PER_REQUEST = 100;
 const PLACEHOLDER_RX = /xyz-1234|example|localhost|127\.0\.0\.1|placeholder/i;
 
-async function _initClient(): Promise<RedisClient | null> {
-  if (_redis === false) return null;
-  if (_redis) return _redis;
+function configured(state: BackendState): boolean {
+  const url = (process.env[state.urlEnv] ?? "").trim();
+  const token = (process.env[state.tokenEnv] ?? "").trim();
+  return Boolean(url && token && !PLACEHOLDER_RX.test(url));
+}
 
-  const url   = (process.env.UPSTASH_REDIS_REST_URL  ?? "").trim();
-  const token = (process.env.UPSTASH_REDIS_REST_TOKEN ?? "").trim();
+function config(state: BackendState): { url: string; token: string } | null {
+  const url = (process.env[state.urlEnv] ?? "").trim();
+  const token = (process.env[state.tokenEnv] ?? "").trim();
+  if (!url || !token || PLACEHOLDER_RX.test(url)) return null;
+  return { url, token };
+}
 
-  if (!url || !token) {
-    _redis = false;
-    logger.info("[redis] UPSTASH_REDIS_REST_URL/TOKEN not set — using in-process cache");
-    return null;
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isAuthError(error: unknown): boolean {
+  const message = errorText(error);
+  return /WRONGPASS|NOAUTH|invalid or missing auth|unauthorized|401/i.test(message);
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`Redis timeout after ${timeoutMs}ms`)), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
   }
+}
 
-  if (PLACEHOLDER_RX.test(url)) {
-    _redis = false;
-    logger.warn(`[redis] UPSTASH_REDIS_REST_URL looks like a placeholder ("${url}") — using in-process cache. Set the real URL from console.upstash.com.`);
-    return null;
-  }
+function markFailure(state: BackendState, error: unknown): void {
+  state.client = null;
+  state.failures += 1;
+  state.retryAt = Date.now() + FAILURE_RETRY_MS;
+
+  // Avoid turning a bad credential into a log storm while still re-probing
+  // after secret rotation and process restarts.
+  if (Date.now() - state.lastLogAt < FAILURE_RETRY_MS) return;
+  state.lastLogAt = Date.now();
+  const message = isAuthError(error)
+    ? "credentials rejected"
+    : errorText(error).slice(0, 180);
+  logger.warn({ backend: state.name, failures: state.failures, detail: message }, "[redis] backend unavailable; using fallback/failover");
+}
+
+async function getBackend(state: BackendState): Promise<RedisClient | null> {
+  if (!configured(state)) return null;
+  if (state.client) return state.client;
+  if (Date.now() < state.retryAt) return null;
+  if (state.initPromise) return state.initPromise;
+
+  state.initPromise = (async () => {
+    const settings = config(state);
+    if (!settings) return null;
+
+    try {
+      const { Redis } = await import("@upstash/redis");
+      const client = new Redis(settings) as unknown as RedisClient;
+      await withTimeout(client.set("_trynext_health", state.name, { ex: 10 }), INIT_TIMEOUT_MS);
+      state.client = client;
+      state.failures = 0;
+      state.retryAt = 0;
+      logger.info({ backend: state.name }, "[redis] Upstash backend connected");
+      return client;
+    } catch (error) {
+      markFailure(state, error);
+      return null;
+    } finally {
+      state.initPromise = null;
+    }
+  })();
+
+  return state.initPromise;
+}
+
+async function callBackend<T>(
+  state: BackendState,
+  operation: (client: RedisClient) => Promise<T>,
+): Promise<{ ok: true; value: T } | { ok: false }> {
+  const client = await getBackend(state);
+  if (!client) return { ok: false };
 
   try {
-    const { Redis } = await import("@upstash/redis");
-    const client = new Redis({ url, token });
-
-    // Verify connectivity once — a live SET proves the credentials work.
-    await client.set("_trynex_health", "1", { ex: 10 });
-    logger.info("[redis] Upstash Redis connected — distributed cache active (MISS→HIT enabled)");
-
-    _redis = client as unknown as RedisClient;
-    return _redis;
-  } catch (err: unknown) {
-    _redis = false;
-    const isAuthError = err instanceof Error && (
-      err.message.includes("WRONGPASS") ||
-      err.message.includes("NOAUTH") ||
-      err.message.includes("invalid or missing auth")
-    );
-    if (isAuthError) {
-      logger.warn(
-        "[redis] Upstash credentials rejected (WRONGPASS) — regenerate the token at console.upstash.com and update UPSTASH_REDIS_REST_TOKEN. Falling back to in-process cache."
-      );
-    } else {
-      logger.warn({ err }, "[redis] Failed to connect to Upstash Redis — falling back to in-process cache");
-    }
-    return null;
+    return { ok: true, value: await withTimeout(operation(client), OP_TIMEOUT_MS) };
+  } catch (error) {
+    markFailure(state, error);
+    return { ok: false };
   }
 }
 
-async function getClient(): Promise<RedisClient | null> {
-  if (_redis === false) return null;
-  if (_redis) return _redis;
-
-  // Only one connection attempt at a time — all concurrent callers share it.
-  if (!_initPromise) {
-    _initPromise = _initClient().finally(() => { _initPromise = null; });
-  }
-  return _initPromise;
+interface FallbackEntry {
+  value: unknown;
+  expiresAt: number;
 }
 
-// ── In-process fallback ────────────────────────────────────────────────────
-
-interface FallbackEntry { value: unknown; expiresAt: number }
-const _fallback = new Map<string, FallbackEntry>();
+const fallback = new Map<string, FallbackEntry>();
 
 function fallbackGet<T>(key: string): T | null {
-  const entry = _fallback.get(key);
+  const entry = fallback.get(key);
   if (!entry) return null;
-  if (Date.now() > entry.expiresAt) { _fallback.delete(key); return null; }
+  if (Date.now() > entry.expiresAt) {
+    fallback.delete(key);
+    return null;
+  }
   return entry.value as T;
 }
 
 function fallbackSet(key: string, value: unknown, ttlSeconds: number): void {
-  _fallback.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
+  fallback.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
 }
 
 function fallbackDel(...keys: string[]): void {
-  for (const k of keys) _fallback.delete(k);
+  for (const key of keys) fallback.delete(key);
 }
 
-// ── Public helpers ─────────────────────────────────────────────────────────
+function configuredBackends(): BackendState[] {
+  return BACKENDS.filter(configured);
+}
 
+/**
+ * Reads primary first, then secondary. A miss on one backend is allowed to
+ * continue to the other because writes may have succeeded on only one side.
+ */
 export async function redisCacheGet<T>(key: string): Promise<T | null> {
-  try {
-    const client = await getClient();
-    if (client) return await client.get<T>(key);
-    return fallbackGet<T>(key);
-  } catch (err) {
-    logger.warn({ err, key }, "[redis] GET failed — using fallback");
-    return fallbackGet<T>(key);
+  for (const state of configuredBackends()) {
+    const result = await callBackend(state, (client) => client.get<T>(key));
+    if (result.ok && result.value !== null) return result.value;
   }
+  return fallbackGet<T>(key);
 }
 
+/**
+ * Keep the local copy for outage recovery, then replicate to every backend.
+ * A secondary failure never makes a successful primary write look failed.
+ */
 export async function redisCacheSet(key: string, value: unknown, ttlSeconds: number): Promise<void> {
-  try {
-    const client = await getClient();
-    if (client) {
-      await client.set(key, value, { ex: ttlSeconds });
-      return;
-    }
-  } catch (err) {
-    logger.warn({ err, key }, "[redis] SET failed — using fallback");
-  }
   fallbackSet(key, value, ttlSeconds);
+  const states = configuredBackends();
+  if (states.length === 0) return;
+
+  await Promise.all(states.map((state) =>
+    callBackend(state, (client) => client.set(key, value, { ex: ttlSeconds })),
+  ));
 }
 
+/**
+ * Delete in bounded batches so accidental broad invalidations cannot create a
+ * single oversized REST request. Normal invalidation should use a version key.
+ */
 export async function redisCacheDel(...keys: string[]): Promise<void> {
-  try {
-    const client = await getClient();
-    if (client) {
-      await client.del(...keys);
-      return;
-    }
-  } catch (err) {
-    logger.warn({ err, keys }, "[redis] DEL failed — using fallback");
-  }
   fallbackDel(...keys);
+  const states = configuredBackends();
+  if (states.length === 0 || keys.length === 0) return;
+
+  await Promise.all(states.map(async (state) => {
+    for (let i = 0; i < keys.length; i += MAX_DEL_KEYS_PER_REQUEST) {
+      const batch = keys.slice(i, i + MAX_DEL_KEYS_PER_REQUEST);
+      await callBackend(state, (client) => client.del(...batch));
+    }
+  }));
+}
+
+/**
+ * Flushes the process-local copy. Upstash REST does not expose FLUSHALL.
+ */
+export async function redisCacheFlushAll(): Promise<{ cleared: number; backend: "upstash" | "in-process" }> {
+  const cleared = fallback.size;
+  fallback.clear();
+  return { cleared, backend: configuredBackends().some((state) => state.client) ? "upstash" : "in-process" };
+}
+
+export type RedisStatusMode = "ok" | "error" | "not_configured" | "connecting";
+
+/**
+ * Reports the real provider status, never the local fallback status.
+ */
+export async function getRedisStatus(): Promise<{ mode: RedisStatusMode; detail?: string }> {
+  const states = configuredBackends();
+  if (states.length === 0) return { mode: "not_configured" };
+
+  const results = await Promise.all(states.map(async (state) => {
+    const result = await callBackend(state, (client) =>
+      client.set("_healthz_ping", state.name, { ex: 10 }),
+    );
+    return { state, ok: result.ok };
+  }));
+
+  const healthy = results.filter((result) => result.ok).map((result) => result.state.name);
+  if (healthy.length > 0) return { mode: "ok", detail: `healthy:${healthy.join(",")}` };
+  return { mode: "error", detail: "All configured Upstash backends unavailable" };
 }

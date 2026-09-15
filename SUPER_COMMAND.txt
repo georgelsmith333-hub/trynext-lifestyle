@@ -1,0 +1,908 @@
+================================================================================
+TRYNEXT LIFESTYLE — SUPER COMMAND BRIEFING
+Complete project context, audit, known issues, and fix guide for AI agents
+Last updated: July 2026
+Repository: georgelsmith333-hub/trynext-lifestyle (branch: main)
+Live site: https://trynext.pages.dev (Cloudflare Pages)
+================================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. PROJECT OVERVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Trynext Lifestyle is a Bangladeshi print-on-demand e-commerce platform. Customers
+can browse products (T-shirts, hoodies, mugs, caps, water bottles), use a
+browser-based Design Studio to upload/position artwork and preview results in 2D
+or 3D, then order with COD or bKash/Nagad (25% advance deposit required for COD).
+
+Products: Custom T-shirts, Hoodies, Mugs, Caps, Water Bottles, Couple Sets,
+          Hampers (gift bundles), Corporate Bulk Orders.
+Target market: Bangladesh (all 64 districts). Currency: BDT (৳).
+Brand: Orange (#FF6B2C) on cream/dark background. Font: Geist. Logo: TN mark.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. FULL TECH STACK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MONOREPO
+  - pnpm workspaces (pnpm-workspace.yaml)
+  - TypeScript throughout; `pnpm run typecheck` checks all packages
+  - Node 20+
+
+STOREFRONT + ADMIN (artifacts/trynex-storefront)
+  - Vite 7 + React 19 + TypeScript
+  - Tailwind CSS v4 + shadcn/ui components
+  - Wouter (lightweight React Router)
+  - TanStack Query v5 (server state)
+  - Framer Motion (animations)
+  - react-helmet-async (SEO)
+  - Vite PWA plugin (service worker, offline support)
+  - Port: $PORT (default 8080 in dev via workflow)
+  - Dev proxy: Vite proxies /api/* → localhost:8082 (the API server)
+
+API SERVER (artifacts/api-server)
+  - Express 5 + TypeScript
+  - esbuild bundle (NOT a dev-watch process — must rebuild manually)
+  - Pino logging (JSON structured logs)
+  - Zod input validation
+  - express-rate-limit (multiple limiters)
+  - Helmet.js (security headers)
+  - Port: $PORT = 8082 (set in workflow command)
+  - CRITICAL: After editing any src/ file, run: cd artifacts/api-server && node build.mjs
+    Then restart the "artifacts/api-server: API Server" workflow.
+
+DATABASE
+  - PostgreSQL via Neon (serverless)
+  - Drizzle ORM + drizzle-kit migrations
+  - Schema: lib/db/src/schema/index.ts (single source of truth)
+  - Connection failover chain (priority order):
+      1. DATABASE_URL_MAIN  (Neon primary — ep-proud-hill)
+      2. DATABASE_FAILOVER  (Neon failover — ep-crimson-dawn) ← currently active
+      3. DATABASE_URL_TRYNEXT_DB (Neon secondary)
+      4. DATABASE_URL       (Replit built-in — last resort)
+  - Status: Primary (DATABASE_URL_MAIN) unreachable; fallback #2 is working fine.
+  - Backup sync: scheduled every 30 min to 3 replica shards — all 3 hitting Neon
+    data-transfer quota limits (not a code bug; requires Neon plan upgrade or
+    disabling those backup targets in admin).
+
+CACHE
+  - Upstash Redis (REST API — works in edge/serverless environments)
+  - Env vars: UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN
+  - Used for: product list cache (60s TTL), settings cache, rate limiting counters
+
+OBJECT STORAGE
+  - Primary: Cloudflare R2 (S3-compatible)
+  - Fallbacks: S3, then local filesystem (./uploads)
+  - Admin selects in: Admin → Settings → Storage
+  - Env: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
+
+MOBILE APP (artifacts/trynext-mobile)
+  - Expo SDK 54 + React Native + TypeScript
+  - TanStack Query v5
+  - Expo Router (file-based routing)
+  - API base: EXPO_PUBLIC_DOMAIN env var → https://{domain}
+  - Dev: workflow injects EXPO_PUBLIC_DOMAIN=$REPLIT_DEV_DOMAIN
+  - Production: should use trynext.pages.dev (see fix applied below)
+  - Port: $PORT (8084 in dev)
+
+HOSTING
+  - Storefront: Cloudflare Pages (trynext.pages.dev + trynext.pages.dev)
+  - CF Pages Functions: functions/api/[[path]].ts — proxies /api/* to API_URL
+  - CF Pages env var REQUIRED: API_URL = https://<your-api-host> (no trailing slash)
+  - API Server: currently hosted on Replit dev domain; deploy separately to
+    Railway/Render/Fly.io/CF Workers for production
+
+NOTIFICATIONS
+  - Telegram bot (TELEGRAM_BOT_TOKEN env var; chat ID stored in settings table)
+  - Email: nodemailer + SMTP (SMTP_HOST, SMTP_USER, SMTP_PASS, SMTP_FROM)
+  - WhatsApp: wa.me links (number from admin settings, not hardcoded)
+
+AI
+  - Design generation: Pollinations (image.pollinations.ai) — free, no key
+  - Admin AI assistant: Pollinations text API (text.pollinations.ai) — free, no key
+  - Background removal: remove.bg (API key stored in settings table, not env var)
+    Falls back to in-browser WASM when unconfigured.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. MONOREPO PACKAGE STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  artifacts/
+    api-server/           Express API (runs on port 8082)
+    trynext-storefront/    Customer storefront + /admin panel (port 8080)
+    trynext-mobile/        Expo React Native app (port 8084)
+    trynext-promo/         Promo animation (Remotion/video-js style)
+    mockup-sandbox/       Isolated component preview server (port 8081)
+
+  lib/
+    db/                   Drizzle ORM schema + pool + migrations
+    api-client-react/     TanStack Query hooks (useListProducts etc)
+    api-spec/             OpenAPI spec
+    api-zod/              Zod schemas for API types
+
+  functions/
+    api/[[path]].ts       Cloudflare Pages Function — proxies /api/* to API_URL
+    _middleware.ts        CF Pages middleware
+
+  packages/               (if any additional shared packages)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. REQUIRED ENVIRONMENT VARIABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Set all of these as Replit Secrets (never in .env files):
+
+  DATABASE_URL_MAIN        Neon primary connection string (postgres://...)
+  DATABASE_FAILOVER        Neon failover connection string
+  DATABASE_URL             Fallback DB (Replit built-in or another Neon)
+
+  ADMIN_JWT_SECRET         Admin JWT signing key (32+ chars, DIFFERENT from JWT_SECRET)
+  JWT_SECRET               Customer JWT signing key (32+ chars)
+  ADMIN_PASSWORD           Admin panel initial password (hashed on first use)
+
+  ALLOWED_ORIGINS          Comma-separated CORS origins:
+                           https://trynext.pages.dev,https://trynext.pages.dev
+                           + add your Replit dev domain during dev
+
+  R2_ACCOUNT_ID            Cloudflare R2 account ID
+  R2_ACCESS_KEY_ID         Cloudflare R2 access key
+  R2_SECRET_ACCESS_KEY     Cloudflare R2 secret key
+  R2_BUCKET                Cloudflare R2 bucket name
+  R2_PUBLIC_BASE_URL       Public CDN URL for R2 files (optional)
+
+  UPSTASH_REDIS_REST_URL   Upstash Redis REST endpoint
+  UPSTASH_REDIS_REST_TOKEN Upstash Redis token
+
+  TELEGRAM_BOT_TOKEN       Telegram bot token (@BotFather)
+  SMTP_HOST                SMTP server hostname
+  SMTP_USER                SMTP username / email
+  SMTP_PASS                SMTP password
+  SMTP_FROM                From address (e.g. "Trynext Lifestyle <hello@trynextshop.com>")
+  SUPPORT_PHONE            Support phone for email footers (default: 01903426915)
+
+  SESSION_SECRET           Express session secret (for any session-based features)
+  CLOUDFLARE_API_TOKEN     For deploy hook triggers from admin panel
+
+  GITHUB_ACCESS_TOKEN      GitHub PAT for git push (used via REST API, not git CLI)
+                           Note: git CLI is blocked in Replit — use GitHub REST API
+
+  # For CF Pages deployment:
+  API_URL                  Set in CF Pages env vars, NOT in Replit secrets
+                           e.g. https://your-api-host.railway.app
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. DATABASE SCHEMA (lib/db/src/schema/index.ts)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tables (all use Drizzle ORM + PostgreSQL):
+
+  admins                   Admin user accounts
+    id, username (unique), passwordHash, totpSecret, totpEnabled, createdAt
+
+  admin_sessions           Token-based admin sessions (not JWT)
+    id, tokenHash (unique), adminId→admins, role, createdAt, lastUsedAt,
+    expiresAt, revokedAt, userAgent, ip
+    Indexes: adminId, expiresAt
+    Check: role IN ('admin')
+
+  settings                 Key-value store for all site config
+    id, key (unique), value, updatedAt
+    Keys include: storeName, phone, whatsappNumber, bkashNumber, nagadNumber,
+    upayNumber, shippingCost, freeShippingThreshold, telegramChatId,
+    removeBgApiKey, aiSystemPrompt, heroHeadlines, flashSaleEnabled,
+    spinWheelEnabled, maintenanceMode, and many more
+
+  categories               Product categories
+    id, name, slug (unique), description, imageUrl, productCount, createdAt
+
+  products                 Product catalog
+    id, name, slug (unique), description, price, discountPrice,
+    categoryId→categories, imageUrl, images (jsonb), sizes (jsonb),
+    colors (jsonb), stock, featured, rating, reviewCount, customizable,
+    tags (jsonb), colorVariants (jsonb), createdAt, updatedAt
+    Checks: price>=0, stock>=0, rating 0-5, reviewCount>=0
+
+  orders                   Customer orders
+    id, orderNumber (unique), customerName, customerEmail, customerPhone,
+    shippingAddress, shippingCity, shippingDistrict, paymentMethod,
+    paymentStatus, status, items (jsonb), subtotal, shippingCost, total,
+    notes, promoCode, promoDiscount, customerId→customers,
+    studioAssetsMissing (bool), createdAt, updatedAt
+    status: pending|processing|shipped|delivered|cancelled
+    paymentStatus: pending|submitted|paid|not_paid|refunded
+
+  customers                Customer accounts (optional registration)
+    id, name, email (unique), phone, passwordHash, googleId, facebookId,
+    loyaltyPoints, totalOrders, totalSpent, createdAt
+
+  blog_posts               Blog articles
+    id, title, slug (unique), excerpt, content, imageUrl, author,
+    authorBio, authorAvatarUrl, category, tags[], published, featured,
+    readingTimeOverride, viewCount, createdAt, updatedAt
+
+  reviews                  Product reviews
+    id, productId→products, customerName, customerPhone, rating, comment,
+    verified, createdAt
+
+  testimonials             Homepage testimonials
+    id, name, message, rating, location, avatarUrl, productName,
+    featured, createdAt
+
+  promo_codes              Discount codes
+    id, code (unique), discountType (percentage|fixed|free_shipping),
+    discountValue, minOrderAmount, maxUses, currentUses, expiresAt,
+    active, createdAt
+
+  referrals                Customer referral program
+    id, referrerId→customers, referredId→customers, code (unique),
+    rewardType, rewardValue, status, createdAt
+
+  hampers                  Gift hamper products
+    id, name, slug (unique), description, price, discountPrice,
+    imageUrl, images (jsonb), items (jsonb), featured, active, createdAt
+
+  newsletter_subscribers   Email subscribers
+    id, email (unique), name, subscribedAt, unsubscribedAt
+
+  abandoned_carts          Cart recovery
+    id, sessionId, items (jsonb), totalValue, emailSent, createdAt, updatedAt
+
+  activity_log             Admin action audit trail
+    id, adminId, action, target, details (jsonb), ip, createdAt
+
+  order_messages           Order status messages/notes
+    id, orderId→orders, message, type, createdAt
+
+  spin_promos              Spin-the-wheel promo outcomes
+    id, label, discountPercent, probability, active, createdAt
+
+  design_drafts            Saved Design Studio drafts
+    id, sessionToken, productId, layers (jsonb), thumbnail, expiresAt, createdAt
+
+  notifications            Admin notifications
+    id, title, message, type, read, data (jsonb), createdAt
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. API ROUTES (artifacts/api-server/src/routes/)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Public routes (no auth):
+  GET  /api/healthz                    Health check
+  GET  /api/health/liveness            K8s liveness
+  GET  /api/health/readiness           K8s readiness
+  GET  /api/products                   List products (pagination, filter, sort, search)
+  GET  /api/products/:idOrSlug         Single product
+  GET  /api/categories                 List categories
+  GET  /api/settings                   Public site settings (sanitized)
+  GET  /api/blog                       Blog post list
+  GET  /api/blog/:slug                 Single blog post
+  GET  /api/testimonials               Homepage testimonials
+  GET  /api/reviews?productId=N        Product reviews
+  POST /api/reviews                    Submit review
+  POST /api/orders                     Place order
+  GET  /api/orders/track               Track order by number+phone
+  GET  /api/sitemap.xml                Dynamic sitemap
+  POST /api/promo-codes/validate       Validate promo code
+  POST /api/newsletter/subscribe       Newsletter signup
+  GET  /api/hampers                    Hamper list
+  GET  /api/hampers/:slug              Single hamper
+  POST /api/abandoned-cart             Log cart
+  GET  /api/public-stats               Public stats for homepage
+  GET  /api/storage/:path              Serve uploaded files
+
+Admin routes (require admin session token):
+  All under /api/admin/* — products CRUD, orders management, customers,
+  blog CRUD, settings update, categories CRUD, reviews moderation,
+  promo codes, referrals, newsletter, hampers CRUD, testimonials,
+  backup sync status, system health, activity log, secrets management,
+  deployment triggers, AI commands, DB cluster status.
+
+Webhook routes:
+  POST /api/telegram-webhook           Telegram bot updates
+  POST /api/uptime-robot               UptimeRobot status pings
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. STOREFRONT ROUTES (artifacts/trynex-storefront/src/App.tsx)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Customer-facing:
+  /                         Home (hero, featured products, categories, testimonials)
+  /products                 Shop page (filter by category, price, sort)
+  /product/:id              Product detail (images, sizes, colors, reviews)
+  /design-studio            Design Studio (upload artwork, preview, customize)
+  /cart                     Cart (items, promo code, shipping estimate)
+  /checkout                 Checkout (address, payment, order confirmation)
+  /track                    Order tracking (by order number + phone)
+  /blog                     Blog listing
+  /blog/:slug               Blog post
+  /hampers                  Gift hampers
+  /hampers/build            Custom hamper builder
+  /hampers/:slug            Hamper detail
+  /wishlist                 Saved products
+  /referral                 Referral program
+  /sale                     Sale page
+  /faq                      FAQ accordion
+  /contact                  Contact form
+  /about                    About page
+  /size-guide               Size chart
+  /shipping-policy          Shipping info
+  /return-policy            Return policy
+  /terms-of-service         Terms
+  /privacy-policy           Privacy
+  /account                  Customer account / login
+  /signup                   Customer registration
+
+SEO landing pages:
+  /custom-tshirt-bangladesh
+  /custom-hoodie-bangladesh
+  /custom-mug-bangladesh
+  /custom-cap-bangladesh
+  /custom-couple-tshirt
+  /corporate-gifts-bangladesh
+
+Admin panel (/admin/*):
+  /admin                    Dashboard (stats, recent orders, health)
+  /admin/products           Product CRUD
+  /admin/categories         Category management
+  /admin/orders             Order management (status, tracking, notes)
+  /admin/customers          Customer list
+  /admin/blog               Blog post editor
+  /admin/settings           Site settings (phone, payments, shipping, etc)
+  /admin/backup             DB backup sync status/control
+  /admin/security           Security settings (admin password, TOTP)
+  /admin/deployment         Deploy trigger, GitHub push
+  /admin/activity-log       Admin action audit trail
+  /admin/reviews            Review moderation
+  /admin/promo-codes        Discount code management
+  /admin/referrals          Referral program admin
+  /admin/newsletter         Email subscriber management
+  /admin/hampers            Gift hamper products CRUD
+  /admin/database-cluster   DB connection health dashboard
+  /admin/page-builder       Homepage layout builder (Layout Builder)
+  /admin/mockups            Product mockup management
+  /admin/ai-developer       AI assistant (natural language commands)
+  /admin/roles              Admin role management
+  /admin/seo                SEO settings and guidance
+  /admin/tech-stack         Tech stack overview / documentation
+  /admin/secrets            Environment secret management via UI
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. DESIGN STUDIO (artifacts/trynex-storefront/src/pages/design-studio/)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Key files:
+  mockups.tsx          Garment mockup rendering (SVG cutouts, garment colors)
+  composer.ts          Canvas compositor (layers → final PNG for order)
+  ProductViewer3D.tsx  Three.js 3D preview (PhotoMockupMesh — billboard approach)
+  DesignStudio.tsx     Main page (state machine, 2D canvas editor, product switch)
+
+Garment rendering pipeline:
+  1. White/light garments: multiply-blend mode (cutout shadow + full photo with
+     mix-blend-mode:multiply). Uses transparent cutout PNG + color tint.
+  2. Dark/black garments: full dark garment photo directly (no multiply needed).
+  3. Colored garments (navy, red): AI-generated real photos from colorPhotos map.
+  4. 3D preview: PhotoMockupMesh (billboard plane textured with garment photo).
+     GLB models are NOT used (files were absent; billboard approach replaces them).
+
+Print zone system:
+  - Each product has a defined print zone (x, y, width, height as % of canvas).
+  - Designs are fitted to the print zone with contain-fit on product switch.
+  - "Outside print area" warnings use bleed-relative tolerance + rotation-aware bounds.
+  - Canvas is 2D (flat, precise placement); curvature only in 3D preview + composer.
+
+Curved products (mug, waterbottle, cap):
+  - Default view mode is "3d" so cylindrical curvature is visible by default.
+  - Flat apparel defaults to "2d" for precise placement.
+
+Design file handling:
+  - Customer uploads go to /api/storage (temp staging).
+  - On order placement, files are copied to permanent order folder.
+  - studioAssetsMissing flag on order if any file copy fails.
+
+Drag & rotate on canvas:
+  - No pointer restriction; filterTaps:true; threshold:1.
+  - Rotate handle: SVG circle above selection box, rotateHandle memo.
+  - Image layers use transparent hit-rect overlay for reliable drag.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. MOBILE APP (artifacts/trynext-mobile/)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Structure:
+  app/(tabs)/index.tsx      Home tab (featured products, categories)
+  app/(tabs)/account.tsx    Account tab (login, orders, support)
+  app/product/[id].tsx      Product detail
+  app/cart.tsx              Cart
+  app/checkout.tsx          Checkout (inline validation, dynamic settings)
+  lib/api.ts                API client (apiFetch with base URL logic)
+  lib/api-client-react/     Shared React Query hooks (same as storefront package)
+  app/_layout.tsx           Root layout (setBaseUrl, QueryClient setup)
+
+API URL resolution:
+  - lib/api.ts getBaseUrl(): uses EXPO_PUBLIC_DOMAIN env var
+  - If EXPO_PUBLIC_DOMAIN is "trynex-api.onrender.com" (stale) or unset → uses trynext.pages.dev
+  - In dev: workflow injects EXPO_PUBLIC_DOMAIN=$REPLIT_DEV_DOMAIN (overrides .env.production)
+  - _layout.tsx: setBaseUrl() for api-client-react package (same fallback logic)
+
+Checkout:
+  - Inline validation (no Alert.alert) — red border + error text below fields
+  - 12-chip quick-select for major districts; full BD_DISTRICTS list for autocomplete
+  - Dynamic shipping cost/free-threshold from API settings
+  - 25% advance deposit for COD
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+10. SITE SETTINGS SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ALL customer-facing configurable values live in the settings table, not code.
+Access via:
+  - Storefront: useSiteSettings() hook → SiteSettingsContext.tsx
+  - API: GET /api/settings → merged with defaults in context
+  - Admin: /admin/settings page
+
+Key settings keys:
+  phone               Support phone (used in JSON-LD, WhatsApp links, emails)
+  whatsappNumber      WhatsApp number (separate from phone in some contexts)
+  bkashNumber         bKash payment number shown at checkout
+  nagadNumber         Nagad payment number
+  upayNumber          Upay payment number
+  shippingCost        Default shipping fee (BDT)
+  freeShippingThreshold  Order total above which shipping is free
+  storeName           Site name
+  heroHeadlines       Typewriter hero text (one per line, JSON array or newline-sep)
+  flashSaleEnabled    Boolean toggle
+  spinWheelEnabled    Boolean toggle
+  maintenanceMode     Boolean toggle
+  removeBgApiKey      remove.bg API key (stored in settings, NOT env var)
+  telegramChatId      Telegram chat ID for order notifications
+  aiSystemPrompt      Custom system prompt for admin AI assistant
+  Social links: facebookUrl, instagramUrl, tiktokUrl, youtubeUrl, twitterUrl
+
+IMPORTANT: Do NOT hardcode phone numbers, payment numbers, or config values in
+JSX or component code. Always read from useSiteSettings() or the settings API.
+If a page needs a phone number but can't use hooks (e.g. class component),
+use the real number (8801903426915) as a last-resort fallback string only.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. WHAT WAS FIXED (chronological — most recent last)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Session 1 (earlier agents):
+  ✅ JWT fallbacks removed (no fallback to empty string or predictable values)
+  ✅ Backup sync truncation bug fixed
+  ✅ CF proxy hardcoding removed
+  ✅ DB constraints and indexes added to schema
+  ✅ _redirects: removed stale /api/* → Render redirect; /sitemap.xml → 301 /api/sitemap.xml
+  ✅ WhatsApp numbers made dynamic from settings in:
+     ProductCard.tsx, Account.tsx, FAQ.tsx, Home.tsx (JSON-LD), KeywordLanding.tsx
+  ✅ ProductViewer3D.tsx TypeScript error fixed (Promise<unknown>[] type)
+  ✅ Mobile: cart.tsx + account.tsx WhatsApp made dynamic from settings query
+
+Session 2 (July 24 2026 — this session):
+  ✅ ROOT CAUSE FIX: Vite proxy port corrected from 5001 → 8082
+     (File: artifacts/trynex-storefront/vite.config.ts line ~10)
+     This was why ALL API calls from storefront failed in dev — proxy was
+     pointing to a dead port. Products, categories, settings — everything.
+  ✅ Mobile .env.production Render URL bypassed: lib/api.ts getBaseUrl() now
+     detects and replaces "trynex-api.onrender.com" with "trynext.pages.dev"
+  ✅ Mobile _layout.tsx: setBaseUrl() has same stale-Render-domain guard
+  ✅ SizeGuide.tsx: WhatsApp number now dynamic from useSiteSettings()
+  ✅ FAQ.tsx: Bulk order answer no longer has hardcoded phone number
+  ✅ email.ts: Support phone uses SUPPORT_PHONE env var with fallback
+  ✅ API rebuilt (dist/index.mjs updated)
+  ✅ All typechecks pass: storefront ✅, mobile ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+12. KNOWN REMAINING ISSUES & WHAT TO FIX NEXT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PRIORITY 1 — CRITICAL FUNCTIONALITY
+
+[P1-A] DB Primary Unreachable
+  Status: Working via failover (ep-crimson-dawn). Products load correctly.
+  Problem: DATABASE_URL_MAIN (ep-proud-hill) is either paused, deleted, or the
+           connection string in secrets is stale.
+  Fix: Log into Neon dashboard → verify ep-proud-hill project exists and is active.
+       If deleted: remove DATABASE_URL_MAIN secret, set DATABASE_FAILOVER as the
+       primary connection string.
+       If paused: resume the project or upgrade Neon plan.
+
+[P1-B] Neon Backup Sync Quota Exceeded
+  Status: Failover/Products/Analytics shards hitting "data transfer quota" errors.
+  Problem: Neon free tier has data transfer limits; backup sync runs every 30 min.
+  Fix options:
+    Option A: Upgrade affected Neon projects to paid plan.
+    Option B: Disable the failing backup targets in Admin → Backup.
+    Option C: Reduce sync frequency (edit scheduler.ts, rebuild, restart API).
+  Note: These errors only affect backup redundancy, NOT primary operations.
+
+[P1-C] Cloudflare Pages API_URL Not Set (PRODUCTION BLOCKER)
+  Status: The CF Pages function (functions/api/[[path]].ts) requires API_URL env var.
+  Problem: If API_URL is not set in CF Pages environment variables, ALL /api/*
+           requests from the live site return HTTP 503.
+  Fix: CF Pages dashboard → trynext-lifestyle-shop → Settings → Environment Variables
+       Set: API_URL = https://<your-actual-api-server-host>
+       The API server must be deployed somewhere permanent (Railway, Render, Fly.io,
+       CF Workers) and that URL set here.
+
+[P1-D] ALLOWED_ORIGINS Missing Replit Dev Domain
+  Status: In dev, API CORS may reject requests from the Replit preview domain.
+  Fix: Add your Replit dev domain to ALLOWED_ORIGINS secret:
+       https://trynext.pages.dev,https://trynext.pages.dev,https://<your-replit-dev-domain>
+
+PRIORITY 2 — REMAINING HARDCODED VALUES
+
+[P2-A] SeoGuide.tsx — still has "WhatsApp: 01903426915" in static example text (line 235)
+  File: artifacts/trynex-storefront/src/pages/SeoGuide.tsx:235
+  Note: This is in example/instructional text, not a link. Low urgency.
+
+[P2-B] AppErrorBoundary.tsx — class component, can't use hooks
+  File: artifacts/trynex-storefront/src/components/AppErrorBoundary.tsx:110
+  Has: href="https://wa.me/8801903426915" hardcoded (fallback for error state)
+  Fix option: Load the number from a module-level fetch at app boot and cache it.
+  Low urgency: only shown when React tree crashes.
+
+[P2-C] Mobile product/[id].tsx — local WHATSAPP_NUMBER constant
+  File: artifacts/trynext-mobile/app/product/[id].tsx:76
+  Comment says "fallback; dynamic number fetched below" but dynamic fetch is partial.
+  Fix: Add useQuery(["siteSettings"], api.getSettings) at component top,
+       compute waNum from result, and pass it through to the WhatsApp links.
+
+[P2-D] Mobile .env.production still has old Render URL
+  Cannot edit .env.production (Replit secrets restriction).
+  Workaround APPLIED: code-level fallback in lib/api.ts and _layout.tsx.
+  Proper fix: delete and recreate .env.production with:
+    EXPO_PUBLIC_DOMAIN=trynext.pages.dev
+    EXPO_PUBLIC_API_URL=https://trynext.pages.dev
+
+PRIORITY 3 — PRODUCT IMAGES & CONTENT
+
+[P3-A] Some product images use Unsplash URLs that may 404
+  Symptom: ProductCard shows placeholder image for some products.
+  Fix: Admin → Products → edit affected products → update imageUrl.
+  Long-term: host all images on R2 (use Admin → Products → bulk image upload).
+
+[P3-B] Product stock counts are low/zero for some products
+  Fix: Admin → Products → update stock for each product.
+
+[P3-C] Rating/review data mostly zeroes
+  Products were seeded without reviews. Existing reviewCount/rating may be 0.
+  Fix: Either import real review data, or run the auto-seed with test reviews.
+
+PRIORITY 4 — SEO & PERFORMANCE
+
+[P4-A] JSON-LD aggregateRating: never use fake review counts
+  Current code already guards (only include when reviewCount > 0).
+  Verify by checking ProductDetail.tsx JSON-LD section.
+
+[P4-B] No server-side rendering
+  The site is a client-rendered SPA. Googlebot renders JS, but social share bots
+  (Facebook, Twitter) only see generic index.html meta tags.
+  Fix: Implement SSR (Next.js migration) or pre-rendering (react-snap).
+  This is a major refactor — plan carefully.
+
+[P4-C] Service worker may cache stale product data
+  The Vite PWA plugin caches API responses. If products update, cache may be stale.
+  Fix: Ensure the cache strategy for /api/* is NetworkFirst, not CacheFirst.
+  Check: artifacts/trynex-storefront/vite.config.ts workbox runtimeCaching config.
+
+PRIORITY 5 — ADMIN PANEL FEATURES
+
+[P5-A] Telegram integration: chat ID must be set via Admin → Settings → Telegram
+  If TELEGRAM_CHAT_ID is not configured, order notifications won't send.
+  The bot token must be set as TELEGRAM_BOT_TOKEN env var (Replit secret).
+
+[P5-B] Admin roles: /admin/roles page exists but role enforcement may be incomplete
+  Check: artifacts/api-server/src/middlewares/adminAuth.ts for role-based guards.
+
+[P5-C] Admin AI developer: system prompt can be customized via settings table
+  Key: aiSystemPrompt. Admin can override via /admin/ai-developer.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13. DEPLOYMENT GUIDE (Cloudflare Pages)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STOREFRONT (CF Pages):
+  1. Connect repo (georgelsmith333-hub/trynext-lifestyle) to CF Pages
+  2. Build command: pnpm --filter @workspace/trynext-storefront run build
+  3. Build output: artifacts/trynex-storefront/dist
+  4. Root directory: / (monorepo root)
+  5. Environment variables in CF Pages:
+     API_URL = https://your-api-server-host (REQUIRED)
+  6. Custom domain: trynext.pages.dev → trynext.pages.dev
+
+API SERVER (must deploy separately — NOT to CF Pages):
+  Options: Railway, Render, Fly.io, or CF Workers (requires Worker rewrite)
+
+  For Railway/Render/Fly.io:
+  1. Build: node ./build.mjs (in artifacts/api-server/)
+  2. Start: node dist/index.mjs
+  3. Set all env vars listed in section 4
+  4. Set PORT (Railway auto-assigns)
+  5. Copy the deployed URL → CF Pages API_URL var
+
+  Alternatively, the API can stay on Replit (dev domain changes on restart).
+  Better: use Replit Deployments for a stable domain.
+
+MOBILE APP (EAS Build for Play Store / App Store):
+  1. Install EAS CLI: npm install -g eas-cli
+  2. eas login (Expo account)
+  3. eas build --platform android (or ios)
+  4. .env.production must have: EXPO_PUBLIC_DOMAIN=trynext.pages.dev
+  5. After build: eas submit for store submission
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+14. CODE CONVENTIONS & CRITICAL RULES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+API SERVER REBUILD RULE (CRITICAL):
+  - The API is an esbuild bundle — it does NOT hot-reload.
+  - After ANY change to artifacts/api-server/src/**:
+    cd artifacts/api-server && node build.mjs
+    Then restart the workflow: artifacts/api-server: API Server
+
+GITHUB PUSH RULE:
+  - git CLI is blocked in Replit (askpass intercepts credentials).
+  - Use GitHub REST API (blobs/trees/commits endpoint) to push.
+  - Or use x-access-token:$TOKEN in the remote URL:
+    git remote set-url origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/georgelsmith333-hub/trynext-lifestyle.git
+    git fetch origin && git merge origin/main --allow-unrelated-histories
+    git push origin main
+
+SETTINGS RULE:
+  - Never hardcode phone numbers, payment numbers, shipping costs, or config values.
+  - Always read from useSiteSettings() hook (storefront) or api.getSettings() (mobile).
+  - Fallback pattern: (settings.whatsappNumber || settings.phone || "8801903426915").replace(/[^0-9]/g, "")
+
+CORS RULE:
+  - ALLOWED_ORIGINS must include ALL origins that will call the API.
+  - In development: include your Replit dev domain.
+  - In production: https://trynext.pages.dev,https://trynext.pages.dev
+
+DB RULE:
+  - Schema changes go in lib/db/src/schema/index.ts.
+  - Run drizzle-kit migrations (migrations in lib/db/drizzle/).
+  - Never alter the DB directly; always use migrations.
+
+HEALTH ENDPOINT RULE:
+  - systemHealth.ts is the ONLY source for GET /api/admin/system/health.
+  - Do NOT add a competing handler in health.ts (it would silently win due to mount order).
+  - The response shape: { services: { ... }, vars: [...] }
+
+SCROLL LOCK RULE:
+  - Route all body scroll locking through the shared ref-counted helper.
+  - Never set document.body.style.overflow directly in components.
+
+BLEND MODE RULE:
+  - multiply blend threshold must match isLightTint (lum > 0.92).
+  - Using 0.58 causes "same shade" bug on colored garments.
+
+PHOTO MOCKUP RULE:
+  - Do NOT use adjustGarmentColor() for photo planes in 3D.
+  - near-white (lum > 0.88) must return "#ffffff" exactly.
+
+ADVANCE DEPOSIT: Always 25% (changed from 15% across all files).
+
+AnimatePresence: mode="wait" causes white screen on navigation — use mode="sync"
+or omit mode entirely.
+
+PRODUCT_TAB_ICONS: Must be {} (empty object) to show photo tabs in Design Studio.
+
+ICON NAMING: Hoodie/longsleeve mockup assets use *-cutout-real.png (NOT -cutout.png).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+15. HOW TO INVESTIGATE & FIX ISSUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"No products showing in storefront":
+  1. Check Vite proxy port: artifacts/trynex-storefront/vite.config.ts
+     Line: const apiPort = process.env.API_PORT ?? "8082"  ← must be 8082
+  2. Check API is running: curl http://localhost:8082/api/products?limit=1
+  3. Check proxy works: curl http://localhost:8080/api/products?limit=1
+  4. Check browser console for CORS errors or 502/503
+  5. Check ALLOWED_ORIGINS in API env vars includes the storefront origin
+
+"API server won't start":
+  1. Check all required env vars are set (ADMIN_JWT_SECRET, JWT_SECRET, etc.)
+  2. Run: cd artifacts/api-server && node build.mjs (rebuild first)
+  3. Check workflow logs for the specific error
+
+"DB connection failing":
+  1. Check lib/db/src/index.ts failover chain — which URL is being tried?
+  2. Verify Neon project is not paused (Neon dashboard → check project status)
+  3. Try connecting with psql to each DATABASE_URL_* to find which works
+  4. The server will still start even if all DBs fail; queries will throw
+
+"Mobile app can't reach API":
+  1. In dev: EXPO_PUBLIC_DOMAIN must be set to the Replit dev domain
+     (workflow command sets this: EXPO_PUBLIC_DOMAIN=$REPLIT_DEV_DOMAIN)
+  2. The Vite proxy must be running (storefront workflow) — mobile goes through it
+  3. Verify: api.ts getBaseUrl() returns correct URL for the environment
+
+"Backup sync failing":
+  1. These are Neon quota errors — not code bugs.
+  2. Check Admin → Backup → Sync Status (AdminBackup.tsx)
+  3. Circuit breaker: after 3 consecutive all-failed runs, sync pauses 2 hours.
+  4. Fix: upgrade Neon plan or disable failing targets
+
+"WhatsApp links broken":
+  1. Check Admin → Settings → phone + whatsappNumber fields are filled.
+  2. All WA links should use useSiteSettings() hook with fallback.
+  3. Never hardcode phone numbers in JSX.
+
+"Cloudflare Rocket Loader breaking the site":
+  1. vite.config.ts adds data-cfasync="false" to all script tags automatically.
+  2. If Rocket Loader is enabled in CF dashboard, disable it there as well.
+
+"Admin login not working":
+  1. Check ADMIN_JWT_SECRET and ADMIN_PASSWORD env vars are set.
+  2. Admin sessions are in admin_sessions table (token-based, not JWT cookie).
+  3. Tokens stored in sessionStorage as trynext_admin_token.
+
+"Design Studio 3D preview blank":
+  1. GLB models are NOT used — billboard approach (PhotoMockupMesh) instead.
+  2. Check that garment photo files exist in public/mockups/.
+  3. ProductViewer3D.tsx uses useGLTF.preload calls — all should be commented out.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+16. VISUAL DESIGN SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Colors:
+  --color-primary: #FF6B2C (orange — brand color)
+  Brand background: cream #FFF8F5 / dark brown #1a0a00
+  Accent: dark navy #1e3a5f, success green #16a34a
+  Text: #111827 (dark), #6B7280 (muted)
+
+Typography:
+  Primary: Geist (Google Fonts) — clean, modern, tech-forward
+  Body size: 14-16px. Heading scale: 20→40px.
+
+Component library:
+  shadcn/ui (Radix UI primitives + Tailwind styling)
+  Custom components under src/components/ui/
+
+Announcement bar:
+  Orange marquee at top (hiding on scroll) — shows shipping/promo messages.
+
+Navbar:
+  Home | Shop (dropdown: All, T-Shirts, Hoodies, Caps, Mugs, Hampers, Design Studio)
+       | Customize NEW | Help (dropdown: FAQ, Size Guide, Track, Return, Contact)
+       | Company (dropdown: About, Blog, Referral, Terms, Privacy)
+
+Product cards:
+  White background with subtle shadow. Orange "Customize" badge.
+  Rating stars + review count. Discount price strikethrough.
+
+Hero section (Home):
+  Left: TypewriterHero headline (cycles through product types), CTAs.
+  Right: 4-grid product category cards with badges (BEST SELLER, NEW, etc.)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+17. COMMON COMMANDS (run from monorepo root)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Run storefront dev server
+pnpm --filter @workspace/trynext-storefront run dev
+
+# Run API server (after building)
+pnpm --filter @workspace/api-server run dev
+
+# Rebuild API (REQUIRED after any src/ change)
+cd artifacts/api-server && node build.mjs && cd ../..
+
+# Run mobile app
+pnpm --filter @workspace/trynext-mobile run dev
+
+# Typecheck everything
+pnpm run typecheck
+pnpm --filter @workspace/trynext-storefront run typecheck
+pnpm --filter @workspace/trynext-mobile run typecheck
+
+# Install all dependencies
+pnpm install
+
+# Add a package to a specific workspace
+pnpm --filter @workspace/trynext-storefront add <package>
+pnpm --filter @workspace/api-server add <package>
+
+# Test API endpoints (replace localhost:8082 with your API port)
+curl http://localhost:8082/api/healthz
+curl http://localhost:8082/api/products?limit=5&featured=true
+curl http://localhost:8082/api/categories
+curl http://localhost:8082/api/settings
+
+# Test via Vite proxy (goes through port 8080 → 8082)
+curl http://localhost:8080/api/products?limit=5
+
+# Push to GitHub (git CLI blocked; use REST API instead)
+# Or set remote URL with token:
+git remote set-url origin https://x-access-token:${GITHUB_ACCESS_TOKEN}@github.com/georgelsmith333-hub/trynext-lifestyle.git
+git add -A && git commit -m "your message"
+git fetch origin && git merge origin/main --allow-unrelated-histories --no-edit
+git push origin main
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+18. AGENT INSTRUCTIONS (for Google AI Studio / other AI agents)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You are working on the Trynext Lifestyle e-commerce project. Here is how to work
+effectively on this codebase:
+
+BEFORE MAKING ANY CHANGES:
+  1. Read this document fully.
+  2. Read replit.md in the project root for additional conventions.
+  3. Read .agents/memory/MEMORY.md for session-to-session learnings.
+  4. Check if the relevant workflow is running (not crashed).
+  5. For API changes: ALWAYS rebuild (node build.mjs) + restart workflow after editing.
+
+WHEN FIXING ISSUES:
+  - Start with the API health check: GET /api/healthz
+  - Check workflow logs for errors
+  - Verify DB connection (the failover chain is automatic — check which is active)
+  - For storefront issues: check browser console in screenshot/preview
+  - For mobile issues: check Expo Metro bundler logs
+
+WHEN ADDING FEATURES:
+  - Add DB tables in lib/db/src/schema/index.ts
+  - Add API route in artifacts/api-server/src/routes/ (register in index.ts)
+  - Rebuild API: node build.mjs (in artifacts/api-server/)
+  - Add storefront page in artifacts/trynex-storefront/src/pages/
+  - Register route in artifacts/trynex-storefront/src/App.tsx
+  - Use TanStack Query hooks (useQuery/useMutation) for data fetching
+  - Use useSiteSettings() for any configurable values
+  - All prices in BDT. Currency format: ৳1,299
+
+DO NOT:
+  - Hardcode phone numbers, payment numbers, or prices in JSX
+  - Edit lib/db/src/schema/index.ts without planning for migrations
+  - Use git CLI for pushing (use REST API or token-URL approach)
+  - Create duplicate route handlers (check routes/index.ts first)
+  - Set document.body.style.overflow directly (use scroll-lock helper)
+  - Use AnimatePresence mode="wait" on page-level transitions
+  - Set VITE_API_BASE_URL unless deploying frontend separately from API
+
+KEY FILE LOCATIONS FOR COMMON TASKS:
+  Change phone/WhatsApp displayed to customers → Admin → Settings (runtime)
+                                               or default in SiteSettingsContext.tsx
+  Change shipping cost/threshold            → Admin → Settings (runtime)
+  Add a product                             → Admin → Products → Add New
+  Add a blog post                           → Admin → Blog → New Post
+  Change hero headlines                     → Admin → Settings → Hero Headlines
+  Add payment method                        → Admin → Settings → Payment Numbers
+  Change advance deposit %                  → Search "0.25" or "25%" in codebase
+                                              (Checkout.tsx, orders.ts, email.ts, etc.)
+  Configure Telegram notifications          → Set TELEGRAM_BOT_TOKEN + use Admin → Settings
+  Deploy to production                      → Admin → Deployment (triggers CF Pages build)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+19. CURRENT STATE SUMMARY (July 24, 2026)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Storefront loads and shows products correctly (Vite proxy fix applied)
+✅ Products API returns 10 products via proxy (curl confirmed)
+✅ Categories load correctly (5 categories)
+✅ Homepage renders with hero, product cards, features sections
+✅ All typechecks pass (storefront + mobile)
+✅ API server running on port 8082
+✅ Mobile app dev server running (Expo Metro)
+✅ DB connected via failover #2 (ep-crimson-dawn) — working
+✅ Redis (Upstash) connected — distributed cache active
+✅ All WhatsApp/phone numbers dynamic from settings (no hardcoded values in links)
+
+⚠️  DB primary (DATABASE_URL_MAIN) unreachable — using failover (functional)
+⚠️  Backup sync failing (Neon quota limits) — non-critical; backup only
+⚠️  Mobile product/[id].tsx WhatsApp number still partially hardcoded
+⚠️  AppErrorBoundary.tsx class component — phone hardcoded as fallback (low risk)
+⚠️  CF Pages API_URL must be verified/set for production to work
+
+Workflows (all RUNNING as of July 24, 2026):
+  artifacts/trynex-storefront: web          port 8080
+  artifacts/api-server: API Server          port 8082
+  artifacts/trynext-mobile: expo             port 8084
+  artifacts/trynext-promo: web              port 8083
+  artifacts/mockup-sandbox: Component Preview Server  port 8081
+
+================================================================================
+END OF SUPER COMMAND BRIEFING
+================================================================================

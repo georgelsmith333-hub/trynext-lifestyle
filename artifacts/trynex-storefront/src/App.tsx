@@ -20,29 +20,19 @@ import { BackToTop } from "@/components/BackToTop";
 import { AbandonedCartPopup } from "@/components/AbandonedCartPopup";
 import { DesignDraftReminder } from "@/components/DesignDraftReminder";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
-import { SocialProofToast } from "@/components/SocialProofToast";
 import { SocialAuthLoader } from "@/components/SocialAuthLoader";
 import { FlashSaleBar } from "@/components/FlashSaleBar";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { useUtmCapture } from "@/hooks/useUtm";
 import { Loader } from "@/components/ui/Loader";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
-import { getApiUrl } from "@/lib/utils";
+import { getApiBaseUrl } from "@/lib/utils";
+import { ApiError, setBaseUrl } from "@workspace/api-client-react";
 
-// Warm up the API on mount so the first real request is fast.
-function useWarmUpApi() {
-  useEffect(() => {
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    const ping = () =>
-      fetch(getApiUrl("/api/healthz"), { method: "GET", cache: "no-store" }).catch(() => {});
-    ping();
-    timers.push(setTimeout(ping, 3000));
-    timers.push(setTimeout(ping, 8000));
-    timers.push(setTimeout(ping, 15000));
-    timers.push(setTimeout(ping, 25000));
-    return () => { timers.forEach(clearTimeout); };
-  }, []);
-}
+// Keep generated hooks (orders, stats, products) on the same API origin as
+// the hand-written fetches. In production this avoids a Pages proxy request
+// hanging while direct authenticated Render requests remain healthy.
+setBaseUrl(getApiBaseUrl());
 
 /**
  * lazyWithRetry — wraps lazy() with a single automatic retry on chunk load
@@ -66,12 +56,16 @@ function lazyWithRetry<T extends ComponentType<any>>(
   );
 }
 
-// Top-5 most-visited routes loaded eagerly — navigation to these never
-// triggers Suspense, so there's zero spinner flash on the most common paths.
+// Only Home is needed for an initial storefront visit. Product detail, cart,
+// and checkout can carry indirect visual/editor dependencies, so keep them
+// behind the existing retrying lazy boundary rather than loading their chunks
+// before a customer requests those routes.
 import Home from "./pages/Home";
-import Products from "./pages/Products";
-import ProductDetail from "./pages/ProductDetail";
 
+const Products       = lazyWithRetry(() => import("./pages/Products"));
+const ProductDetail  = lazyWithRetry(() => import("./pages/ProductDetail"));
+const Cart           = lazyWithRetry(() => import("./pages/Cart"));
+const Checkout       = lazyWithRetry(() => import("./pages/Checkout"));
 const TrackOrder     = lazyWithRetry(() => import("./pages/TrackOrder"));
 const Blog           = lazyWithRetry(() => import("./pages/Blog"));
 const BlogPost       = lazyWithRetry(() => import("./pages/BlogPost"));
@@ -85,8 +79,7 @@ const Signup         = lazyWithRetry(() => import("./pages/Signup"));
 const Account        = lazyWithRetry(() => import("./pages/Account"));
 const NotFound       = lazyWithRetry(() => import("./pages/not-found"));
 const SeoGuide       = lazyWithRetry(() => import("./pages/SeoGuide").then(m => ({ default: m.SeoGuide })));
-const Cart           = lazyWithRetry(() => import("./pages/Cart"));
-const Checkout       = lazyWithRetry(() => import("./pages/Checkout"));
+const KeywordLanding = lazyWithRetry(() => import("./pages/KeywordLanding"));
 
 const AdminLogin           = lazyWithRetry(() => import("./pages/admin/Login"));
 const AdminDashboard       = lazyWithRetry(() => import("./pages/admin/Dashboard"));
@@ -114,12 +107,14 @@ const AdminDatabaseCluster    = lazyWithRetry(() => import("./pages/admin/AdminD
 const AdminPageBuilder      = lazyWithRetry(() => import("./pages/admin/AdminPageBuilder"));
 const AdminMockups          = lazyWithRetry(() => import("./pages/admin/AdminMockups"));
 const AdminAIDeveloper      = lazyWithRetry(() => import("./pages/admin/AdminAIDeveloper"));
+const AdminRoles            = lazyWithRetry(() => import("./pages/admin/AdminRoles"));
+const SecretsAdmin          = lazyWithRetry(() => import("./pages/admin/SecretsAdmin"));
 
 const Hampers        = lazyWithRetry(() => import("./pages/Hampers"));
 const HamperDetail   = lazyWithRetry(() => import("./pages/HamperDetail"));
 const HamperBuilder  = lazyWithRetry(() => import("./pages/HamperBuilder"));
 const Referral       = lazyWithRetry(() => import("./pages/Referral"));
-const DesignStudio   = lazyWithRetry(() => import("./pages/DesignStudio"));
+const DesignStudioV2 = lazyWithRetry(() => import("./pages/studio/DesignStudioV2"));
 const SalePage       = lazyWithRetry(() => import("./pages/SalePage"));
 const FAQ            = lazyWithRetry(() => import("./pages/FAQ"));
 const About          = lazyWithRetry(() => import("./pages/About"));
@@ -129,7 +124,15 @@ const SizeGuide      = lazyWithRetry(() => import("./pages/SizeGuide"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      // The Pages gateway already exhausts safe-read origin failover before it
+      // returns an explicit 503. Retrying that response blindly can keep a
+      // visitor on a loading skeleton for another full failover window. Let
+      // page-level recovery UI appear immediately for this terminal gateway
+      // state while retaining one retry for other transient client failures.
+      retry: (failureCount, error) => {
+        if (error instanceof ApiError && error.status === 503) return false;
+        return failureCount < 1;
+      },
       staleTime: 20 * 1000,
       gcTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
@@ -141,18 +144,18 @@ function Router() {
   const [location] = useLocation();
 
   return (
-    // mode="wait" — old route fully exits before new route mounts, eliminating
-    // the double-render overlap that caused the blank flash between pages.
-    // Suspense is placed INSIDE each motion.div so each route manages its own
-    // loading state independently without blocking the exit animation.
-    <AnimatePresence mode="wait" initial={false}>
+    // No mode="wait" — old page stays visible while new page mounts.
+    // This eliminates the blank white gap that mode="wait" causes when
+    // lazy chunks take time to load or Suspense resolves slowly.
+    // The new page fades in on top of the old one, giving instant feedback.
+    <AnimatePresence initial={false}>
       <motion.div
         key={location}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.12, ease: "easeInOut" }}
-        style={{ minHeight: "100vh" }}
+        exit={{ opacity: 0, position: "absolute" as const, top: 0, left: 0, right: 0, zIndex: -1 }}
+        transition={{ duration: 0.12, ease: "easeOut" }}
+        style={{ minHeight: "100vh", width: "100%", position: "relative" }}
       >
         <Suspense fallback={<Loader />}>
           <Switch>
@@ -172,7 +175,10 @@ function Router() {
             <Route path="/privacy-policy" component={PrivacyPolicy} />
             <Route path="/terms-of-service" component={TermsOfService} />
             <Route path="/referral" component={Referral} />
-            <Route path="/design-studio" component={DesignStudio} />
+             {/* V2 is the active responsive production design studio */}
+             <Route path="/design-studio" component={DesignStudioV2} />
+            <Route path="/design-studio-v1" component={() => <Redirect to="/design-studio" />} />
+            <Route path="/design-studio-v2" component={() => <Redirect to="/design-studio" />} />
             <Route path="/hampers" component={Hampers} />
             <Route path="/hampers/build" component={HamperBuilder} />
             <Route path="/hampers/:slug" component={HamperDetail} />
@@ -182,6 +188,12 @@ function Router() {
             <Route path="/contact" component={Contact} />
             <Route path="/size-guide" component={SizeGuide} />
             <Route path="/seo-guide" component={SeoGuide} />
+            <Route path="/custom-tshirt-bangladesh"  component={(p: any) => <KeywordLanding params={{ slug: "custom-tshirt-bangladesh" }} />} />
+            <Route path="/custom-hoodie-bangladesh"  component={(p: any) => <KeywordLanding params={{ slug: "custom-hoodie-bangladesh" }} />} />
+            <Route path="/custom-gift-bangladesh"    component={(p: any) => <KeywordLanding params={{ slug: "custom-gift-bangladesh" }} />} />
+            <Route path="/corporate-gift-dhaka"      component={(p: any) => <KeywordLanding params={{ slug: "corporate-gift-dhaka" }} />} />
+            <Route path="/custom-mug-bangladesh"     component={(p: any) => <KeywordLanding params={{ slug: "custom-mug-bangladesh" }} />} />
+            <Route path="/birthday-gift-bangladesh"  component={(p: any) => <KeywordLanding params={{ slug: "birthday-gift-bangladesh" }} />} />
             <Route path="/login" component={Login} />
             <Route path="/signup" component={Signup} />
             <Route path="/account" component={Account} />
@@ -220,6 +232,8 @@ function Router() {
             <Route path="/admin/page-builder"  component={AdminPageBuilder} />
             <Route path="/admin/mockups"       component={AdminMockups} />
             <Route path="/admin/ai-developer" component={AdminAIDeveloper} />
+            <Route path="/admin/roles"        component={AdminRoles} />
+            <Route path="/admin/secrets"      component={SecretsAdmin} />
             <Route path="/admin"               component={AdminDashboard} />
 
             {/* Short-URL redirects */}
@@ -229,6 +243,7 @@ function Router() {
             <Route path="/returns"><Redirect to="/return-policy" /></Route>
             <Route path="/refund"><Redirect to="/return-policy" /></Route>
             <Route path="/customize"><Redirect to="/design-studio" /></Route>
+            <Route path="/design"><Redirect to="/design-studio" /></Route>
             <Route path="/gift-hampers"><Redirect to="/hampers" /></Route>
             <Route path="/gift-hamper"><Redirect to="/hampers" /></Route>
 
@@ -252,7 +267,7 @@ function CaptureReferralCode() {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("ref");
     if (ref) {
-      localStorage.setItem("trynex_ref_code", ref.toUpperCase().trim());
+      localStorage.setItem("trynext_ref_code", ref.toUpperCase().trim());
       const url = new URL(window.location.href);
       url.searchParams.delete("ref");
       window.history.replaceState({}, "", url.pathname + url.search);
@@ -264,7 +279,6 @@ function CaptureReferralCode() {
 function AppInner() {
   useLenis();
   useUtmCapture();
-  useWarmUpApi();
   return null;
 }
 
@@ -295,7 +309,6 @@ function App() {
                 <AbandonedCartPopup />
                 <DesignDraftReminder />
                 <ExitIntentPopup />
-                <SocialProofToast />
               </ScrollProvider>
               </WouterRouter>
               <Toaster />

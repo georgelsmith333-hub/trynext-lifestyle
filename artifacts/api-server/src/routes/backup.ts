@@ -2,8 +2,51 @@ import { Router, type IRouter } from "express";
 import { db, ordersTable, productsTable, categoriesTable, settingsTable, blogPostsTable } from "@workspace/db";
 import { desc, sql } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/adminAuth";
+import { repairTargetSchemas, runBackupSync } from "../lib/dbBackupSync";
+import { getBackupSyncStatus, recordBackupSyncResults } from "../lib/scheduler";
 
 const router: IRouter = Router();
+
+/** Returns the current DB sync circuit-breaker state so the admin dashboard
+ *  can surface it without digging through server logs. */
+router.get("/admin/backup/sync-status", requireAdmin, (req, res) => {
+  res.json(getBackupSyncStatus());
+});
+
+/**
+ * Mirrors Neon Main into every configured backup/shard database right now
+ * (Failover, Secondary, Products shard, Analytics shard). Same job that runs
+ * automatically every 30 minutes — exposed here so an admin can trigger it
+ * on demand and see the result immediately.
+ */
+router.post("/admin/backup/repair-schemas", requireAdmin, async (req, res) => {
+  try {
+    const results = await repairTargetSchemas();
+    const blocked = results.some((result) => result.status === "blocked");
+    res.status(blocked ? 409 : 200).json({ success: !blocked, results });
+  } catch (err) {
+    req.log.error({ err }, "Failed to repair backup target schemas");
+    res.status(500).json({ error: "internal_error", message: "Schema repair failed" });
+  }
+});
+
+router.post("/admin/backup/sync-now", requireAdmin, async (req, res) => {
+  if (process.env.BACKUP_SYNC_ENABLED !== "true") {
+    res.status(409).json({
+      error: "backup_sync_disabled",
+      message: "The legacy full-database mirror is disabled until an explicitly owned, quota-measured sync strategy is enabled.",
+    });
+    return;
+  }
+  try {
+    const results = await runBackupSync();
+    recordBackupSyncResults(results);
+    res.json({ success: true, results });
+  } catch (err) {
+    req.log.error({ err }, "Failed to run backup sync");
+    res.status(500).json({ error: "internal_error", message: "Backup sync failed" });
+  }
+});
 
 router.get("/admin/export/orders-csv", requireAdmin, async (req, res) => {
   try {
@@ -43,7 +86,7 @@ router.get("/admin/export/orders-csv", requireAdmin, async (req, res) => {
     });
     const csv = [headers.join(','), ...rows].join('\n');
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="trynex-orders-${new Date().toISOString().split('T')[0]}.csv"`);
+    res.setHeader('Content-Disposition', `attachment; filename="trynext-orders-${new Date().toISOString().split('T')[0]}.csv"`);
     res.send(csv);
   } catch (err) {
     req.log.error({ err }, "Failed to export orders CSV");
@@ -68,7 +111,7 @@ router.get("/admin/backup/export", requireAdmin, async (req, res) => {
     };
 
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Disposition', `attachment; filename="trynex-backup-${new Date().toISOString().split('T')[0]}.json"`);
+    res.setHeader('Content-Disposition', `attachment; filename="trynext-backup-${new Date().toISOString().split('T')[0]}.json"`);
     res.json(backup);
   } catch (err) {
     req.log.error({ err }, "Failed to export backup");
@@ -165,7 +208,7 @@ router.post("/admin/backup/import", requireAdmin, async (req, res) => {
           excerpt: b.excerpt,
           content: b.content,
           imageUrl: b.imageUrl,
-          author: b.author || 'TryNex Team',
+          author: b.author || 'Trynext Team',
           tags: b.tags || [],
           published: b.published || false,
         }).onConflictDoNothing();

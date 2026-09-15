@@ -162,12 +162,12 @@ export default function AdminActivityLog() {
 
   const LIMIT = 20;
 
-  const fetchLogs = useCallback(async () => {
+  const fetchLogs = useCallback(async (requestedPage = page) => {
     setLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams({
-        page: String(page),
+         page: String(requestedPage),
         limit: String(LIMIT),
       });
       if (search) params.set("search", search);
@@ -199,8 +199,11 @@ export default function AdminActivityLog() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setPage(1);
-    fetchLogs();
+    if (page === 1) {
+      void fetchLogs(1);
+    } else {
+      setPage(1);
+    }
   };
 
   const canRollback = (log: ActivityLog) =>
@@ -247,7 +250,7 @@ export default function AdminActivityLog() {
 
   const timeAgo = (iso: string): string => {
     const diff = Date.now() - new Date(iso).getTime();
-    const secs = Math.floor(diff / 1000);
+    const secs = Math.max(0, Math.floor(diff / 1000));
     if (secs < 60) return `${secs}s ago`;
     const mins = Math.floor(secs / 60);
     if (mins < 60) return `${mins}m ago`;
@@ -273,7 +276,9 @@ export default function AdminActivityLog() {
           </div>
           <button
             type="button"
-            onClick={fetchLogs}
+             onClick={() => void fetchLogs()}
+             aria-label="Refresh activity log"
+             disabled={loading}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
@@ -335,10 +340,15 @@ export default function AdminActivityLog() {
           </form>
         </div>
 
-        {error && (
-          <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+         {error && (
+           <div className="flex items-center justify-between gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+             <div className="flex items-center gap-2 min-w-0">
             <AlertCircle className="w-4 h-4 shrink-0" />
-            {error}
+             <span>{error}</span>
+             </div>
+             <button type="button" onClick={() => void fetchLogs()} className="shrink-0 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-bold hover:bg-red-100">
+               Retry
+             </button>
           </div>
         )}
 

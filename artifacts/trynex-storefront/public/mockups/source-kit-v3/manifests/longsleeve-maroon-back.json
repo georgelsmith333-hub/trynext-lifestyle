@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "longsleeve:maroon:back",
+  "category": "longsleeve",
+  "colorSlug": "maroon",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/longsleeve-maroon-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/longsleeve/maroon/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/longsleeve-maroon-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    72,
+    113,
+    952,
+    912
+  ],
+  "sha256": "4931a27df62f654e1562be7684bf7ff3a942bd16a837795cb363e4316ac87f7e",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

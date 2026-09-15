@@ -1,7 +1,9 @@
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import { getApiUrl, formatPrice, getAuthHeaders } from "@/lib/utils";
 import { Share2, Trash2, ToggleLeft, ToggleRight, RefreshCw, TrendingUp, Users, DollarSign } from "lucide-react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Referral {
@@ -23,8 +25,9 @@ function authHeaders() {
 export default function AdminReferrals() {
   const { toast } = useToast();
   const qc = useQueryClient();
+  const [deleteRefConfirm, setDeleteRefConfirm] = useState<{ id: number; name: string } | null>(null);
 
-  const { data, isLoading, refetch } = useQuery<{ referrals: Referral[] }>({
+  const { data, isLoading, isError, error, isFetching, refetch } = useQuery<{ referrals: Referral[] }>({
     queryKey: ["/api/referrals"],
     queryFn: async () => {
       const res = await fetch(getApiUrl("/api/referrals"), { headers: authHeaders() });
@@ -37,7 +40,7 @@ export default function AdminReferrals() {
 
   const referrals = data?.referrals ?? [];
 
-  const { mutateAsync: patchReferral } = useMutation({
+  const { mutateAsync: patchReferral, isPending: patching } = useMutation({
     mutationFn: async ({ id, active }: { id: number; active: boolean }) => {
       const res = await fetch(getApiUrl(`/api/referrals/${id}`), {
         method: "PATCH",
@@ -51,7 +54,7 @@ export default function AdminReferrals() {
     onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
-  const { mutateAsync: deleteReferral } = useMutation({
+  const { mutateAsync: deleteReferral, isPending: deleting } = useMutation({
     mutationFn: async (id: number) => {
       const res = await fetch(getApiUrl(`/api/referrals/${id}`), {
         method: "DELETE",
@@ -79,8 +82,11 @@ export default function AdminReferrals() {
           <p className="text-sm text-gray-500 mt-1">Manage customer referral codes and track earnings</p>
         </div>
         <button
-          onClick={() => refetch()}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:border-orange-300 hover:text-orange-600 transition-all"
+          type="button"
+          onClick={() => void refetch()}
+          disabled={isFetching}
+          aria-label="Refresh referrals"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:border-orange-300 hover:text-orange-600 transition-all disabled:opacity-50"
         >
           <RefreshCw className="w-4 h-4" /> Refresh
         </button>
@@ -110,6 +116,14 @@ export default function AdminReferrals() {
 
       {isLoading ? (
         <div className="flex items-center justify-center h-48 text-gray-400 text-sm">Loading…</div>
+      ) : isError ? (
+        <div className="bg-red-50 rounded-2xl border border-red-200 p-12 text-center">
+          <p className="text-base font-black text-red-700">Could not load referrals</p>
+          <p className="text-sm text-red-600 mt-1">{error instanceof Error ? error.message : "Please try again."}</p>
+          <button type="button" onClick={() => void refetch()} className="mt-4 rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-100">
+            Try again
+          </button>
+        </div>
       ) : referrals.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: "#fff7ed" }}>
@@ -168,20 +182,22 @@ export default function AdminReferrals() {
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
+                          type="button"
                           title={ref.active ? "Pause" : "Activate"}
                           onClick={() => patchReferral({ id: ref.id, active: !ref.active })}
-                          className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-orange-500"
+                          disabled={patching || deleting}
+                          aria-label={`${ref.active ? "Pause" : "Activate"} referral for ${ref.ownerName}`}
+                          className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-orange-500 disabled:opacity-40"
                         >
                           {ref.active ? <ToggleRight className="w-5 h-5 text-green-500" /> : <ToggleLeft className="w-5 h-5" />}
                         </button>
                         <button
+                          type="button"
                           title="Delete"
-                          onClick={() => {
-                            if (confirm(`Delete referral code for "${ref.ownerName}"? This cannot be undone.`)) {
-                              deleteReferral(ref.id);
-                            }
-                          }}
-                          className="p-2 rounded-lg hover:bg-red-50 transition-colors text-gray-300 hover:text-red-500"
+                          onClick={() => setDeleteRefConfirm({ id: ref.id, name: ref.ownerName })}
+                          disabled={patching || deleting}
+                          aria-label={`Delete referral for ${ref.ownerName}`}
+                          className="p-2 rounded-lg hover:bg-red-50 transition-colors text-gray-300 hover:text-red-500 disabled:opacity-40"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -197,6 +213,15 @@ export default function AdminReferrals() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteRefConfirm}
+        title="Delete Referral Code"
+        description={`Delete referral code for "${deleteRefConfirm?.name ?? ""}"? This cannot be undone.`}
+        confirmText="Delete"
+         onConfirm={() => { if (deleteRefConfirm) { void deleteReferral(deleteRefConfirm.id); setDeleteRefConfirm(null); } }}
+        onCancel={() => setDeleteRefConfirm(null)}
+      />
     </AdminLayout>
   );
 }

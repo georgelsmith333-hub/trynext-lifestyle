@@ -15,7 +15,7 @@ import {
   CheckCircle2, CreditCard, Banknote,
   ShieldCheck, Copy, Check, ArrowRight,
   Smartphone, Info, Tag, MapPin, MessageCircle, Phone, AlertCircle, Search,
-  LocateFixed, Loader2
+  LocateFixed, Loader2, Upload
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/tracking";
@@ -31,27 +31,27 @@ import { DeliveryAreaPicker } from "@/components/DeliveryAreaPicker";
 
 const checkoutSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  customerEmail: z.string().email("Invalid email address").optional().or(z.literal("")),
-  customerPhone: z.string().min(11, "Valid phone number required"),
+  lastName: z.string().min(1, "Last name is required").optional(),
+  customerEmail: z.string().email("Invalid email address").optional().or(z.literal("")).nullable(),
+  customerPhone: z.string().min(10, "Valid phone number required (10-11 digits)"),
   shippingAddress: z.string().min(5, "Street address required (House / Road / Area)"),
   shippingDistrict: z.string().min(2, "District is required"),
-  shippingUpazila: z.string().min(2, "Upazila is required"),
-  shippingUnion: z.string().optional(),
-  shippingPostCode: z.string().optional(),
-  shippingCity: z.string().optional(),
-  notes: z.string().optional()
+  shippingUpazila: z.string().min(2, "Upazila is required").optional(),
+  shippingUnion: z.string().optional().or(z.literal("")),
+  shippingPostCode: z.string().optional().or(z.literal("")),
+  shippingCity: z.string().optional().or(z.literal("")),
+  notes: z.string().optional().or(z.literal(""))
 });
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 const DISTRICTS = getAllDistricts();
 
-const inputClass = "w-full px-4 py-3.5 rounded-xl text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all placeholder:text-gray-400";
+const inputClass = "w-full scroll-mt-28 px-4 py-3.5 rounded-xl text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all placeholder:text-gray-400";
 const inputStyle = { background: 'white', border: '1px solid #e5e7eb', color: '#111827' };
 
 type CheckoutStep = 'form' | 'gateway' | 'success';
-type MobileMethod = 'bkash' | 'nagad' | 'upay';
-type PaymentMode = 'cod' | 'full' | 'advance';
+type PaymentMethod = 'bkash' | 'nagad' | 'upay' | 'bank' | 'card' | 'cod';
+type PaymentMode = 'full' | 'advance';
 
 export default function Checkout() {
   const [, setLocation] = useLocation();
@@ -66,14 +66,22 @@ export default function Checkout() {
   const freeShippingThreshold = settings.freeShippingThreshold || 0;
   const shippingFee = settings.shippingCost || 0;
 
-  const [paymentMode, setPaymentMode] = useState<PaymentMode>('cod');
-  const [walletChoice, setWalletChoice] = useState<MobileMethod>('bkash');
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>('advance');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('bkash');
   const [summaryExpanded, setSummaryExpanded] = useState(false);
   const [step, setStep] = useState<number>(1);
   const [checkoutStatus, setCheckoutStatus] = useState<CheckoutStep>('form');
   const [createdOrder, setCreatedOrder] = useState<Record<string, unknown> | null>(null);
   const [lastFour, setLastFour] = useState("");
+  const [senderName, setSenderName] = useState("");
+  const [bankReference, setBankReference] = useState("");
+  const [paymentProofUrl, setPaymentProofUrl] = useState("");
+  const [paymentProofName, setPaymentProofName] = useState("");
+  const [paymentProofNotice, setPaymentProofNotice] = useState<string | null>(null);
+  const [isUploadingProof, setIsUploadingProof] = useState(false);
   const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
+  const [paymentSubmitError, setPaymentSubmitError] = useState<string | null>(null);
+  const paymentSubmissionInFlightRef = useRef(false);
   const [copiedNumber, setCopiedNumber] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [promoDiscount, setPromoDiscount] = useState(0);
@@ -93,6 +101,17 @@ export default function Checkout() {
 
   const { mutateAsync: createOrder, isPending } = useCreateOrder();
   const formRef = useRef<HTMLFormElement>(null);
+  const stepPanelRef = useRef<HTMLDivElement>(null);
+
+  const goToStep = useCallback((nextStep: number) => {
+    setStep(nextStep);
+    requestAnimationFrame(() => {
+      window.setTimeout(() => {
+        stepPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        stepPanelRef.current?.focus({ preventScroll: true });
+      }, 0);
+    });
+  }, []);
 
   const { customer, loginAsGuest } = useAuth();
   const [guestLoading, setGuestLoading] = useState(false);
@@ -117,11 +136,7 @@ export default function Checkout() {
     document.body.scrollTop = 0;
   }, []);
 
-  // Expose trigger for step validation
-  useEffect(() => {
-    (window as any).triggerFormValidation = (fields: any) => trigger(fields);
-    return () => { delete (window as any).triggerFormValidation; };
-  }, [trigger]);
+  // trigger is available directly from useForm — no need for window hack
 
   // Auto-fill name/email/phone for logged-in customers (do NOT pre-fill address)
   useEffect(() => {
@@ -148,8 +163,9 @@ export default function Checkout() {
       if (r?.code && !r.usedOn && !promoApplied && !promoInput) {
         spinAutoAppliedRef.current = true;
         setPromoInput(r.code);
-        // Defer one tick so promoInput state is committed before validate reads it
-        setTimeout(() => { void validatePromo(); }, 0);
+        // Pass the code directly — validatePromo would read stale promoInput state
+        // because React batches state updates and the new value isn't flushed yet.
+        setTimeout(() => { void validatePromo(r.code); }, 0);
       }
     } catch { /* ignore */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,26 +181,6 @@ export default function Checkout() {
       }
     }
   }, [errors]);
-
-  const gpsTriedRef = useRef(false);
-  useEffect(() => {
-    if (gpsTriedRef.current) return;
-    gpsTriedRef.current = true;
-    if (!navigator.geolocation) return;
-    try {
-      if (navigator.permissions && typeof navigator.permissions.query === 'function') {
-        navigator.permissions.query({ name: 'geolocation' as PermissionName }).then(result => {
-          if (result.state === 'prompt' || result.state === 'granted') {
-            handleGPSDetect();
-          }
-        }).catch(() => {});
-      } else {
-        handleGPSDetect();
-      }
-    } catch {
-      handleGPSDetect();
-    }
-  }, []);
 
   const selectedDistrict = watch("shippingDistrict");
   const selectedUpazila = watch("shippingUpazila");
@@ -259,6 +255,29 @@ export default function Checkout() {
     );
   }, [setValue, toast]);
 
+  const gpsTriedRef = useRef(false);
+  useEffect(() => {
+    if (gpsTriedRef.current) return;
+    gpsTriedRef.current = true;
+    if (!navigator.geolocation) return;
+    try {
+      if (navigator.permissions && typeof navigator.permissions.query === 'function') {
+        navigator.permissions.query({ name: 'geolocation' as PermissionName }).then(result => {
+          if (result.state === 'granted') {
+            handleGPSDetect();
+          }
+          // If 'prompt' → don't auto-trigger; let the user click the button
+          // If 'denied' → silently skip
+        }).catch(() => {});
+      } else {
+        // No permissions API → attempt once
+        handleGPSDetect();
+      }
+    } catch {
+      handleGPSDetect();
+    }
+  }, [handleGPSDetect]);
+
   useEffect(() => {
     return () => {
       if (wakingTimerRef.current) clearTimeout(wakingTimerRef.current);
@@ -278,7 +297,7 @@ export default function Checkout() {
 
   useEffect(() => {
     if (refAppliedRef.current || promoApplied) return;
-    const refCode = localStorage.getItem("trynex_ref_code");
+    const refCode = localStorage.getItem("trynext_ref_code");
     if (refCode) {
       refAppliedRef.current = true;
       setPromoInput(refCode);
@@ -304,15 +323,28 @@ export default function Checkout() {
     }
   }, [items, promoApplied]);
 
-  const getPaymentNumber = (method: MobileMethod) => {
+  const getPaymentNumber = (method: PaymentMethod) => {
     if (method === 'bkash') return settings.bkashNumber || "";
     if (method === 'nagad') return settings.nagadNumber || "";
     if (method === 'upay') return settings.upayNumber || "";
     return "";
   };
 
-  const validatePromo = async () => {
-    if (!promoInput.trim()) return;
+  const bankConfigured = !!(settings.bankName && settings.bankAccountNumber && settings.bankAccountName);
+  const anyWalletConfigured = !!(settings.bkashNumber || settings.nagadNumber || settings.upayNumber);
+
+  // Keep the visible method list aligned with the API and mobile checkout.
+  // Wallets and bank transfer are shown only when their destination is usable;
+  // COD follows the admin toggle and card-on-delivery is always available.
+  const configuredPaymentMethods: PaymentMethod[] = [
+    ...(['bkash', 'nagad', 'upay'] as PaymentMethod[]).filter((m) => !!getPaymentNumber(m)),
+    ...(bankConfigured ? ['bank' as const] : []),
+    ...(settings.codEnabled ? ['cod' as const] : []),
+    'card',
+  ];
+  const validatePromo = async (codeOverride?: string) => {
+    const codeToValidate = codeOverride?.trim() ?? promoInput.trim();
+    if (!codeToValidate) return;
     setPromoLoading(true);
     setPromoError(null);
     try {
@@ -321,7 +353,7 @@ export default function Checkout() {
       const res = await fetch(getApiUrl("/api/promo-codes/validate"), {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
-        body: JSON.stringify({ code: promoInput.trim(), orderTotal: liveTotal, customerEmail: customerEmailVal }),
+        body: JSON.stringify({ code: codeToValidate, orderTotal: liveTotal, customerEmail: customerEmailVal }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -355,7 +387,11 @@ export default function Checkout() {
   const qualifiesForFreeShipping = freeShippingThreshold > 0 && liveSubtotal >= freeShippingThreshold;
   const shippingCost = liveSubtotal > 0 && !qualifiesForFreeShipping ? shippingFee : 0;
   const total = Math.max(0, liveSubtotal + shippingCost - promoDiscount);
-  const advanceAmount = Math.ceil(total * 0.15);
+  // COD is a payment method, not a separate payment mode. Every non-full
+  // order therefore has the same 25% amount due now; this prevents a COD
+  // selection from ever producing a zero-value "advance" order.
+  const advanceAmount = Math.ceil(total * 0.25);
+  const amountDueNow = paymentMode === 'full' ? total : advanceAmount;
 
   const displayTotal = checkoutStatus === 'form' ? total : snapshotRef.current.total;
   const displayAdvance = checkoutStatus === 'form' ? advanceAmount : snapshotRef.current.advance;
@@ -365,6 +401,17 @@ export default function Checkout() {
       setLocation("/cart");
     }
   }, [items.length, checkoutStatus, setLocation]);
+
+  // Normalize the wallet selection before any conditional return. Keeping this
+  // hook above the empty-cart branch prevents React error #310 when a cart is
+  // emptied or restored during navigation.
+  useEffect(() => {
+    if (configuredPaymentMethods.length > 0 && !configuredPaymentMethods.includes(paymentMethod)) {
+      setPaymentMethod(configuredPaymentMethods[0]);
+    }
+    setPaymentMode('advance');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configuredPaymentMethods.join(",")]);
 
   // Suppress checkout render while redirecting to /cart on empty cart.
   // We render a deterministic loading state instead of `return null` so
@@ -381,25 +428,26 @@ export default function Checkout() {
     );
   }
 
-  const effectiveGatewayMethod: MobileMethod = walletChoice;
-  const paymentMethod = (paymentMode === 'full' || paymentMode === 'advance') ? walletChoice : 'cod';
+  const effectiveGatewayMethod: PaymentMethod = configuredPaymentMethods.includes(paymentMethod)
+    ? paymentMethod
+    : (configuredPaymentMethods[0] ?? 'bkash');
 
   const onSubmit = async (data: CheckoutFormData) => {
     const snapSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const snapQualifies = freeShippingThreshold > 0 && snapSubtotal >= freeShippingThreshold;
     const snapShipping = snapSubtotal > 0 && !snapQualifies ? shippingFee : 0;
     const snapTotal = Math.max(0, snapSubtotal + snapShipping - promoDiscount);
-    const snapAdvance = Math.ceil(snapTotal * 0.15);
+    const snapAdvance = Math.ceil(snapTotal * 0.25);
 
     snapshotRef.current = { total: snapTotal, advance: snapAdvance, shipping: snapShipping };
 
-    const { firstName, lastName, shippingUpazila, shippingUnion, shippingPostCode, ...rest } = data;
+    const { firstName, lastName, shippingUpazila, shippingUnion, shippingPostCode, shippingAddress, ...rest } = data;
     const customerName = `${firstName} ${lastName}`.trim();
-    const addressParts = [rest.shippingAddress];
+    const addressParts = [shippingAddress];
     if (shippingUnion) addressParts.push(shippingUnion);
     if (shippingUpazila) addressParts.push(shippingUpazila);
     if (shippingPostCode) addressParts.push(`PO: ${shippingPostCode}`);
-    rest.shippingAddress = addressParts.join(", ");
+    const formattedAddress = addressParts.join(", ");
 
     if (wakingTimerRef.current) clearTimeout(wakingTimerRef.current);
     // If the very first request is still in flight after 6s, the API is
@@ -410,8 +458,13 @@ export default function Checkout() {
     const utm = getStoredUtm();
     const orderPayload = {
       ...rest,
+      shippingAddress: formattedAddress,
       customerName,
       paymentMethod,
+      notes: [
+        rest.notes,
+        paymentMode === 'advance' ? 'Payment plan: 25% advance + cash on delivery' : 'Payment plan: full payment',
+      ].filter(Boolean).join(' | '),
       items: items.map(i => ({
         productId: i.productId,
         name: i.name,
@@ -423,6 +476,10 @@ export default function Checkout() {
           ? JSON.stringify({ hamper: i.hamperPayload, unitPrice: i.price })
           : i.customNote,
         customImages: i.customImages,
+        // Keep print-ready studio uploads in the order payload. These are
+        // storage paths/metadata, not the large preview data URLs.
+        originalAssetUrls: i.originalAssetUrls,
+        originalAssets: i.originalAssets,
       })),
       ...(promoApplied ? { promoCode: promoApplied } : {}),
       ...(utm.utmSource ? { utmSource: utm.utmSource } : {}),
@@ -464,7 +521,7 @@ export default function Checkout() {
           setServerWaking(true);
         }
         try {
-          order = await createOrder({ data: orderPayload } as any);
+          order = await createOrder(orderPayload as CreateOrderRequest);
           lastErr = undefined;
           break;
         } catch (e) {
@@ -478,9 +535,21 @@ export default function Checkout() {
       const orderData = order as unknown as Record<string, unknown>;
       setCreatedOrder(orderData);
 
-      const serverTotal = typeof orderData.total === "number" ? orderData.total : snapTotal;
-      const serverAdvance = Math.ceil(serverTotal * 0.15);
-      snapshotRef.current = { total: serverTotal, advance: serverAdvance, shipping: snapshotRef.current.shipping };
+      const rawServerTotal = typeof orderData.total === "number" ? orderData.total : snapTotal;
+      const serverSubtotal = typeof orderData.subtotal === "number" ? orderData.subtotal : snapSubtotal;
+      const serverShipping = typeof orderData.shippingCost === "number" ? orderData.shippingCost : snapshotRef.current.shipping;
+      // Some already-published API builds return the line-item subtotal as `total`
+      // while still returning the shipping field separately. Reconcile that narrow
+      // legacy response so the wallet gateway never undercharges or misstates the
+      // customer’s advance amount after order creation. A current full total is
+      // preserved unchanged, including valid promo/free-shipping adjustments.
+      const serverTotal = rawServerTotal === snapSubtotal && snapTotal > rawServerTotal
+        ? snapTotal
+        : rawServerTotal === serverSubtotal && serverShipping > 0
+          ? rawServerTotal + serverShipping
+          : rawServerTotal;
+      const serverAdvance = Math.ceil(serverTotal * 0.25);
+      snapshotRef.current = { total: serverTotal, advance: serverAdvance, shipping: serverShipping };
 
       trackPurchase({
         orderId: orderData.orderNumber as string,
@@ -489,12 +558,10 @@ export default function Checkout() {
       });
 
       if (isReferralCode && promoApplied) {
-        fetch(getApiUrl(`/api/referrals/${promoApplied}/use`), {
-          method: "PUT",
-          headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
-          body: JSON.stringify({ orderTotal: serverTotal }),
-        }).catch(() => {});
-        localStorage.removeItem("trynex_ref_code");
+        // NOTE: Do NOT call PUT /api/referrals/:code/use here.
+        // The server already updates usedCount + totalEarnings inside the order
+        // creation DB transaction. Calling it again would double-count earnings.
+        localStorage.removeItem("trynext_ref_code");
       }
 
       if (wakingTimerRef.current) { clearTimeout(wakingTimerRef.current); wakingTimerRef.current = null; }
@@ -510,13 +577,26 @@ export default function Checkout() {
         color: i.color,
       }));
       clearCart();
-      setCheckoutStatus('gateway');
+
+      // Wallet orders must stop at the gateway so the customer can send the
+      // exact 25% amount and submit transaction evidence. Payment is only
+      // marked submitted after the customer presses “I've Sent the Payment”.
+      if (paymentMethod === 'bkash' || paymentMethod === 'nagad' || paymentMethod === 'upay' || paymentMethod === 'bank') {
+        setCheckoutStatus('gateway');
+      } else {
+        setCheckoutStatus('success');
+      }
     } catch (err: any) {
       if (wakingTimerRef.current) { clearTimeout(wakingTimerRef.current); wakingTimerRef.current = null; }
       setServerWaking(false);
       const errBody = err?.data || err?.body || {};
       const code = errBody?.error;
       const serverMessage = errBody?.message;
+      const fullErrorText = err?.response?.data
+        ? JSON.stringify(err.response.data).slice(0, 300)
+        : err?.message || err?.toString?.() || "";
+      // eslint-disable-next-line no-console
+      console.error("[Checkout] order submit failed:", { status: err?.status, code, serverMessage, fullErrorText, err });
 
       if (code === "promo_invalid") {
         removePromo();
@@ -579,7 +659,7 @@ export default function Checkout() {
       } else {
         toast({
           title: "Failed to place order",
-          description: serverMessage || "Please try again in a moment, or message us on WhatsApp for help.",
+          description: serverMessage || fullErrorText || "Please try again in a moment, or message us on WhatsApp for help.",
           variant: "destructive",
         });
       }
@@ -587,34 +667,138 @@ export default function Checkout() {
   };
 
   const handlePaymentSubmit = async () => {
-    if (!lastFour || lastFour.length < 4) {
-      toast({ title: "Please enter last 4 digits", description: "Enter the last 4 digits of your sending number.", variant: "destructive" });
+    if (paymentSubmissionInFlightRef.current || isSubmittingPayment) return;
+    setPaymentSubmitError(null);
+    if (paymentMethod === 'bank') {
+      if (senderName.trim().length < 2) {
+        toast({ title: "Enter account holder name", description: "Enter the name used for the bank transfer.", variant: "destructive" });
+        return;
+      }
+      if (bankReference.trim().length < 4) {
+        toast({ title: "Enter bank reference", description: "Enter the bank transfer reference or confirmation number.", variant: "destructive" });
+        return;
+      }
+    } else {
+      if (lastFour.length !== 4) {
+        const message = "Enter exactly 4 digits from the wallet number you paid from.";
+        setPaymentSubmitError(message);
+        toast({ title: "Sender number is incomplete", description: message, variant: "destructive" });
+        return;
+      }
+    }
+    const orderId = Number((createdOrder as Record<string, unknown>)?.id);
+    if (!Number.isFinite(orderId) || orderId <= 0) {
+      const message = 'Your order reference is missing. Please return to checkout and try again.';
+      setPaymentSubmitError(message);
+      toast({ title: 'Order reference missing', description: message, variant: 'destructive' });
       return;
     }
+    paymentSubmissionInFlightRef.current = true;
     setIsSubmittingPayment(true);
     try {
-      await fetch(getApiUrl(`/api/orders/${(createdOrder as Record<string, unknown>)?.id}/payment-info`), {
+      const res = await fetch(getApiUrl(`/api/orders/${orderId}/payment-info`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-        body: JSON.stringify({ lastFourDigits: lastFour, promoCode: promoApplied || undefined })
+        body: JSON.stringify({
+          paymentMethod,
+          customerEmail: watch("customerEmail") || undefined,
+          customerPhone: watch("customerPhone"),
+          lastFourDigits: lastFour || undefined,
+          transactionId: undefined,
+          paymentProofUrl,
+          senderName: senderName.trim() || undefined,
+          bankReference: bankReference.trim() || undefined,
+          promoCode: promoApplied || undefined,
+        })
       });
+      const updatedOrder = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(updatedOrder?.message || `Server error: ${res.status}`);
+      }
+      if (updatedOrder && typeof updatedOrder === 'object') {
+        setCreatedOrder(prev => ({ ...(prev || {}), ...(updatedOrder as Record<string, unknown>) }));
+      }
+      setPaymentSubmitError(null);
       setCheckoutStatus('success');
-    } catch {
-      toast({ title: "Submission failed", description: "Please screenshot this page and contact us on WhatsApp.", variant: "destructive" });
+    } catch (err: any) {
+      paymentSubmissionInFlightRef.current = false;
+      const message = err?.message || "Please try again or contact us on WhatsApp.";
+      setPaymentSubmitError(message);
+      toast({ title: "Payment submission failed", description: message, variant: "destructive" });
     } finally {
       setIsSubmittingPayment(false);
     }
   };
+  const uploadPaymentProof = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Image required', description: 'Please choose a JPG, PNG, or WebP screenshot.', variant: 'destructive' });
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      toast({ title: 'Screenshot is too large', description: 'Please choose an image smaller than 8 MB.', variant: 'destructive' });
+      return;
+    }
+    setIsUploadingProof(true);
+    try {
+      const req = await fetch(getApiUrl('/api/storage/uploads/request-url'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // The API rejects cross-site state-changing requests without this
+          // explicit AJAX marker. Without it, valid payment screenshots fail
+          // before a signed upload URL is issued.
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({ name: `payment-proof-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-80)}`, contentType: file.type, size: file.size }),
+      });
+      const requestBody = await req.json().catch(() => null);
+      if (!req.ok || !requestBody?.uploadURL || !requestBody?.objectPath) {
+        throw new Error(requestBody?.message || `Could not prepare the upload (server ${req.status})`);
+      }
+      const { uploadURL, objectPath } = requestBody as { uploadURL: string; objectPath: string };
+      const put = await fetch(uploadURL, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+      if (!put.ok) {
+        const detail = await put.text().catch(() => '');
+        throw new Error(`Could not upload the screenshot (storage ${put.status}${detail ? `: ${detail.slice(0, 120)}` : ''})`);
+      }
+      // Uploaded entities live in the private storage namespace. The prior
+      // public-objects URL was invalid for R2/S3-backed uploads and made the
+      // proof appear to disappear even after the PUT completed.
+      const entityId = String(objectPath).replace(/^\/objects\//, '').replace(/^\/+/, '');
+      if (!entityId) throw new Error('The upload completed without an object reference');
+      setPaymentProofUrl(`/api/storage/objects/${entityId}`);
+      setPaymentProofName(file.name);
+      setPaymentProofNotice(null);
+      toast({ title: 'Payment proof attached', description: 'Your screenshot is ready to submit.' });
+    } catch (err: any) {
+      setPaymentProofNotice('Screenshot upload is unavailable right now. You can still submit with the required last 4 sender digits.');
+      toast({ title: 'Screenshot optional', description: 'We could not attach the screenshot, but you can continue with the required last 4 sender digits.' });
+    } finally {
+      setIsUploadingProof(false);
+    }
+  };
 
   const activePaymentNumber = getPaymentNumber(effectiveGatewayMethod);
+  const effectivePaymentNumber = activePaymentNumber;
+  const paymentNumberReady = !!effectivePaymentNumber;
 
   const copyNumber = async () => {
-    await navigator.clipboard.writeText(activePaymentNumber);
+    if (!effectivePaymentNumber) return;
+    await navigator.clipboard.writeText(effectivePaymentNumber);
     setCopiedNumber(true);
     setTimeout(() => setCopiedNumber(false), 3000);
   };
 
-  const gatewayTheme = {
+  const gatewayTheme: Record<PaymentMethod, {
+    name: string;
+    primary: string;
+    light: string;
+    border: string;
+    glow: string;
+    badge: string;
+    logo: React.ReactNode;
+    icon: React.ReactNode;
+  }> = {
     bkash: {
       name: 'bKash',
       primary: '#e2136e',
@@ -623,6 +807,7 @@ export default function Checkout() {
       glow: '0 4px 30px rgba(226,19,110,0.1)',
       badge: 'linear-gradient(135deg, #e2136e 0%, #c0105c 100%)',
       logo: <span className="text-4xl font-black" style={{ color: '#e2136e' }}>bKash</span>,
+      icon: <Smartphone className="w-5 h-5" />,
     },
     nagad: {
       name: 'Nagad',
@@ -632,6 +817,7 @@ export default function Checkout() {
       glow: '0 4px 30px rgba(247,148,29,0.1)',
       badge: 'linear-gradient(135deg, #f7941d 0%, #e07800 100%)',
       logo: <span className="text-4xl font-black" style={{ color: '#f7941d' }}>Nagad</span>,
+      icon: <Smartphone className="w-5 h-5" />,
     },
     upay: {
       name: 'uPay',
@@ -641,10 +827,57 @@ export default function Checkout() {
       glow: '0 4px 30px rgba(0,119,204,0.1)',
       badge: 'linear-gradient(135deg, #0077cc 0%, #005fa3 100%)',
       logo: <span className="text-4xl font-black" style={{ color: '#0077cc' }}>uPay</span>,
+      icon: <Smartphone className="w-5 h-5" />,
+    },
+    bank: {
+      name: 'Bank Transfer',
+      primary: '#16a34a',
+      light: 'rgba(22,163,74,0.08)',
+      border: 'rgba(22,163,74,0.2)',
+      glow: '0 4px 30px rgba(22,163,74,0.1)',
+      badge: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+      logo: <span className="text-3xl font-black" style={{ color: '#16a34a' }}>Bank</span>,
+      icon: <Banknote className="w-5 h-5" />,
+    },
+    card: {
+      name: 'Card Payment',
+      primary: '#7c3aed',
+      light: 'rgba(124,58,237,0.08)',
+      border: 'rgba(124,58,237,0.2)',
+      glow: '0 4px 30px rgba(124,58,237,0.1)',
+      badge: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+      logo: <span className="text-3xl font-black" style={{ color: '#7c3aed' }}>Card</span>,
+      icon: <CreditCard className="w-5 h-5" />,
+    },
+    cod: {
+      name: 'Cash on Delivery',
+      primary: '#0891b2',
+      light: 'rgba(8,145,178,0.08)',
+      border: 'rgba(8,145,178,0.2)',
+      glow: '0 4px 30px rgba(8,145,178,0.1)',
+      badge: 'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)',
+      logo: <span className="text-3xl font-black" style={{ color: '#0891b2' }}>COD</span>,
+      icon: <Banknote className="w-5 h-5" />,
     },
   };
 
   const theme = gatewayTheme[effectiveGatewayMethod];
+
+  const isWalletMethod = paymentMethod === 'bkash' || paymentMethod === 'nagad' || paymentMethod === 'upay';
+  const canProceed = (() => {
+    if (configuredPaymentMethods.length === 0) return false;
+    if (isWalletMethod) {
+      // The screenshot is uploaded only after the order exists, because the
+      // payment-proof object is attached to the created order on the gateway
+      // screen. Requiring it here deadlocks Step 2 and makes Review Order
+      // impossible. The sender suffix is enough to reach the review step.
+      return paymentNumberReady && lastFour.length === 4;
+    }
+    if (paymentMethod === 'bank') {
+      return bankConfigured && senderName.trim().length > 0 && bankReference.trim().length > 0;
+    }
+    return paymentMethod === 'cod' || paymentMethod === 'card';
+  })();
 
   if (checkoutStatus === 'success') {
     return (
@@ -653,7 +886,7 @@ export default function Checkout() {
           initial={{ scale: 0.85, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", damping: 20 }}
-          className="max-w-md w-full rounded-3xl p-8 text-center bg-white"
+          className="max-w-xl w-full rounded-3xl p-8 text-center bg-white"
           style={{ border: '1px solid #e5e7eb', boxShadow: '0 8px 40px rgba(0,0,0,0.08)' }}
         >
           <motion.div
@@ -667,9 +900,11 @@ export default function Checkout() {
 
           <h1 className="text-4xl font-black font-display mb-2 text-gray-900">Order Confirmed!</h1>
           <p className="text-gray-400 mb-6 leading-relaxed text-sm">
-            {paymentMode === 'full'
-              ? "Full payment submitted! Our team will verify and confirm your order shortly."
-              : "15% advance submitted. We'll collect the remaining balance on delivery."}
+             {paymentMode === 'full'
+               ? "Full payment submitted! Our team will verify and confirm your order shortly."
+               : paymentMethod === 'cod'
+                 ? "Your order is reserved. We'll contact you to collect the 25% advance, then deliver the balance by cash on delivery."
+                 : "25% advance submitted. We'll collect the remaining balance on delivery."}
           </p>
 
           <div className="p-5 rounded-2xl mb-4 bg-gray-50 border border-gray-100">
@@ -739,7 +974,17 @@ export default function Checkout() {
             );
           })()}
 
-          {paymentMode === 'full' ? (
+          {paymentMethod === 'cod' ? (
+            <div className="p-4 rounded-2xl mb-4 text-left" style={{ background: 'rgba(8,145,178,0.06)', border: '1px solid rgba(8,145,178,0.18)' }}>
+              <p className="text-xs font-bold text-cyan-700 mb-2 flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5" /> Advance Required to Confirm
+              </p>
+              <div className="text-xs text-gray-500 space-y-1">
+                <p>Advance due: <strong className="text-gray-900">{formatPrice(snapshotRef.current.advance)}</strong></p>
+                <p>Remaining on delivery: <strong className="text-gray-900">{formatPrice(snapshotRef.current.total - snapshotRef.current.advance)}</strong></p>
+              </div>
+            </div>
+          ) : paymentMode === 'full' ? (
             <div className="p-4 rounded-2xl mb-4 text-left" style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)' }}>
               <p className="text-xs font-bold text-amber-600 mb-2 flex items-center gap-1.5">
                 <Info className="w-3.5 h-3.5" /> Full Payment Under Verification
@@ -763,7 +1008,7 @@ export default function Checkout() {
 
           {WHATSAPP_NUMBER_INTL && (
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER_INTL.replace('+', '')}?text=Hi TryNex! My order number is ${createdOrder?.orderNumber}. I need help.`}
+              href={`https://wa.me/${WHATSAPP_NUMBER_INTL.replace('+', '')}?text=Hi Trynext! My order number is ${createdOrder?.orderNumber}. I need help.`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-white text-sm mb-2"
@@ -806,13 +1051,18 @@ export default function Checkout() {
     const snapAdvance = snapshotRef.current.advance;
     const snapRemaining = snapTotal - snapAdvance;
     const amountToSend = paymentMode === 'full' ? snapTotal : snapAdvance;
+    const gatewayEvidenceReady = isWalletMethod
+      ? paymentNumberReady && lastFour.length === 4
+      : paymentMethod === 'bank'
+        ? bankConfigured && senderName.trim().length >= 2 && bankReference.trim().length >= 4
+        : true;
 
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full space-y-4"
+          className="max-w-xl w-full space-y-4"
         >
           <div className="rounded-3xl overflow-hidden bg-white"
             style={{ border: `1px solid ${theme.border}`, boxShadow: theme.glow }}>
@@ -821,9 +1071,7 @@ export default function Checkout() {
               <div className="mb-2">{theme.logo}</div>
               <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Payment Gateway</p>
               <p className="text-sm text-gray-500">
-                {paymentMode === 'full'
-                  ? `Pay full amount via ${theme.name} — order confirmed instantly`
-                  : `Pay 15% advance via ${theme.name} — rest collected on delivery`}
+                {`Pay 25% advance via ${theme.name} — rest collected on delivery`}
               </p>
             </div>
 
@@ -842,7 +1090,7 @@ export default function Checkout() {
 
               <div className="rounded-2xl p-5 text-center" style={{ background: theme.light, border: `2px solid ${theme.border}` }}>
                 <p className="text-xs font-black uppercase tracking-widest mb-2" style={{ color: theme.primary }}>
-                  {paymentMode === 'full' ? 'Send This Amount (Full Payment)' : 'Send This Amount (15% Advance)'}
+                  Send This Amount (25% Advance)
                 </p>
                 <p className="text-6xl font-black font-display" style={{ color: theme.primary }}>
                   {formatPrice(amountToSend)}
@@ -861,9 +1109,9 @@ export default function Checkout() {
                 {[
                   `Open your ${theme.name} app`,
                   `Go to "Send Money"`,
-                  `Enter number: ${activePaymentNumber}`,
+                  `Enter number: ${effectivePaymentNumber}`,
                   `Send exactly ${formatPrice(amountToSend)}`,
-                  'Enter your sending number last 4 digits below',
+                  'Enter the last 4 digits of the wallet number you paid from below',
                 ].map((s, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 mt-0.5"
@@ -881,12 +1129,19 @@ export default function Checkout() {
                   <div className="flex-1">
                     <p className="text-[10px] font-bold text-gray-400 mb-1">{theme.name} Personal Number</p>
                     <p className="text-3xl font-black tracking-widest font-mono" style={{ color: theme.primary }}>
-                      {activePaymentNumber}
+                      {effectivePaymentNumber}
                     </p>
                     <p className="text-[10px] text-gray-400 mt-1">Tap COPY then paste directly in {theme.name} app</p>
+                    {!paymentNumberReady && (
+                      <p className="text-[10px] text-red-500 mt-1 font-bold">Admin number not configured — use WhatsApp to confirm payment.</p>
+                    )}
                   </div>
                   <button
-                    onClick={copyNumber}
+                    type="button"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      void copyNumber();
+                    }}
                     className="flex flex-col items-center gap-1 w-14 h-14 rounded-xl justify-center transition-all duration-300 shrink-0"
                     style={{
                       background: copiedNumber ? 'rgba(22,163,74,0.08)' : theme.light,
@@ -904,38 +1159,83 @@ export default function Checkout() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-xs text-green-600 font-bold mt-2 flex items-center gap-1.5"
                   >
-                    <Check className="w-3 h-3" /> {activePaymentNumber} copied! Paste directly in {theme.name} app.
+                    <Check className="w-3 h-3" /> {effectivePaymentNumber} copied! Paste directly in {theme.name} app.
                   </motion.p>
                 )}
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">
-                  Your Sending Number — Last 4 Digits *
+                <label htmlFor="payment-sender-last-four" className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2 mt-4">
+                  Sender Number — Last 4 Digits
                 </label>
                 <input
+                  id="payment-sender-last-four"
                   type="tel"
                   inputMode="numeric"
                   maxLength={4}
                   placeholder="e.g. 5678"
+                  aria-label="Last four digits of the number used to send payment"
                   value={lastFour}
-                  onChange={e => setLastFour(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                  onChange={e => {
+                    setPaymentSubmitError(null);
+                    setLastFour(e.target.value.replace(/\D/g, '').slice(0, 4));
+                  }}
                   className={inputClass}
                   style={{ ...inputStyle, letterSpacing: '0.5em', textAlign: 'center', fontSize: '1.5rem', fontWeight: 900 }}
                 />
-                <p className="text-xs text-gray-400 mt-1.5">
-                  Enter the last 4 digits of the {theme.name} number you're sending FROM
+                  <p className="text-xs text-gray-500 mt-1.5">
+                  Use the last 4 digits of <strong>your own sending number</strong>, not our merchant number. Never enter your full number.
                 </p>
+                <p className="text-xs text-gray-400 mt-1">Example: if your sending number ends in 5678, enter <strong>5678</strong>.</p>
+
+                <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2 mt-5">
+                  Payment Screenshot (Optional)
+                </label>
+                <label className="relative overflow-hidden flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-colors hover:bg-orange-50"
+                  style={{ background: paymentProofUrl ? 'rgba(22,163,74,0.06)' : '#fffaf5', border: `1px dashed ${paymentProofUrl ? 'rgba(22,163,74,0.4)' : 'rgba(232,93,4,0.35)'}` }}>
+                  <Upload className="w-5 h-5 text-orange-500 shrink-0" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-bold text-gray-800">{isUploadingProof ? 'Uploading screenshot…' : paymentProofName || 'Attach payment screenshot'}</span>
+                    <span className="block text-xs text-gray-400 mt-0.5">Optional · JPG, PNG, or WebP · max 8 MB</span>
+                  </span>
+                  {paymentProofUrl && <Check className="w-5 h-5 text-green-600 shrink-0" />}
+                  <input id="payment-proof-file" type="file" accept="image/png,image/jpeg,image/webp" className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" disabled={isUploadingProof} onChange={e => { const f = e.target.files?.[0]; if (f) void uploadPaymentProof(f); }} />
+                </label>
+                {paymentProofNotice && (
+                  <p role="status" className="mt-2 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                    {paymentProofNotice}
+                  </p>
+                )}
               </div>
 
+              {paymentMethod === 'bank' && (
+                <div className="rounded-2xl p-4 mb-5 bg-gray-50" style={{ border: `1px solid ${theme.border}` }}>
+                  <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">Bank Transfer Details</p>
+                  <p className="text-sm text-gray-700"><strong>{settings.bankName}</strong> · {settings.bankAccountName}</p>
+                  <p className="text-lg font-black font-mono text-gray-900 mt-1">{settings.bankAccountNumber}</p>
+                  {settings.bankBranch && <p className="text-xs text-gray-500 mt-1">Branch: {settings.bankBranch}</p>}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <input value={senderName} onChange={e => setSenderName(e.target.value.slice(0, 100))} placeholder="Transfer account holder name" className={inputClass} style={inputStyle} />
+                    <input value={bankReference} onChange={e => setBankReference(e.target.value.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 100))} placeholder="Bank reference / ID" className={inputClass} style={inputStyle} />
+                  </div>
+                </div>
+              )}
+
+              {paymentSubmitError && (
+                <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                  {paymentSubmitError}
+                </div>
+              )}
+
               <button
+                type="button"
                 onClick={handlePaymentSubmit}
-                disabled={isSubmittingPayment || lastFour.length < 4}
+                disabled={isSubmittingPayment}
                 className="w-full py-4 rounded-xl font-black text-white text-base flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-40"
                 style={{
-                  background: lastFour.length >= 4 && !isSubmittingPayment ? theme.badge : '#e5e7eb',
-                  boxShadow: lastFour.length >= 4 ? `0 8px 30px ${theme.light}` : 'none',
-                  color: lastFour.length >= 4 ? 'white' : '#9ca3af',
+                  background: !isSubmittingPayment ? theme.badge : '#e5e7eb',
+                  boxShadow: !isSubmittingPayment ? `0 8px 30px ${theme.light}` : 'none',
+                  color: !isSubmittingPayment ? 'white' : '#9ca3af',
                 }}
               >
                 {isSubmittingPayment ? (
@@ -944,6 +1244,12 @@ export default function Checkout() {
                   <>I've Sent the Payment <ArrowRight className="w-5 h-5" /></>
                 )}
               </button>
+
+                      {!gatewayEvidenceReady && !paymentSubmitError && (
+                <p className="text-center text-xs font-semibold text-gray-500">
+                  {isWalletMethod ? <>Enter the required <strong>4 sender digits</strong>. The screenshot is optional and can be attached for faster verification.</> : <>Complete the required payment reference fields to submit this transfer.</>}
+                </p>
+              )}
 
               <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -992,10 +1298,10 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <SEOHead title="Checkout" description="Complete your order at TryNex Lifestyle." noindex />
+      <SEOHead title="Checkout" description="Complete your order at Trynext Lifestyle." noindex />
       <Navbar />
 
-      <main className="flex-1 pt-header pb-24">
+      <main ref={stepPanelRef} tabIndex={-1} className="flex-1 pt-header pb-24 outline-none">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Mobile Order Summary Toggle */}
@@ -1053,14 +1359,14 @@ export default function Checkout() {
 
           {/* Step Indicator */}
           <div className="mb-8">
-            <div className="flex items-center justify-center gap-0 max-w-md mx-auto" role="navigation" aria-label="Checkout progress">
+            <div className="flex items-start justify-center gap-0 max-w-lg mx-auto px-1 sm:px-3" role="navigation" aria-label="Checkout progress">
               {[
                 { num: 1, label: "Delivery", done: step > 1, active: step === 1 },
                 { num: 2, label: "Payment", done: step > 2, active: step === 2 },
                 { num: 3, label: "Review", done: false, active: step === 3 },
               ].map((s, i) => (
-                <div key={s.num} className="flex items-center flex-1 last:flex-initial">
-                  <div className="flex flex-col items-center gap-1.5">
+                <div key={s.num} className="flex items-start flex-1 min-w-0 last:flex-initial">
+                  <div className="flex flex-col items-center gap-1.5 min-w-[58px] sm:min-w-[72px]">
                     <div
                       className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-black transition-all"
                       style={{
@@ -1077,12 +1383,12 @@ export default function Checkout() {
                       {s.done ? <Check className="w-4 h-4" /> : s.num}
                     </div>
                     {/* Hide label on very small screens, show only for active/done or on larger screens */}
-                    <span className={`text-[10px] font-bold uppercase tracking-wider md:block ${s.active ? 'text-orange-600' : 'text-gray-400 hidden'}`}>
+                    <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap ${s.active ? 'text-orange-600' : s.done ? 'text-green-600' : 'text-gray-400'}`}>
                       {s.label}
                     </span>
                   </div>
                   {i < 2 && (
-                    <div className="flex-1 h-0.5 mx-2 mt-[-1rem] rounded-full" style={{ background: s.done ? '#16a34a' : '#e5e7eb' }} />
+                    <div className="flex-1 h-0.5 mx-1.5 sm:mx-2 mt-[18px] rounded-full min-w-[18px]" style={{ background: s.done ? '#16a34a' : '#e5e7eb' }} />
                   )}
                 </div>
               ))}
@@ -1154,7 +1460,7 @@ export default function Checkout() {
               <form id="checkout-form" ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
                 {/* Delivery Details Step 1 */}
-                <div className={`p-7 rounded-3xl ${step !== 1 ? 'hidden' : ''}`} style={{ background: 'white', border: '1px solid #e5e7eb' }}>
+                <div className={`p-4 sm:p-7 rounded-3xl ${step !== 1 ? 'hidden' : ''}`} style={{ background: 'white', border: '1px solid #e5e7eb' }}>
                   <h2 className="text-xl font-black font-display flex items-center gap-3 mb-6 text-gray-800">
                     <span className="w-8 h-8 rounded-xl flex items-center justify-center"
                       style={{ background: 'rgba(232,93,4,0.08)', color: '#E85D04' }}>
@@ -1256,7 +1562,7 @@ export default function Checkout() {
                     <div className="sm:col-span-2">
                       <DeliveryAreaPicker
                         selectedDistrict={selectedDistrict}
-                        selectedUpazila={selectedUpazila}
+                        selectedUpazila={selectedUpazila ?? ""}
                         onSelect={(district, upazila, division, postCode) => {
                           setValue("shippingDistrict", district, { shouldValidate: true });
                           setValue("shippingUpazila", upazila, { shouldValidate: true });
@@ -1311,8 +1617,8 @@ export default function Checkout() {
                           "firstName", "lastName", "customerPhone", "shippingAddress",
                           "shippingDistrict", "shippingUpazila"
                         ];
-                        const isValid = await (window as any).triggerFormValidation(fields);
-                        if (isValid) setStep(2);
+                        const isValid = await trigger(fields);
+                        if (isValid) goToStep(2);
                       }}
                       className="w-full py-4 rounded-2xl bg-gray-900 text-white font-black flex items-center justify-center gap-2 hover:bg-black transition-all"
                     >
@@ -1322,24 +1628,58 @@ export default function Checkout() {
                 </div>
 
                 {/* Payment Method Step 2 */}
-                <div className={`p-7 rounded-3xl ${step !== 2 ? 'hidden' : ''}`} style={{ background: 'white', border: '1px solid #e5e7eb' }}>
+                <div className={`p-4 sm:p-7 rounded-3xl ${step !== 2 ? 'hidden' : ''}`} style={{ background: 'white', border: '1px solid #e5e7eb' }}>
                   <h2 className="text-xl font-black font-display flex items-center gap-3 mb-6 text-gray-800">
                     <span className="w-8 h-8 rounded-xl flex items-center justify-center"
                       style={{ background: 'rgba(232,93,4,0.08)', color: '#E85D04' }}>
-                      <Smartphone className="w-4 h-4" />
+                      <CreditCard className="w-4 h-4" />
                     </span>
-                    Step 2: Payment Method
+                    Step 2: Payment
                   </h2>
 
                   <p className="text-xs text-gray-500 mb-5 leading-relaxed">
-                    Choose how you'd like to pay — then select your preferred e-wallet below.
+                    Choose how you pay. For wallets, send the amount to our merchant number and enter your sending details below.
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                     <button
                       type="button"
-                      onClick={() => setPaymentMode('full')}
-                      className="text-left p-4 rounded-2xl transition-all duration-200 focus:outline-none"
+                      onClick={() => {
+                        if (paymentMethod === 'card') {
+                          const advanceMethod = configuredPaymentMethods.find(m => m !== 'card');
+                          if (!advanceMethod) return;
+                          setPaymentMethod(advanceMethod);
+                        }
+                        setPaymentMode('advance');
+                      }}
+                      className="text-left p-4 rounded-2xl transition-all duration-200 focus:outline-none relative"
+                      style={{
+                        background: paymentMode === 'advance' ? 'rgba(22,163,74,0.05)' : '#f9fafb',
+                        border: paymentMode === 'advance' ? '2px solid rgba(22,163,74,0.45)' : '2px solid #e5e7eb',
+                        boxShadow: paymentMode === 'advance' ? '0 2px 16px rgba(22,163,74,0.10)' : 'none',
+                      }}
+                    >
+                      <span className="absolute -top-2.5 right-3 text-[10px] font-black bg-green-500 text-white px-2 py-0.5 rounded-full">RECOMMENDED</span>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMode === 'advance' ? 'border-green-500' : 'border-gray-300'}`}>
+                          {paymentMode === 'advance' && <div className="w-2 h-2 rounded-full bg-green-500" />}
+                        </div>
+                        <span className="font-black text-sm text-gray-900">25% Advance</span>
+                      </div>
+                      <p className="text-xs text-gray-500 leading-relaxed pl-6">
+                        Pay <strong className="text-gray-800">{formatPrice(advanceAmount)}</strong> now, rest on delivery.
+                      </p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (paymentMethod === 'cod') {
+                          const advanceMethod = configuredPaymentMethods.find(m => m !== 'cod' && m !== 'card');
+                          if (advanceMethod) setPaymentMethod(advanceMethod);
+                        }
+                        setPaymentMode('full');
+                      }}
+                      className="text-left p-4 rounded-2xl transition-all duration-200 focus:outline-none relative"
                       style={{
                         background: paymentMode === 'full' ? 'rgba(232,93,4,0.05)' : '#f9fafb',
                         border: paymentMode === 'full' ? '2px solid rgba(232,93,4,0.45)' : '2px solid #e5e7eb',
@@ -1350,71 +1690,208 @@ export default function Checkout() {
                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMode === 'full' ? 'border-orange-500' : 'border-gray-300'}`}>
                           {paymentMode === 'full' && <div className="w-2 h-2 rounded-full bg-orange-500" />}
                         </div>
-                        <span className="font-black text-sm text-gray-900">Pay Full Amount</span>
+                        <span className="font-black text-sm text-gray-900">Full Payment</span>
                       </div>
                       <p className="text-xs text-gray-500 leading-relaxed pl-6">
-                        Pay entire <strong className="text-gray-800">{formatPrice(total)}</strong> now.
+                        Pay the complete <strong className="text-gray-800">{formatPrice(total)}</strong> now.
                       </p>
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMode('advance')}
-                      className="text-left p-4 rounded-2xl transition-all duration-200 focus:outline-none"
-                      style={{
-                        background: paymentMode === 'advance' ? 'rgba(22,163,74,0.05)' : '#f9fafb',
-                        border: paymentMode === 'advance' ? '2px solid rgba(22,163,74,0.45)' : '2px solid #e5e7eb',
-                        boxShadow: paymentMode === 'advance' ? '0 2px 16px rgba(22,163,74,0.10)' : 'none',
-                      }}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMode === 'advance' ? 'border-green-500' : 'border-gray-300'}`}>
-                          {paymentMode === 'advance' && <div className="w-2 h-2 rounded-full bg-green-500" />}
-                        </div>
-                        <span className="font-black text-sm text-gray-900">15% Advance + COD</span>
-                      </div>
-                      <p className="text-xs text-gray-500 leading-relaxed pl-6">
-                        Pay <strong className="text-gray-800">{formatPrice(advanceAmount)}</strong> now, rest on delivery.
-                      </p>
-                    </button>
                   </div>
 
-                  <div className="mb-8">
-                    <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">Select E-Wallet</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {([
-                        { id: 'bkash' as MobileMethod, label: 'bKash', color: '#e2136e', bg: 'rgba(226,19,110,0.06)', border: 'rgba(226,19,110,0.25)' },
-                        { id: 'nagad' as MobileMethod, label: 'Nagad', color: '#f7941d', bg: 'rgba(247,148,29,0.06)', border: 'rgba(247,148,29,0.25)' },
-                        { id: 'upay'  as MobileMethod, label: 'uPay',  color: '#0077cc', bg: 'rgba(0,119,204,0.06)',  border: 'rgba(0,119,204,0.25)'  },
-                      ]).map(w => (
-                        <button
-                          key={w.id}
-                          type="button"
-                          onClick={() => setWalletChoice(w.id)}
-                          className="py-3 px-2 rounded-xl font-black text-sm transition-all duration-150 focus:outline-none"
-                          style={{
-                            background: walletChoice === w.id ? w.bg : '#f9fafb',
-                            border: walletChoice === w.id ? `2px solid ${w.border}` : '2px solid #e5e7eb',
-                            color: walletChoice === w.id ? w.color : '#9ca3af',
-                          }}
-                        >
-                          {w.label}
-                        </button>
-                      ))}
+                  {configuredPaymentMethods.length > 0 ? (
+                    <div className="mb-6">
+                      <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">Select Payment Method</p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {configuredPaymentMethods.map((method) => {
+                          const t = gatewayTheme[method];
+                          const isSelected = paymentMethod === method;
+                          return (
+                            <button
+                              key={method}
+                              type="button"
+                              onClick={() => {
+                                setPaymentMethod(method);
+                                setPaymentMode('advance');
+                              }}
+                              className="relative flex flex-col items-center justify-center gap-2 p-4 rounded-2xl transition-all duration-200 focus:outline-none disabled:opacity-40"
+                              style={{
+                                background: isSelected ? t.light : '#f9fafb',
+                                border: isSelected ? `2px solid ${t.border}` : '2px solid #e5e7eb',
+                                color: isSelected ? t.primary : '#9ca3af',
+                                boxShadow: isSelected ? t.glow : 'none',
+                              }}
+                            >
+                              {isSelected && (
+                                <div className="absolute top-2 right-2" style={{ color: t.primary }}>
+                                  <Check className="w-4 h-4" />
+                                </div>
+                              )}
+                              {t.icon}
+                              <span className="font-black text-sm">{t.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="mb-8 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-700 text-sm">
+                      <p className="font-bold">Payment is not configured yet.</p>
+                      <p className="mt-1">Please contact support or try again later.</p>
+                    </div>
+                  )}
+
+                  {(paymentMethod === 'bkash' || paymentMethod === 'nagad' || paymentMethod === 'upay') && (
+                    <div className="rounded-2xl p-5 mb-6" style={{ background: theme.light, border: `2px solid ${theme.border}` }}>
+                      <div className="flex items-center justify-between mb-4">
+                        <div>{theme.logo}</div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-black uppercase text-gray-400">Send Amount</p>
+                          <p className="text-2xl font-black font-display" style={{ color: theme.primary }}>
+                            {formatPrice(amountDueNow)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl p-4 bg-white mb-4" style={{ border: `1px solid ${theme.border}` }}>
+                        <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Send Money To</p>
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1">
+                            <p className="text-[10px] text-gray-400 mb-1">{theme.name} Personal Number</p>
+                            <p className="text-2xl font-black tracking-widest font-mono" style={{ color: theme.primary }}>
+                              {effectivePaymentNumber || "Not configured"}
+                            </p>
+                            {!paymentNumberReady && (
+                              <p className="text-[10px] text-red-500 mt-1 font-bold">Admin number not configured — contact us on WhatsApp to confirm payment.</p>
+                            )}
+                          </div>
+                          {paymentNumberReady && (
+                            <button
+                              onClick={copyNumber}
+                              className="flex flex-col items-center gap-1 w-14 h-14 rounded-xl justify-center transition-all duration-300 shrink-0"
+                              style={{
+                                background: copiedNumber ? 'rgba(22,163,74,0.08)' : theme.light,
+                                border: copiedNumber ? '1px solid rgba(22,163,74,0.2)' : `1px solid ${theme.border}`,
+                                color: copiedNumber ? '#16a34a' : theme.primary,
+                              }}
+                            >
+                              {copiedNumber ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                              <span className="text-[8px] font-black">{copiedNumber ? 'COPIED' : 'COPY'}</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Last 4 Digits of Sending Number *</label>
+                          <input
+                            type="tel"
+                            inputMode="numeric"
+                            maxLength={4}
+                            placeholder="e.g. 5678"
+                            value={lastFour}
+                            onChange={e => setLastFour(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                            className={inputClass}
+                            style={{ ...inputStyle, letterSpacing: '0.5em', textAlign: 'center', fontSize: '1.5rem', fontWeight: 900 }}
+                          />
+                        </div>
+
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'bank' && (
+                    <div className="rounded-2xl p-5 mb-6" style={{ background: theme.light, border: `2px solid ${theme.border}` }}>
+                      <div className="flex items-center gap-3 mb-4">
+                        {theme.icon}
+                        <span className="text-xl font-black" style={{ color: theme.primary }}>Bank Transfer</span>
+                      </div>
+                      <div className="rounded-xl p-4 bg-white mb-4" style={{ border: `1px solid ${theme.border}` }}>
+                        <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">Transfer To</p>
+                        <div className="space-y-2 text-sm">
+                          <p><span className="text-gray-400">Bank:</span> <strong className="text-gray-900">{settings.bankName || "Not configured"}</strong></p>
+                          <p><span className="text-gray-400">Account Name:</span> <strong className="text-gray-900">{settings.bankAccountName || "Not configured"}</strong></p>
+                          <p><span className="text-gray-400">Account Number:</span> <strong className="text-gray-900">{settings.bankAccountNumber || "Not configured"}</strong></p>
+                          {settings.bankBranch && <p><span className="text-gray-400">Branch:</span> <strong className="text-gray-900">{settings.bankBranch}</strong></p>}
+                          {settings.bankRoutingNumber && <p><span className="text-gray-400">Routing:</span> <strong className="text-gray-900">{settings.bankRoutingNumber}</strong></p>}
+                        </div>
+                        {!bankConfigured && (
+                          <p className="text-xs text-red-500 mt-3 font-bold">Bank details not configured — contact us on WhatsApp.</p>
+                        )}
+                      </div>
+                      <div className="rounded-xl p-4 bg-white mb-4" style={{ border: `1px solid ${theme.border}` }}>
+                        <p className="text-[10px] font-black uppercase text-gray-400 mb-1">Send Amount</p>
+                        <p className="text-2xl font-black font-display" style={{ color: theme.primary }}>{formatPrice(paymentMode === 'full' ? total : advanceAmount)}</p>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Sender Name / Account Name *</label>
+                          <input
+                            type="text"
+                            placeholder="Your bank account name"
+                            value={senderName}
+                            onChange={e => setSenderName(e.target.value.slice(0, 100))}
+                            className={inputClass}
+                            style={inputStyle}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Transaction / Reference Number *</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. REF123456"
+                            value={bankReference}
+                            onChange={e => setBankReference(e.target.value.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 50))}
+                            className={inputClass}
+                            style={inputStyle}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'card' && (
+                    <div className="rounded-2xl p-5 mb-6" style={{ background: theme.light, border: `2px solid ${theme.border}` }}>
+                      <div className="flex items-center gap-3 mb-3">
+                        {theme.icon}
+                        <span className="text-xl font-black" style={{ color: theme.primary }}>Card Payment</span>
+                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed mb-2">{settings.cardPaymentNote}</p>
+                      <p className="text-xs text-gray-400">Pay the full amount <strong>{formatPrice(total)}</strong> to our delivery agent using a POS card machine.</p>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'cod' && (
+                    <div className="rounded-2xl p-5 mb-6" style={{ background: theme.light, border: `2px solid ${theme.border}` }}>
+                      <div className="flex items-center gap-3 mb-3">
+                        {theme.icon}
+                        <span className="text-xl font-black" style={{ color: theme.primary }}>Cash on Delivery</span>
+                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed mb-3">
+                        A 25% advance of <strong className="text-gray-900">{formatPrice(advanceAmount)}</strong> is required to confirm your order.
+                        Our team will contact you with payment instructions.
+                      </p>
+                      <p className="text-xs text-gray-400">Remaining balance <strong>{formatPrice(total - advanceAmount)}</strong> will be collected on delivery.</p>
+                    </div>
+                  )}
 
                   <div className="flex flex-col gap-3">
                     <button
                       type="button"
-                      onClick={() => setStep(3)}
-                      className="w-full py-4 rounded-2xl bg-gray-900 text-white font-black flex items-center justify-center gap-2 hover:bg-black transition-all"
+                      onClick={() => goToStep(3)}
+                      disabled={!canProceed}
+                      className={`w-full py-4 rounded-2xl font-black flex items-center justify-center gap-2 transition-all ${
+                        canProceed
+                          ? 'bg-gray-900 text-white hover:bg-black'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }`}
                     >
                       Review Order <ArrowRight className="w-5 h-5" />
                     </button>
                     <button
                       type="button"
-                      onClick={() => setStep(1)}
+                      onClick={() => goToStep(1)}
                       className="w-full py-3 rounded-xl bg-white border border-gray-200 text-gray-500 font-bold text-sm"
                     >
                       Back to Delivery
@@ -1423,7 +1900,7 @@ export default function Checkout() {
                 </div>
 
                 {/* Review & Place Order Step 3 */}
-                <div className={`p-7 rounded-3xl ${step !== 3 ? 'hidden' : ''}`} style={{ background: 'white', border: '1px solid #e5e7eb' }}>
+                <div className={`p-4 sm:p-7 rounded-3xl ${step !== 3 ? 'hidden' : ''}`} style={{ background: 'white', border: '1px solid #e5e7eb' }}>
                   <h2 className="text-xl font-black font-display flex items-center gap-3 mb-6 text-gray-800">
                     <span className="w-8 h-8 rounded-xl flex items-center justify-center"
                       style={{ background: 'rgba(232,93,4,0.08)', color: '#E85D04' }}>
@@ -1436,7 +1913,7 @@ export default function Checkout() {
                     <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
                       <div className="flex justify-between items-center mb-2">
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Delivery To</p>
-                        <button type="button" onClick={() => setStep(1)} className="text-[10px] font-black text-orange-600 uppercase">Edit</button>
+                        <button type="button" onClick={() => goToStep(1)} className="text-[10px] font-black text-orange-600 uppercase">Edit</button>
                       </div>
                       <p className="text-sm font-bold text-gray-900">{watch("firstName")} {watch("lastName")}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{watch("customerPhone")}</p>
@@ -1448,12 +1925,12 @@ export default function Checkout() {
                     <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
                       <div className="flex justify-between items-center mb-2">
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Payment Method</p>
-                        <button type="button" onClick={() => setStep(2)} className="text-[10px] font-black text-orange-600 uppercase">Edit</button>
+                        <button type="button" onClick={() => goToStep(2)} className="text-[10px] font-black text-orange-600 uppercase">Edit</button>
                       </div>
                       <p className="text-sm font-bold text-gray-900">
-                        {paymentMode === 'full' ? 'Full Payment' : '15% Advance + COD'}
+                         {paymentMode === 'full' ? 'Full Payment' : '25% Advance + Pay on Delivery'}
                       </p>
-                      <p className="text-xs text-gray-500 mt-0.5">Via {walletChoice.toUpperCase()}</p>
+                       <p className="text-xs text-gray-500 mt-0.5">Via {theme.name}{paymentMethod === 'cod' ? ` (25% advance ${formatPrice(advanceAmount)})` : ''}</p>
                     </div>
                   </div>
 
@@ -1470,13 +1947,13 @@ export default function Checkout() {
                         </>
                       ) : (
                         <>
-                          Place Order ({formatPrice(paymentMode === 'full' ? total : advanceAmount)})
+                           Place Order ({formatPrice(amountDueNow)})
                         </>
                       )}
                     </button>
                     <button
                       type="button"
-                      onClick={() => setStep(2)}
+                      onClick={() => goToStep(2)}
                       className="w-full py-3 rounded-xl bg-white border border-gray-200 text-gray-500 font-bold text-sm"
                     >
                       Back to Payment
@@ -1491,7 +1968,7 @@ export default function Checkout() {
             </div>
 
             <div className="lg:col-span-5 order-first lg:order-last">
-              <div className="sticky top-28 rounded-3xl p-5 sm:p-7" style={{ background: 'white', border: '1px solid #e5e7eb' }}>
+              <div className="lg:sticky lg:top-28 rounded-3xl p-5 sm:p-7" style={{ background: 'white', border: '1px solid #e5e7eb' }}>
                 <h3 className="text-lg font-black font-display mb-6 text-gray-800">Order Summary</h3>
 
                 <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1 mb-6 hide-scrollbar">
@@ -1523,7 +2000,7 @@ export default function Checkout() {
                       />
                       <button
                         type="button"
-                        onClick={validatePromo}
+                        onClick={() => validatePromo()}
                         disabled={promoLoading || !promoInput.trim()}
                         className="px-4 py-2.5 rounded-xl text-sm font-bold text-white shrink-0 disabled:opacity-40"
                         style={{ background: "linear-gradient(135deg, #E85D04, #FB8500)" }}
@@ -1568,14 +2045,14 @@ export default function Checkout() {
                     {paymentMode === 'full' ? (
                       <div className="flex justify-between items-center p-3 rounded-xl"
                         style={{ background: 'rgba(232,93,4,0.04)', border: '1px solid rgba(232,93,4,0.12)' }}>
-                        <span className="text-xs font-bold text-orange-600">Pay Now (Full — via {walletChoice === 'bkash' ? 'bKash' : walletChoice === 'nagad' ? 'Nagad' : 'uPay'})</span>
+                        <span className="text-xs font-bold text-orange-600">Pay Now (Full — via {theme.name})</span>
                         <span className="font-black text-orange-600">{formatPrice(total)}</span>
                       </div>
                     ) : (
                       <>
                         <div className="flex justify-between items-center p-3 rounded-xl"
                           style={{ background: 'rgba(232,93,4,0.04)', border: '1px solid rgba(232,93,4,0.12)' }}>
-                          <span className="text-xs font-bold text-orange-600">Pay Now (15% Advance via {walletChoice === 'bkash' ? 'bKash' : walletChoice === 'nagad' ? 'Nagad' : 'uPay'})</span>
+                          <span className="text-xs font-bold text-orange-600">Pay Now (25% Advance via {theme.name})</span>
                           <span className="font-black text-orange-600">{formatPrice(advanceAmount)}</span>
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl"
@@ -1605,7 +2082,7 @@ export default function Checkout() {
                 </div>
 
                 <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER_INTL.replace('+', '')}?text=Hi TryNex! I need help with my order.`}
+                  href={`https://wa.me/${WHATSAPP_NUMBER_INTL.replace('+', '')}?text=Hi Trynext! I need help with my order.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl font-semibold text-xs transition-all"

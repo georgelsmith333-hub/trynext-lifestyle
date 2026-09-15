@@ -73,6 +73,11 @@ export default function Products() {
   const [priceMax, setPriceMax] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
 
+  const currentPage = useMemo(() => {
+    const page = Number(new URLSearchParams(searchString).get("page") || "1");
+    return Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  }, [searchString]);
+
   const { data: categoriesData } = useListCategories();
   const categories = categoriesData?.categories || [];
 
@@ -91,13 +96,26 @@ export default function Products() {
     if (match) setActiveCategory(match.id);
   }, [searchString, categories]);
 
-  const { data: productsData, isLoading } = useListProducts({
+  const { data: productsData, isLoading, isError, refetch } = useListProducts({
     search: search || undefined,
-    categoryId: activeCategory,
-    limit: 48
+    category: activeCategory ? String(activeCategory) : undefined,
+    limit: 50,
+    page: currentPage,
   });
 
   const products = productsData?.products || [];
+  const totalProducts = productsData?.total ?? products.length;
+  const totalPages = Math.max(1, productsData?.totalPages ?? Math.ceil(totalProducts / 50));
+
+  const goToPage = (nextPage: number) => {
+    const safePage = Math.min(Math.max(1, nextPage), totalPages);
+    const params = new URLSearchParams(searchString);
+    if (safePage <= 1) params.delete("page");
+    else params.set("page", String(safePage));
+    const query = params.toString();
+    setLocation(`/products${query ? `?${query}` : ""}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const categoryWeight = (p: any): number => {
     const slug = (p.category?.slug || p.category?.name || "").toLowerCase();
@@ -136,7 +154,7 @@ export default function Products() {
   }, [activeCategory, categories]);
 
   const jsonLd = useMemo(() => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://trynexshop.com";
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://trynext.pages.dev";
     const items = [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": `${origin}/` },
       { "@type": "ListItem", "position": 2, "name": "Shop", "item": `${origin}/products` },
@@ -159,8 +177,8 @@ export default function Products() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <SEOHead
-        title={activeTab === "offers" ? "Special Offers & Deals | TryNex Lifestyle" : activeCategoryData ? `${activeCategoryData.name} Collection | TryNex Lifestyle` : "Shop All Products | TryNex Lifestyle"}
-        description={activeTab === "offers" ? "Exclusive deals, combo offers and limited-time discounts on custom apparel from TryNex Lifestyle Bangladesh." : activeCategoryData ? `Browse our ${activeCategoryData.name} collection. Premium quality custom apparel, best prices in Bangladesh.` : "Browse premium custom T-shirts, Hoodies, Mugs & Caps from TryNex Lifestyle. Best prices in Bangladesh with fast delivery to all 64 districts."}
+        title={activeTab === "offers" ? "Special Offers & Deals | Trynext Lifestyle" : activeCategoryData ? `${activeCategoryData.name} Collection | Trynext Lifestyle` : "Shop All Products | Trynext Lifestyle"}
+        description={activeTab === "offers" ? "Exclusive deals, combo offers and limited-time discounts on custom apparel from Trynext Lifestyle Bangladesh." : activeCategoryData ? `Browse our ${activeCategoryData.name} collection. Premium quality custom apparel, best prices in Bangladesh.` : "Browse premium custom T-shirts, Hoodies, Mugs & Caps from Trynext Lifestyle. Best prices in Bangladesh with fast delivery to all 64 districts."}
         canonical={activeTab === "offers" ? "/products?tab=offers" : activeCategoryData ? `/products?category=${activeCategoryData.slug}` : "/products"}
         keywords={activeTab === "offers" ? "special offers bangladesh, combo deals custom tshirt, discount apparel dhaka, gift deals bangladesh" : "buy custom tshirt bangladesh, premium hoodie bd, custom mug dhaka, branded cap bangladesh, কাস্টম গিফট বাংলাদেশ"}
         jsonLd={jsonLd}
@@ -170,7 +188,7 @@ export default function Products() {
       <main className="flex-1 pt-header pb-20">
         {/* Page Header with Tab Switcher */}
         <div className="bg-white border-b border-gray-100 py-4 sm:py-6">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 mb-2">
                 <a href="/" className="hover:text-orange-600 transition-colors cursor-pointer">Home</a>
@@ -252,10 +270,14 @@ export default function Products() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-8">
+              <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-8">
                 <div className="relative mb-2 sm:mb-4">
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+                  <label htmlFor="product-search" className="sr-only">Search products</label>
                   <input
+                    id="product-search"
+                    aria-label="Search products"
+                    data-testid="input-product-search"
                     type="text"
                     placeholder="Search products..."
                     value={search}
@@ -263,8 +285,10 @@ export default function Products() {
                     className="w-full pl-8 sm:pl-9 pr-7 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium focus:outline-none bg-white border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all"
                   />
                   {search && (
-                    <button onClick={() => setSearch("")}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                     <button type="button" onClick={() => setSearch("")}
+                       aria-label="Clear product search"
+                       data-testid="button-clear-product-search"
+                       className="absolute right-2 top-1/2 -translate-y-1/2 min-h-11 min-w-11 p-3 text-gray-400 hover:text-gray-600">
                       <X className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </button>
                   )}
@@ -272,6 +296,8 @@ export default function Products() {
 
                 <div className="flex items-center gap-2 mb-3 sm:mb-6">
                   <select
+                     aria-label="Sort products"
+                     data-testid="select-product-sort"
                     value={sort}
                     onChange={e => setSort(e.target.value as SortOption)}
                     className="py-2 sm:py-2.5 px-2 sm:px-3 rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-semibold focus:outline-none bg-white border border-gray-200 focus:border-orange-400 text-gray-700 cursor-pointer"
@@ -283,13 +309,21 @@ export default function Products() {
 
                   <div className="flex items-center bg-white border border-gray-200 rounded-lg sm:rounded-xl p-0.5 sm:p-1">
                     <button
+                      type="button"
                       onClick={() => setViewMode("grid")}
+                      aria-label="Show products as a grid"
+                      aria-pressed={viewMode === "grid"}
+                      data-testid="button-product-grid-view"
                       className={cn("p-1.5 sm:p-2 rounded-md sm:rounded-lg transition-all", viewMode === "grid" ? "bg-orange-50 text-orange-600" : "text-gray-400 hover:text-gray-600")}
                     >
                       <Grid3X3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                     <button
+                      type="button"
                       onClick={() => setViewMode("list")}
+                      aria-label="Show products as a list"
+                      aria-pressed={viewMode === "list"}
+                      data-testid="button-product-list-view"
                       className={cn("p-1.5 sm:p-2 rounded-md sm:rounded-lg transition-all", viewMode === "list" ? "bg-orange-50 text-orange-600" : "text-gray-400 hover:text-gray-600")}
                     >
                       <LayoutList className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -297,7 +331,11 @@ export default function Products() {
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                    aria-label={mobileFiltersOpen ? "Close filters" : "Open filters"}
+                    aria-expanded={mobileFiltersOpen}
+                    data-testid="button-mobile-filters"
                     className="md:hidden flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-white border border-gray-200 text-gray-600"
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -463,7 +501,7 @@ export default function Products() {
                     {(search || activeCategory) && (
                       <div className="flex items-center justify-between mb-4">
                         <p className="text-xs text-gray-400 font-medium">
-                          {isLoading ? "Loading..." : `${sortedProducts.length} result${sortedProducts.length !== 1 ? 's' : ''}`}
+                          {isLoading ? "Loading..." : `${totalProducts} product${totalProducts !== 1 ? 's' : ''}${totalPages > 1 ? ` · Page ${currentPage} of ${totalPages}` : ''}`}
                         </p>
                         <button
                           onClick={() => { setSearch(""); setActiveCategory(undefined); }}
@@ -477,12 +515,21 @@ export default function Products() {
                     <AnimatePresence mode="wait">
                       {isLoading ? (
                         <motion.div key="loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-5" aria-label="Loading products" aria-busy="true">
-                            {Array.from({ length: 6 }).map((_, i) => (
+                          <div className="product-grid-responsive" aria-label="Loading products" aria-busy="true">
+                            {Array.from({ length: 8 }).map((_, i) => (
                               <ProductCardSkeleton key={i} />
                             ))}
                           </div>
                         </motion.div>
+                      ) : isError ? (
+                        <div className="rounded-3xl border border-dashed border-orange-200 bg-orange-50/60 px-6 py-16 text-center" role="alert">
+                          <Package className="mx-auto mb-3 h-10 w-10 text-orange-400" aria-hidden="true" />
+                          <h2 className="font-display text-xl font-black text-gray-900">We could not load the shop</h2>
+                          <p className="mx-auto mt-2 max-w-md text-sm text-gray-600">Check your connection and try again. Your filters are still here.</p>
+                          <button type="button" onClick={() => void refetch()} className="mt-5 min-h-11 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2" data-testid="button-retry-products">
+                            Try again
+                          </button>
+                        </div>
                       ) : sortedProducts.length > 0 ? (
                         <ErrorBoundary section="product listing">
                           <motion.div
@@ -490,9 +537,9 @@ export default function Products() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             className={cn(
-                              "grid gap-5",
+                              "grid gap-4 sm:gap-5",
                               viewMode === "grid"
-                                ? "grid-cols-2 lg:grid-cols-3"
+                                ? "product-grid-responsive"
                                 : "grid-cols-1"
                             )}
                           >
@@ -528,6 +575,43 @@ export default function Products() {
                         </motion.div>
                       )}
                     </AnimatePresence>
+
+                    {!isLoading && !isError && totalPages > 1 && (
+                      <nav className="mt-8 flex flex-wrap items-center justify-center gap-2" aria-label="Product pages">
+                        <button
+                          type="button"
+                          onClick={() => goToPage(currentPage - 1)}
+                          disabled={currentPage <= 1}
+                          className="min-h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm font-bold text-gray-700 transition hover:border-orange-300 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Previous
+                        </button>
+                        {Array.from({ length: totalPages }, (_, index) => index + 1).map(pageNumber => (
+                          <button
+                            key={pageNumber}
+                            type="button"
+                            onClick={() => goToPage(pageNumber)}
+                            aria-current={pageNumber === currentPage ? "page" : undefined}
+                            className={cn(
+                              "min-h-11 min-w-11 rounded-xl border px-3 text-sm font-black transition",
+                              pageNumber === currentPage
+                                ? "border-orange-500 bg-orange-500 text-white shadow-sm"
+                                : "border-gray-200 bg-white text-gray-700 hover:border-orange-300 hover:text-orange-600"
+                            )}
+                          >
+                            {pageNumber}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => goToPage(currentPage + 1)}
+                          disabled={currentPage >= totalPages}
+                          className="min-h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm font-bold text-gray-700 transition hover:border-orange-300 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Next
+                        </button>
+                      </nav>
+                    )}
                   </div>
                 </div>
               </div>

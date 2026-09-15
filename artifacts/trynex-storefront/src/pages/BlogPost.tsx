@@ -28,6 +28,7 @@ interface BlogPostData {
   readingTime: number;
   viewCount: number;
   createdAt: string;
+  updatedAt?: string;
 }
 
 interface TocItem {
@@ -398,7 +399,7 @@ export default function BlogPost() {
     </div>
   );
 
-  const pageUrl = `https://trynexshop.com/blog/${post.slug}`;
+  const pageUrl = `https://trynext.pages.dev/blog/${post.slug}`;
 
   const faqEntries = extractFaqSchema(post.content, isHtmlContent);
 
@@ -414,11 +415,11 @@ export default function BlogPost() {
         ...(post.authorAvatarUrl ? { "image": post.authorAvatarUrl } : {}),
       },
       "datePublished": post.createdAt,
-      "dateModified": post.createdAt,
+      "dateModified": post.updatedAt || post.createdAt,
       "publisher": {
         "@type": "Organization",
-        "name": "TryNex Lifestyle",
-        "logo": { "@type": "ImageObject", "url": "https://trynexshop.com/logo.png" },
+        "name": "Trynext Lifestyle",
+        "logo": { "@type": "ImageObject", "url": "https://trynext.pages.dev/logo.png" },
       },
       "image": post.imageUrl || undefined,
       "url": pageUrl,
@@ -429,8 +430,8 @@ export default function BlogPost() {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynexshop.com/" },
-        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://trynexshop.com/blog" },
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://trynext.pages.dev/blog" },
         { "@type": "ListItem", "position": 3, "name": post.title, "item": pageUrl },
       ],
     },
@@ -450,7 +451,7 @@ export default function BlogPost() {
       <ReadingProgress />
       <SEOHead
         title={post.title}
-        description={post.excerpt || `Read "${post.title}" on TryNex Lifestyle blog.`}
+        description={post.excerpt || `Read "${post.title}" on Trynext Lifestyle blog.`}
         canonical={`/blog/${post.slug}`}
         ogType="article"
         ogImage={post.imageUrl || undefined}
@@ -473,7 +474,7 @@ export default function BlogPost() {
           </motion.div>
         )}
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-12 pt-8 sm:pt-12">
 
             {/* Main content */}
@@ -605,7 +606,7 @@ export default function BlogPost() {
                 <Link href="/products"
                   className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white text-sm"
                   style={{ background: "linear-gradient(135deg, #E85D04, #FB8500)" }}>
-                  <BookOpen className="w-4 h-4" /> Shop TryNex Collection
+                  <BookOpen className="w-4 h-4" /> Shop Trynext Collection
                 </Link>
               </div>
             </div>

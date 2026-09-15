@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import { getApiUrl, getAuthHeaders } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Mail, Trash2, RefreshCw, AlertTriangle, Download, Users, ShieldAlert, Globe } from "lucide-react";
+import { Mail, Trash2, RefreshCw, AlertTriangle, Download, Users, ShieldAlert, Globe, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Subscriber {
@@ -27,8 +28,10 @@ export default function AdminNewsletter() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<"all" | "duplicate">("all");
   const [search, setSearch] = useState("");
+  const [deleteSubConfirm, setDeleteSubConfirm] = useState<{ id: number; email: string } | null>(null);
+  const [deleteIpConfirm, setDeleteIpConfirm] = useState<{ ip: string; count: number } | null>(null);
 
-  const { data, isLoading, refetch } = useQuery<SubscribersResponse>({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery<SubscribersResponse>({
     queryKey: ["/api/newsletter/subscribers"],
     queryFn: async () => {
       const res = await fetch(getApiUrl("/api/newsletter/subscribers"), {
@@ -73,6 +76,10 @@ export default function AdminNewsletter() {
 
   const exportCsv = () => {
     if (!data?.subscribers?.length) return;
+    const safeCsv = (value: string) => {
+      const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+      return `"${safe.replace(/"/g, '""')}"`;
+    };
     const rows = [
       ["ID", "Email", "Source", "IP", "Signed Up", "Duplicate IP"],
       ...data.subscribers.map(s => [
@@ -84,7 +91,7 @@ export default function AdminNewsletter() {
         s.duplicateIp ? "YES" : "",
       ]),
     ];
-    const csv = rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n");
+    const csv = rows.map(r => r.map(safeCsv).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -120,9 +127,10 @@ export default function AdminNewsletter() {
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => refetch()}
+              disabled={isFetching}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:border-orange-300 hover:text-orange-600 transition-all"
             >
-              <RefreshCw className="w-4 h-4" /> Refresh
+              <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} /> Refresh
             </button>
             <button
               onClick={exportCsv}
@@ -209,6 +217,13 @@ export default function AdminNewsletter() {
             <div className="flex items-center justify-center py-20">
               <div className="w-8 h-8 rounded-full border-4 border-orange-500 border-t-transparent animate-spin" />
             </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <AlertCircle className="w-10 h-10 mx-auto mb-3 text-red-400" />
+              <p className="font-bold text-red-900">Subscribers could not be loaded</p>
+              <p className="mt-1 text-sm text-red-700">Refresh the list to try again.</p>
+              <button type="button" onClick={() => refetch()} className="mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700">Try again</button>
+            </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <Mail className="w-10 h-10 mx-auto mb-3 text-gray-200" />
@@ -275,11 +290,7 @@ export default function AdminNewsletter() {
                           <div className="flex items-center justify-end gap-1.5">
                             {sub.duplicateIp && sub.ip && (
                               <button
-                                onClick={() => {
-                                  if (confirm(`Remove ALL ${sub.ipCount} subscribers from IP ${sub.ip}?`)) {
-                                    deleteByIpMut.mutate(sub.ip!);
-                                  }
-                                }}
+                                onClick={() => setDeleteIpConfirm({ ip: sub.ip!, count: sub.ipCount ?? 0 })}
                                 title="Remove all from this IP"
                                 className="p-1.5 rounded-lg text-red-400 hover:text-red-700 hover:bg-red-50 transition-colors text-[10px] font-bold"
                               >
@@ -287,11 +298,7 @@ export default function AdminNewsletter() {
                               </button>
                             )}
                             <button
-                              onClick={() => {
-                                if (confirm(`Remove ${sub.email} from newsletter?`)) {
-                                  deleteMut.mutate(sub.id);
-                                }
-                              }}
+                              onClick={() => setDeleteSubConfirm({ id: sub.id, email: sub.email })}
                               disabled={deleteMut.isPending}
                               className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
                             >
@@ -311,6 +318,24 @@ export default function AdminNewsletter() {
           Showing {filtered.length} of {subscribers.length} subscribers
         </p>
       </div>
+
+      <ConfirmDialog
+        open={!!deleteSubConfirm}
+        title="Remove Subscriber"
+        description={`Remove ${deleteSubConfirm?.email ?? ""} from the newsletter?`}
+        confirmText="Remove"
+        onConfirm={() => { if (deleteSubConfirm) { deleteMut.mutate(deleteSubConfirm.id); setDeleteSubConfirm(null); } }}
+        onCancel={() => setDeleteSubConfirm(null)}
+      />
+      <ConfirmDialog
+        open={!!deleteIpConfirm}
+        title="Remove All from IP"
+        description={`Remove ALL ${deleteIpConfirm?.count ?? 0} subscribers from IP ${deleteIpConfirm?.ip ?? ""}?`}
+        confirmText="Remove All"
+        variant="danger"
+        onConfirm={() => { if (deleteIpConfirm) { deleteByIpMut.mutate(deleteIpConfirm.ip); setDeleteIpConfirm(null); } }}
+        onCancel={() => setDeleteIpConfirm(null)}
+      />
     </AdminLayout>
   );
 }

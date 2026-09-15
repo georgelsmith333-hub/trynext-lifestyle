@@ -1,14 +1,16 @@
 import { Link, useLocation } from "wouter";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Menu, X, ChevronDown, Heart, ShoppingCart, User, LogIn, LogOut, Package, ShoppingBag, Gift, Search, Tag, Clock, TrendingUp, MessageSquare, Bell, Check, ExternalLink } from "lucide-react";
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useSiteSettings } from "@/context/SiteSettingsContext";
 import { useAuth } from "@/context/AuthContext";
 import { cn, getApiUrl } from "@/lib/utils";
+import { prefetchDesignStudio } from "@/lib/prefetch";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartDrawer } from "@/components/CartDrawer";
 import { useListProducts, useListCategories } from "@workspace/api-client-react";
+import { lockBodyScroll } from "@/lib/scrollLock";
 
 const SHOP_CATEGORIES = [
   { label: "All Products", href: "/products", emoji: "🛍️" },
@@ -16,18 +18,24 @@ const SHOP_CATEGORIES = [
   { label: "Hoodies", href: "/products?category=hoodies", emoji: "🧥" },
   { label: "Caps", href: "/products?category=caps", emoji: "🧢" },
   { label: "Mugs", href: "/products?category=mugs", emoji: "☕" },
+  { label: "Gift Hampers", href: "/hampers", emoji: "🎁" },
   { label: "Design Studio", href: "/design-studio", emoji: "🎨" },
 ];
 
-const MORE_LINKS = [
-  { label: "About Us", href: "/about", emoji: "💫" },
-  { label: "Contact Us", href: "/contact", emoji: "💬" },
+const HELP_LINKS = [
   { label: "FAQ", href: "/faq", emoji: "❓" },
   { label: "Size Guide", href: "/size-guide", emoji: "📏" },
+  { label: "Track Order", href: "/track", emoji: "📦" },
+  { label: "Return Policy", href: "/return-policy", emoji: "🔄" },
+  { label: "Contact Us", href: "/contact", emoji: "💬" },
+];
+
+const COMPANY_LINKS = [
+  { label: "About Us", href: "/about", emoji: "💫" },
+  { label: "Blog", href: "/blog", emoji: "📝" },
   { label: "Referral Program", href: "/referral", emoji: "🎁" },
   { label: "Terms of Service", href: "/terms-of-service", emoji: "📄" },
   { label: "Privacy Policy", href: "/privacy-policy", emoji: "🔒" },
-  { label: "Return Policy", href: "/return-policy", emoji: "🔄" },
 ];
 
 const TRENDING_SEARCHES = [
@@ -40,7 +48,7 @@ const TRENDING_SEARCHES = [
   "Gift Hamper",
 ];
 
-const RECENT_KEY = "trynex_recent_searches";
+const RECENT_KEY = "trynext_recent_searches";
 const MAX_RECENT = 5;
 
 function getStoredRecent(): string[] {
@@ -65,7 +73,8 @@ export function Navbar() {
   const { customer, isAuthenticated, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [companyOpen, setCompanyOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -101,7 +110,8 @@ export function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
     setShopOpen(false);
-    setMoreOpen(false);
+    setHelpOpen(false);
+    setCompanyOpen(false);
     setProfileOpen(false);
     setSearchOpen(false);
     setDesktopSearchFocused(false);
@@ -115,7 +125,7 @@ export function Navbar() {
       setNotifications([]);
       return;
     }
-    const token = localStorage.getItem("trynex_customer_token");
+    const token = localStorage.getItem("trynext_customer_token");
     if (!token) return;
 
     // Mounted flag prevents state updates on unmounted component (avoids React
@@ -175,7 +185,7 @@ export function Navbar() {
 
   const markNotificationsAsRead = async () => {
     if (unreadNotificationsCount === 0) return;
-    const token = localStorage.getItem("trynex_customer_token");
+    const token = localStorage.getItem("trynext_customer_token");
     if (!token) return;
     try {
       const resp = await fetch(getApiUrl("/api/notifications/mark-all-read"), {
@@ -289,22 +299,17 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
+    if (!mobileOpen) return;
+    const unlock = lockBodyScroll();
+    return unlock;
   }, [mobileOpen]);
 
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Shop", dropdown: true },
     { href: "/design-studio", label: "Customize", badge: "NEW" as const },
-    { href: "/hampers", label: "Gift Hampers" },
-    { href: "/blog", label: "Blog" },
-    { href: "/track", label: "Track Order" },
-    { href: "/about", label: "More", moreDropdown: true },
+    { href: "/faq", label: "Help", helpDropdown: true },
+    { href: "/about", label: "Company", companyDropdown: true },
   ];
 
   return (
@@ -319,7 +324,7 @@ export function Navbar() {
       )}
       style={{ top: 'var(--announcement-height, 0px)' }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[4.25rem]">
 
           <Link href="/" className="flex items-center gap-3 group select-none">
@@ -340,11 +345,11 @@ export function Navbar() {
             </div>
             <div className="flex flex-col leading-none gap-[3px]">
               <span className="text-[1.3rem] font-black font-display tracking-tight text-gray-900 group-hover:text-orange-600 transition-colors">
-                <span style={{ color: '#E85D04' }}>{(settings.siteName?.trim() || "TryNex").split(' ')[0]}</span>
+                <span style={{ color: '#E85D04' }}>{(settings.siteName?.trim() || "Trynext").split(' ')[0]}</span>
               </span>
               <span className="text-[8px] font-bold tracking-[0.32em] uppercase" style={{ color: '#B8860B' }}>
                 {(() => {
-                  const name = settings.siteName?.trim() || "TryNex Lifestyle";
+                  const name = settings.siteName?.trim() || "Trynext Lifestyle";
                   const rest = name.split(' ').slice(1).join(' ');
                   return rest || settings.tagline || "Lifestyle";
                 })()}
@@ -362,6 +367,10 @@ export function Navbar() {
                   onMouseLeave={() => setShopOpen(false)}
                 >
                   <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={shopOpen}
+                    aria-label="Open shop menu"
                     className={cn(
                       "flex items-center gap-1 px-4 py-2 rounded-full font-semibold text-[0.8125rem] transition-all",
                       location === link.href
@@ -395,34 +404,83 @@ export function Navbar() {
                     )}
                   </AnimatePresence>
                 </div>
-              ) : link.moreDropdown ? (
+              ) : link.helpDropdown ? (
                 <div
-                  key="more-dropdown"
+                  key="help-dropdown"
                   className="relative"
-                  onMouseEnter={() => setMoreOpen(true)}
-                  onMouseLeave={() => setMoreOpen(false)}
+                  onMouseEnter={() => setHelpOpen(true)}
+                  onMouseLeave={() => setHelpOpen(false)}
                 >
                   <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={helpOpen}
+                    aria-label="Open help menu"
                     className={cn(
                       "flex items-center gap-1 px-4 py-2 rounded-full font-semibold text-[0.8125rem] transition-all",
-                      ["/about", "/contact", "/faq", "/size-guide", "/referral", "/terms-of-service", "/privacy-policy", "/return-policy"].includes(location)
+                      ["/faq", "/size-guide", "/track", "/return-policy", "/contact"].includes(location)
                         ? "text-orange-600 bg-orange-50"
                         : "text-gray-600 hover:text-orange-600 hover:bg-orange-50/60"
                     )}
                   >
                     {link.label}
-                    <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", moreOpen && "rotate-180")} />
+                    <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", helpOpen && "rotate-180")} />
                   </button>
                   <AnimatePresence>
-                    {moreOpen && (
+                    {helpOpen && (
                       <motion.div
                         initial={{ opacity: 0, y: 8, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.96 }}
                         transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-                        className="absolute top-full right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden p-1.5 z-50"
+                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-52 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden p-1.5 z-50"
                       >
-                        {MORE_LINKS.map((item) => (
+                        {HELP_LINKS.map((item) => (
+                          <Link
+                            key={item.label}
+                            href={item.href}
+                            className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[0.8125rem] font-semibold text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                          >
+                            <span className="text-base">{item.emoji}</span>
+                            {item.label}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : link.companyDropdown ? (
+                <div
+                  key="company-dropdown"
+                  className="relative"
+                  onMouseEnter={() => setCompanyOpen(true)}
+                  onMouseLeave={() => setCompanyOpen(false)}
+                >
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={companyOpen}
+                    aria-label="Open company menu"
+                    className={cn(
+                      "flex items-center gap-1 px-4 py-2 rounded-full font-semibold text-[0.8125rem] transition-all",
+                      ["/about", "/blog", "/referral", "/terms-of-service", "/privacy-policy"].includes(location)
+                        ? "text-orange-600 bg-orange-50"
+                        : "text-gray-600 hover:text-orange-600 hover:bg-orange-50/60"
+                    )}
+                  >
+                    {link.label}
+                    <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", companyOpen && "rotate-180")} />
+                  </button>
+                  <AnimatePresence>
+                    {companyOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+                        className="absolute top-full right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden p-1.5 z-50"
+                      >
+                        {COMPANY_LINKS.map((item) => (
                           <Link
                             key={item.label}
                             href={item.href}
@@ -440,6 +498,8 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onMouseEnter={link.href === "/design-studio" ? prefetchDesignStudio : undefined}
+                  onTouchStart={link.href === "/design-studio" ? prefetchDesignStudio : undefined}
                   className={cn(
                     "relative px-4 py-2 rounded-full font-semibold text-[0.8125rem] transition-all inline-flex items-center gap-1.5",
                     location === link.href
@@ -483,6 +543,9 @@ export function Navbar() {
                     className="flex-1 min-w-0 bg-transparent outline-none text-[0.8125rem] font-medium text-gray-800 placeholder:text-gray-400"
                     autoComplete="off"
                     aria-label="Search products"
+                    aria-controls={showAutocomplete || desktopSearchFocused ? "desktop-search-suggestions" : undefined}
+                    aria-expanded={desktopSearchFocused}
+                    aria-autocomplete="list"
                   />
                   {searchQuery ? (
                     <button
@@ -508,17 +571,21 @@ export function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     transition={{ duration: 0.15 }}
+                    id="desktop-search-suggestions"
+                    role="listbox"
+                    aria-label="Search suggestions"
                     className="absolute top-full right-0 mt-2 w-[22rem] max-w-[90vw] bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100 overflow-hidden z-50"
                   >
                     {!showAutocomplete ? (
-                      <div className="py-2 max-h-[26rem] overflow-y-auto">
+                      <div className="py-2 max-h-[26rem] overflow-y-auto" data-lenis-prevent>
                         {recentSearches.length > 0 && (
                           <div className="px-2 pb-1">
                             <div className="flex items-center justify-between px-2 py-1.5">
                               <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Recent</span>
                               <button
                                 onClick={clearRecentSearches}
-                                className="text-[10px] font-bold text-gray-400 hover:text-red-400 transition-colors"
+                                  type="button"
+                                  className="text-[10px] font-bold text-gray-400 hover:text-red-400 transition-colors"
                               >
                                 Clear
                               </button>
@@ -527,6 +594,7 @@ export function Navbar() {
                               <button
                                 key={`recent-${term}`}
                                 onClick={() => goToSearchTerm(term)}
+                                type="button"
                                 className="w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-[0.8125rem] font-semibold text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors text-left"
                               >
                                 <Clock className="w-3.5 h-3.5 text-gray-300 shrink-0" />
@@ -542,6 +610,7 @@ export function Navbar() {
                               <button
                                 key={`trend-${term}`}
                                 onClick={() => goToSearchTerm(term)}
+                                type="button"
                                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-orange-600 bg-orange-50 hover:bg-orange-100 border border-orange-100 transition-colors"
                               >
                                 <TrendingUp className="w-3 h-3" />
@@ -552,7 +621,7 @@ export function Navbar() {
                         </div>
                       </div>
                     ) : hasSuggestions ? (
-                      <div className="py-2 max-h-[26rem] overflow-y-auto">
+                      <div className="py-2 max-h-[26rem] overflow-y-auto" data-lenis-prevent>
                         {matchedCategories.length > 0 && (
                           <div className="px-2 pb-1">
                             <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-2 py-1.5">Categories</div>
@@ -693,7 +762,7 @@ export function Navbar() {
                           </button>
                         )}
                       </div>
-                      <div className="max-h-[360px] overflow-y-auto scrollbar-hide overscroll-contain">
+                      <div className="max-h-[360px] overflow-y-auto scrollbar-hide overscroll-contain" data-lenis-prevent>
                         {notifications.length > 0 ? (
                           <div className="divide-y divide-gray-50">
                             {notifications.map((n) => (
@@ -875,6 +944,7 @@ export function Navbar() {
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
               className="btn-press md:hidden flex items-center justify-center w-10 h-10 rounded-full text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition-all"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -892,7 +962,7 @@ export function Navbar() {
             transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
             className="md:hidden overflow-hidden bg-white border-t border-gray-100"
           >
-            <div className="px-5 py-5 space-y-1 max-h-[85dvh] overflow-y-auto">
+            <div className="px-5 py-5 space-y-1 max-h-[85dvh] overflow-y-auto" data-lenis-prevent>
               {/* Mobile search */}
               <form onSubmit={handleSearch} className="flex items-center gap-2 mb-3">
                 <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-2xl border border-gray-200 bg-gray-50">
@@ -913,7 +983,7 @@ export function Navbar() {
                 </button>
               </form>
 
-              {navLinks.filter(l => !l.moreDropdown).map((link) => (
+              {navLinks.filter(l => !l.helpDropdown && !l.companyDropdown).map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -936,10 +1006,20 @@ export function Navbar() {
                   )}
                 </Link>
               ))}
-              {/* More section in mobile */}
+              {/* Help section in mobile */}
               <div className="pt-2 border-t border-gray-100 mt-1">
-                <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-4 mb-1">More</div>
-                {MORE_LINKS.slice(0, 4).map((item) => (
+                <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-4 mb-1">Help</div>
+                {HELP_LINKS.map((item) => (
+                  <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-2xl font-semibold text-[0.875rem] text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-all">
+                    <span>{item.emoji}</span>{item.label}
+                  </Link>
+                ))}
+              </div>
+              {/* Company section in mobile */}
+              <div className="pt-2 border-t border-gray-100 mt-1">
+                <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-4 mb-1">Company</div>
+                {COMPANY_LINKS.map((item) => (
                   <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-3 px-4 py-2.5 rounded-2xl font-semibold text-[0.875rem] text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-all">
                     <span>{item.emoji}</span>{item.label}
@@ -1008,7 +1088,7 @@ export function Navbar() {
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden bg-white border-t border-gray-100 shadow-lg"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="container-wide mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <form onSubmit={handleSearch} className="flex items-center gap-3">
                 <div className="flex-1 flex items-center gap-3 px-4 py-3 rounded-2xl border-2 border-orange-200 bg-orange-50/40 focus-within:border-orange-400 transition-colors">
                   <Search className="w-4 h-4 text-orange-400 shrink-0" />

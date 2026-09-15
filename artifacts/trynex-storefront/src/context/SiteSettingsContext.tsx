@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { useGetSettings } from "@workspace/api-client-react";
 
 interface SiteSettings {
@@ -21,6 +21,13 @@ interface SiteSettings {
   nagadNumber: string;
   rocketNumber: string;
   upayNumber: string;
+  bankName: string;
+  bankAccountName: string;
+  bankAccountNumber: string;
+  bankBranch: string;
+  bankRoutingNumber: string;
+  cardPaymentNote: string;
+  codEnabled: boolean;
   facebookUrl: string;
   instagramUrl: string;
   youtubeUrl: string;
@@ -37,6 +44,16 @@ interface SiteSettings {
   studioMugColors: string;
   studioTshirtPrice: number;
   studioMugPrice: number;
+  studioHoodiePrice: number;
+  studioLongsleevePrice: number;
+  studioCapPrice: number;
+  studioWaterbottlePrice: number;
+  studioTshirtCustomizationFee: number;
+  studioHoodieCustomizationFee: number;
+  studioLongsleeveCustomizationFee: number;
+  studioCapCustomizationFee: number;
+  studioMugCustomizationFee: number;
+  studioWaterbottleCustomizationFee: number;
   heroImageUrl: string;
   heroGradient: string;
   heroCTAText: string;
@@ -93,7 +110,7 @@ interface SiteSettings {
   isLoaded: boolean;
 }
 
-const CACHE_KEY = "trynex_site_settings_v6";
+const CACHE_KEY = "trynext_site_settings_v6";
 
 function getCachedSettings(): Partial<SiteSettings> {
   try {
@@ -127,6 +144,13 @@ const defaults: SiteSettings = {
   nagadNumber: c("nagadNumber") || "",
   rocketNumber: c("rocketNumber") || "",
   upayNumber: c("upayNumber") || "",
+  bankName: c("bankName") || "",
+  bankAccountName: c("bankAccountName") || "",
+  bankAccountNumber: c("bankAccountNumber") || "",
+  bankBranch: c("bankBranch") || "",
+  bankRoutingNumber: c("bankRoutingNumber") || "",
+  cardPaymentNote: c("cardPaymentNote") || "Pay with card on delivery (POS machine available).",
+  codEnabled: c("codEnabled") ?? true,
   facebookUrl: c("facebookUrl") || "",
   instagramUrl: c("instagramUrl") || "",
   youtubeUrl: c("youtubeUrl") || "",
@@ -141,8 +165,19 @@ const defaults: SiteSettings = {
   googleSiteVerification: c("googleSiteVerification") || "",
   studioTshirtColors: c("studioTshirtColors") || "",
   studioMugColors: c("studioMugColors") || "",
-  studioTshirtPrice: Number(c("studioTshirtPrice")) || 1099,
-  studioMugPrice: Number(c("studioMugPrice")) || 799,
+  // Published custom-design defaults: T-shirt ৳450 + ৳99; mug ৳449 + ৳99.
+  studioTshirtPrice: Number(c("studioTshirtPrice")) || 450,
+  studioMugPrice: Number(c("studioMugPrice")) || 449,
+  studioHoodiePrice: Number(c("studioHoodiePrice")) || 1699,
+  studioLongsleevePrice: Number(c("studioLongsleevePrice")) || 1299,
+  studioCapPrice: Number(c("studioCapPrice")) || 699,
+  studioWaterbottlePrice: Number(c("studioWaterbottlePrice")) || 899,
+  studioTshirtCustomizationFee: Number(c("studioTshirtCustomizationFee")) || 99,
+  studioHoodieCustomizationFee: Number(c("studioHoodieCustomizationFee")) || 99,
+  studioLongsleeveCustomizationFee: Number(c("studioLongsleeveCustomizationFee")) || 99,
+  studioCapCustomizationFee: Number(c("studioCapCustomizationFee")) || 99,
+  studioMugCustomizationFee: Number(c("studioMugCustomizationFee")) || 99,
+  studioWaterbottleCustomizationFee: Number(c("studioWaterbottleCustomizationFee")) || 99,
   heroImageUrl: c("heroImageUrl") || "",
   heroGradient: c("heroGradient") || "",
   heroCTAText: c("heroCTAText") || "Shop Now",
@@ -150,13 +185,13 @@ const defaults: SiteSettings = {
   primaryColor: c("primaryColor") || "#E85D04",
   announcementColor: c("announcementColor") || "#E85D04",
   trustBadge1Title: c("trustBadge1Title") || "100% Secure Payments",
-  trustBadge1Desc: c("trustBadge1Desc") || "bKash, Nagad, Rocket & COD",
+  trustBadge1Desc: c("trustBadge1Desc") || "bKash, Nagad & uPay — 25% advance",
   trustBadge2Title: c("trustBadge2Title") || "Nationwide Delivery",
   trustBadge2Desc: c("trustBadge2Desc") || "All 64 districts of Bangladesh",
   trustBadge3Title: c("trustBadge3Title") || "Quality Guarantee",
   trustBadge3Desc: c("trustBadge3Desc") || "230-320GSM premium fabric",
-  trustBadge4Title: c("trustBadge4Title") || "5,000+ Happy Customers",
-  trustBadge4Desc: c("trustBadge4Desc") || "98% satisfaction rate",
+  trustBadge4Title: c("trustBadge4Title") || "Design Studio Ready",
+  trustBadge4Desc: c("trustBadge4Desc") || "Preview artwork before checkout",
   sectionFeaturedEnabled: c("sectionFeaturedEnabled") ?? true,
   sectionCategoriesEnabled: c("sectionCategoriesEnabled") ?? true,
   sectionFlashSaleEnabled: c("sectionFlashSaleEnabled") ?? true,
@@ -189,9 +224,9 @@ const defaults: SiteSettings = {
   spinWheelSubtitle: c("spinWheelSubtitle") || "One free spin — no purchase needed.",
   spinWheelResetAt: Number(c("spinWheelResetAt")) || 0,
   spinWheelCooldownHours: Number(c("spinWheelCooldownHours")) || 24,
-  seoDefaultTitle: c("seoDefaultTitle") || "TryNex Lifestyle — Custom Apparel & Gifts in Bangladesh",
-  seoDefaultDescription: c("seoDefaultDescription") || "Design and order custom T-shirts, hoodies, mugs, caps, and gift hampers in Bangladesh. Premium quality, nationwide delivery, cash on delivery.",
-  seoDefaultKeywords: c("seoDefaultKeywords") || "custom t-shirt bangladesh, personalized mug, gift hamper, custom hoodie, design studio, trynex",
+  seoDefaultTitle: c("seoDefaultTitle") || "Trynext Lifestyle — Custom Apparel & Gifts in Bangladesh",
+  seoDefaultDescription: c("seoDefaultDescription") || "Design and order custom T-shirts, hoodies, mugs, caps, and gift hampers in Bangladesh. Premium quality, nationwide delivery, pay just 25% in advance.",
+  seoDefaultKeywords: c("seoDefaultKeywords") || "custom t-shirt bangladesh, personalized mug, gift hamper, custom hoodie, design studio, trynext",
   seoOgImage: c("seoOgImage") || "",
   seoTwitterHandle: c("seoTwitterHandle") || "",
   metaCapiTokenConfigured: c("metaCapiTokenConfigured") ?? false,
@@ -203,15 +238,19 @@ const SiteSettingsContext = createContext<SiteSettings>(defaults);
 
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   const { data } = useGetSettings();
-  const prevNameRef = useRef<string | null>(null);
-  const settings: SiteSettings = { ...defaults, ...(data as Partial<SiteSettings> || {}), isLoaded: !!data };
+  const remote = (data as Partial<SiteSettings> | undefined) || {};
+  const settings: SiteSettings = {
+    ...defaults,
+    ...remote,
+    // Keep the configured wallet destination authoritative; empty means the
+    // method is unavailable rather than inventing a customer-facing number.
+    upayNumber: remote.upayNumber?.trim() || defaults.upayNumber || "",
+    isLoaded: !!data,
+  };
 
   useEffect(() => {
     if (data) {
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch {}
-      if (prevNameRef.current === null) {
-        prevNameRef.current = (data as any).siteName || "";
-      }
     }
   }, [data]);
 

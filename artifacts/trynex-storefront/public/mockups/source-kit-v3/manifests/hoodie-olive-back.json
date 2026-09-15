@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "hoodie:olive:back",
+  "category": "hoodie",
+  "colorSlug": "olive",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/hoodie-olive-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/hoodie/olive/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/hoodie-olive-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    72,
+    62,
+    952,
+    962
+  ],
+  "sha256": "2851608c9d2ea82251ae3908ad95db431c3474c55a005b29cc6dbcb85a91daf2",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

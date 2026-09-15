@@ -1,0 +1,6 @@
+
+## Initial bottle asset audit
+
+The repository contact sheet confirms the requested product is the upright aluminium bottle with a black key-ring loop and side carabiner, matching `bottle_2.png` / `bottle_6.png`-style references rather than the plain screw-cap bottle. The current source-kit white render at `public/mockups/source-kit/waterbottle-white-front.png` does use the key-ring loop and carabiner, but it is an opaque studio image with a large off-white background and a very bright white body. The Design Studio currently resolves `/mockups/normalized/waterbottle-white-front.png?v=v3_clean` and falls back to `bottle_1.png` through legacy constants, so source selection must be made explicit and consistent for front/back/color instead of relying on the old single `bottle_1.png` entry.
+
+The recurring compositor risks are: the bottle print zone is a rectangular body contract with only a mild shoulder/base curve, while the cylindrical warp is applied independently to layers; mug side handling uses the same `mug_1.png` front source and `mug_6.png` back source only through face resolution, so any UI that does not pass `face=back` will render the same side. Smart shading is still generated from source pixels and must remain clipped to the print zone with reduced highlight strength for light products.

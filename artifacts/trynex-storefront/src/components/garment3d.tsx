@@ -36,9 +36,9 @@ import { useGLTF, useProgress, OrbitControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { hasWebGL2 } from "../pages/design-studio/composer";
 
-// Ref type for drei's <OrbitControls> — derived from the component itself so
-// we don't need to depend on `three-stdlib` directly.
-type OrbitControlsRef = React.ElementRef<typeof OrbitControls>;
+// Keep the ref contract local so duplicate React type trees from the mobile
+// workspace cannot collapse ElementRef<typeof OrbitControls> to never.
+type OrbitControlsRef = { reset: () => void };
 
 export { hasWebGL2 };
 
@@ -125,7 +125,7 @@ export function adjustGarmentColor(hex: string): string {
   const b = parseInt(hex.slice(5, 7), 16);
   // Perceived luminance (Rec. 601)
   const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  if (lum > 0.88) return "#D2CFC9";   // warm off-white — 3-D depth visible
+  if (lum > 0.88) return "#ffffff";   // near-white → pure white so photo looks correct
   if (lum < 0.15) return "#2e2e2e";   // dark charcoal — catches #1a1a1a / #1C1917 correctly
   return hex;
 }
@@ -300,8 +300,17 @@ export function RealisticShirt({
   const frontGeo = useFrontOverlayGeometry(baseGeo);
   const backGeo = useBackOverlayGeometry(baseGeo);
 
-  // Adjust extreme garment colours so white/black show 3-D form under lighting
-  const renderColor = useMemo(() => adjustGarmentColor(garmentColor), [garmentColor]);
+  const renderColor = useMemo(() => {
+    if (!garmentColor) return "#ffffff";
+    const h = garmentColor.replace("#", "");
+    if (h.length === 6) {
+      const r = parseInt(h.slice(0, 2), 16);
+      const g = parseInt(h.slice(2, 4), 16);
+      const b = parseInt(h.slice(4, 6), 16);
+      if ((0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.88) return "#ffffff";
+    }
+    return garmentColor;
+  }, [garmentColor]);
 
   if (!baseGeo) return null;
 
@@ -518,10 +527,12 @@ export function MugBody({
   wrapTex,
   garmentColor,
   isWrapMode = false,
+  activeFace = "front",
 }: {
   wrapTex?: THREE.Texture | null;
   garmentColor: string;
   isWrapMode?: boolean;
+  activeFace?: "front" | "back";
 }) {
   const H     = 1.80;
   const R_TOP = 0.72;
@@ -614,7 +625,10 @@ export function MugBody({
 
       {/* Single-side: planar front-half overlay */}
       {wrapTex && !isWrapMode && (
-        <mesh geometry={frontOverlayGeo}>
+        <mesh
+          geometry={frontOverlayGeo}
+          rotation-y={activeFace === "back" ? Math.PI : 0}
+        >
           <meshStandardMaterial
             map={wrapTex}
             transparent
@@ -686,84 +700,120 @@ export function MugBody({
 }
 
 /* ─────────────────────── PHOTO BILLBOARD 3D ─────────
- * Used for Hoodie, Long Sleeve, and Structured Cap — products where
- * the procedurally generated GLB geometry looked flat and unrealistic.
+ * Used for apparel, mugs, caps, and water bottles — products where the
+ * procedurally generated GLB geometry looked flat and unrealistic.
  *
- * Approach: map the REAL product photo as a texture onto a plane in the
- * 3D scene. The R3F environment (city HDRI) adds specular highlights and
- * ambient light, making the photo look three-dimensionally lit. A second
- * plane slightly in front carries the design texture overlay.
+ * Approach: map the REAL product photo or PSD-derived full-canvas composite as
+ * a texture onto a plane in the 3D scene. The R3F environment adds specular
+ * highlights and ambient light, while the full composite preserves protected
+ * product details above the Smart Object artwork.
  *
  * Two planes (front + back) are stacked back-to-back so the camera can
- * orbit 360° and always see the correct face of the garment.
+ * orbit 360° and always see the correct face of the product.
  *────────────────────────────────────────────────────── */
 export function PhotoMockupMesh({
   frontPhotoSrc,
   backPhotoSrc,
   frontTex,
   backTex,
+  frontCompositeTex,
+  backCompositeTex,
   activeFace = "front",
   planeW = 2.60,
   planeH = 2.60,
-  garmentColor,
+  frontTint,
+  backTint,
+  frontFrame,
+  backFrame,
 }: {
   frontPhotoSrc: string;
   backPhotoSrc?: string;
   frontTex?: THREE.Texture | null;
   backTex?: THREE.Texture | null;
+  /** Full-canvas PSD-derived preview. When present it replaces the split
+   * photo/artwork planes so protected details stay above the Smart Object. */
+  frontCompositeTex?: THREE.Texture | null;
+  backCompositeTex?: THREE.Texture | null;
   activeFace?: "front" | "back";
   planeW?: number;
   planeH?: number;
-  /** When provided, the photo texture is multiplied by this colour in the
-   *  Three.js material (identical to SVG multiply-tint filter). Pass
-   *  undefined when the photo is already the correct dark version. */
-  garmentColor?: string;
+  /** Explicit resolver tint for each face. Exact-color photos pass undefined. */
+  frontTint?: string;
+  backTint?: string;
+  /** Normalized source frame used to crop the billboard texture. */
+  frontFrame?: { canvasWidth: number; canvasHeight: number; x: number; y: number; w: number; h: number };
+  backFrame?: { canvasWidth: number; canvasHeight: number; x: number; y: number; w: number; h: number };
 }) {
   const frontPhotoTex = useUrlTexture(frontPhotoSrc);
   const backPhotoTex  = useUrlTexture(backPhotoSrc ?? frontPhotoSrc);
 
-  // Three.js material colour × photo texture = colour-tinted photo.
-  // IMPORTANT: Do NOT use adjustGarmentColor here. That function was designed for
-  // procedural 3D meshes (RealisticShirt/GarmentGLB) where pure-white geometry
-  // looks flat. Photo planes already have the correct tonal rendering baked in.
-  // Applying adjustGarmentColor makes near-white garments look grey/faded (#D2CFC9)
-  // and near-black garments look washed out (#2e2e2e instead of the dark photo).
-  // Rule: near-white (luminance > 0.88) → "#ffffff" (no tinting, photo as-is);
-  //       coloured / dark → use the exact garmentColor for multiply-tint.
-  const renderColor = useMemo(() => {
-    if (!garmentColor) return "#ffffff";
-    const h = garmentColor.replace("#", "");
-    if (h.length === 6) {
-      const r = parseInt(h.slice(0, 2), 16);
-      const g = parseInt(h.slice(2, 4), 16);
-      const b = parseInt(h.slice(4, 6), 16);
-      if ((0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.88) return "#ffffff";
-    }
-    return garmentColor;
-  }, [garmentColor]);
+  const cropTexture = useMemo(
+    () => (
+      texture: THREE.Texture | null,
+      frame?: { canvasWidth: number; canvasHeight: number; x: number; y: number; w: number; h: number },
+    ) => {
+      if (!texture || !frame) return texture;
+      const cropped = texture.clone();
+      cropped.wrapS = THREE.ClampToEdgeWrapping;
+      cropped.wrapT = THREE.ClampToEdgeWrapping;
+      cropped.repeat.set(frame.w / frame.canvasWidth, frame.h / frame.canvasHeight);
+      cropped.offset.set(
+        frame.x / frame.canvasWidth,
+        1 - (frame.y + frame.h) / frame.canvasHeight,
+      );
+      cropped.needsUpdate = true;
+      return cropped;
+    },
+    [],
+  );
+  const frontBillboardTex = useMemo(
+    () => cropTexture(frontPhotoTex, frontFrame),
+    [cropTexture, frontPhotoTex, frontFrame],
+  );
+  const backBillboardTex = useMemo(
+    () => cropTexture(backPhotoTex, backFrame ?? frontFrame),
+    [cropTexture, backPhotoTex, backFrame, frontFrame],
+  );
+  const frontDesignTex = useMemo(
+    () => cropTexture(frontTex ?? null, frontFrame),
+    [cropTexture, frontTex, frontFrame],
+  );
+  const backDesignTex = useMemo(
+    () => cropTexture(backTex ?? null, backFrame ?? frontFrame),
+    [cropTexture, backTex, backFrame, frontFrame],
+  );
+  // The back plane is rotated 180° around Y. Flip the cropped design texture
+  // back across U so logos and text read correctly from the back camera.
+  const backDesignTexMirrored = useMemo(() => {
+    if (!backDesignTex) return null;
+    const mirrored = backDesignTex.clone();
+    mirrored.repeat.set(-1, 1);
+    mirrored.offset.set(1, 0);
+    mirrored.needsUpdate = true;
+    return mirrored;
+  }, [backDesignTex]);
+  const frontCompositeBillboardTex = useMemo(
+    () => cropTexture(frontCompositeTex ?? null, frontFrame),
+    [cropTexture, frontCompositeTex, frontFrame],
+  );
+  const backCompositeBillboardTex = useMemo(
+    () => cropTexture(backCompositeTex ?? null, backFrame ?? frontFrame),
+    [cropTexture, backCompositeTex, backFrame, frontFrame],
+  );
+  const frontAspect = frontFrame ? frontFrame.w / Math.max(1, frontFrame.h) : 1;
+  const backAspect = backFrame ? backFrame.w / Math.max(1, backFrame.h) : frontAspect;
+  const resolvedPlaneW = planeW * Math.max(frontAspect, backAspect);
 
   const planeGeo = useMemo(
-    () => new THREE.PlaneGeometry(planeW, planeH),
-    [planeW, planeH]
+    () => new THREE.PlaneGeometry(resolvedPlaneW, planeH),
+    [resolvedPlaneW, planeH]
   );
 
-  // The back face plane is rotated [0, π, 0] which mirrors U horizontally.
-  // Clone the design texture and flip U so text/logos read correctly from the back camera.
-  const backTexMirrored = useMemo(() => {
-    if (!backTex) return null;
-    const t = backTex.clone();
-    t.repeat.set(-1, 1);
-    t.offset.set(1, 0);
-    t.needsUpdate = true;
-    return t;
-  }, [backTex]);
-
   // Shared physical material settings — clearcoat gives a slight glossy sheen.
-  // `color` multiplies with the photo texture: white areas become garmentColor,
-  // shadow/fold areas darken proportionally — identical result to multiply-blend tint.
-  const baseMat = (tex: THREE.Texture | null | undefined) => ({
+  // The material colour is non-white only for an explicitly tintable cutout.
+  const baseMat = (tex: THREE.Texture | null | undefined, tint?: string) => ({
     map: tex ?? undefined,
-    color: renderColor,
+    color: tint ?? "#ffffff",
     roughness: 0.72 as number,
     metalness: 0.0 as number,
     clearcoat: 0.12 as number,
@@ -776,30 +826,60 @@ export function PhotoMockupMesh({
 
   return (
     <group>
-      {/* ── FRONT face ─────────────────────────────────── */}
-      <mesh geometry={planeGeo} position={[0, 0, 0.006]} castShadow receiveShadow>
-        <meshPhysicalMaterial {...baseMat(frontPhotoTex)} />
-      </mesh>
-      {frontTex && (
-        <mesh geometry={planeGeo} position={[0, 0, 0.012]}>
-          <meshStandardMaterial
-            map={frontTex} transparent roughness={0.72} metalness={0}
-            depthWrite={false} alphaTest={0.02} side={THREE.FrontSide}
-          />
-        </mesh>
+      {/*
+       * Render only the active face. Rendering front and back transparent
+       * billboards at the same time lets the inactive silhouette bleed through
+       * alpha pixels, especially on dark colour assets, and the shadow map then
+       * creates the old "ghost mockup" reported in the studio. The camera rig
+       * already rotates to the selected face, so the inactive pair is not
+       * needed for the current preview.
+       */}
+      {activeFace === "front" && (
+        <>
+          {frontCompositeBillboardTex ? (
+            <mesh geometry={planeGeo} position={[0, 0, 0.006]}>
+              <meshPhysicalMaterial {...baseMat(frontCompositeBillboardTex)} />
+            </mesh>
+          ) : (
+            <>
+              <mesh geometry={planeGeo} position={[0, 0, 0.006]}>
+                <meshPhysicalMaterial {...baseMat(frontBillboardTex, frontTint)} />
+              </mesh>
+              {frontDesignTex && (
+                <mesh geometry={planeGeo} position={[0, 0, 0.012]}>
+                  <meshStandardMaterial
+                    map={frontDesignTex} transparent roughness={0.72} metalness={0}
+                    depthWrite={false} alphaTest={0.02} side={THREE.FrontSide}
+                  />
+                </mesh>
+              )}
+            </>
+          )}
+        </>
       )}
 
-      {/* ── BACK face (rotated 180° around Y) ──────────── */}
-      <mesh geometry={planeGeo} position={[0, 0, -0.006]} rotation={[0, Math.PI, 0]} castShadow receiveShadow>
-        <meshPhysicalMaterial {...baseMat(backPhotoTex)} />
-      </mesh>
-      {backTexMirrored && (
-        <mesh geometry={planeGeo} position={[0, 0, -0.012]} rotation={[0, Math.PI, 0]}>
-          <meshStandardMaterial
-            map={backTexMirrored} transparent roughness={0.72} metalness={0}
-            depthWrite={false} alphaTest={0.02} side={THREE.FrontSide}
-          />
-        </mesh>
+      {activeFace === "back" && (
+        <>
+          {backCompositeBillboardTex ? (
+            <mesh geometry={planeGeo} position={[0, 0, -0.006]} rotation={[0, Math.PI, 0]}>
+              <meshPhysicalMaterial {...baseMat(backCompositeBillboardTex)} />
+            </mesh>
+          ) : (
+            <>
+              <mesh geometry={planeGeo} position={[0, 0, -0.006]} rotation={[0, Math.PI, 0]}>
+                <meshPhysicalMaterial {...baseMat(backBillboardTex, backTint ?? frontTint)} />
+              </mesh>
+              {backDesignTexMirrored && (
+                <mesh geometry={planeGeo} position={[0, 0, -0.012]} rotation={[0, Math.PI, 0]}>
+                  <meshStandardMaterial
+                    map={backDesignTexMirrored} transparent roughness={0.72} metalness={0}
+                    depthWrite={false} alphaTest={0.02} side={THREE.FrontSide}
+                  />
+                </mesh>
+              )}
+            </>
+          )}
+        </>
       )}
     </group>
   );
@@ -814,11 +894,16 @@ export function PhotoMockupMesh({
  */
 export function WaterBottleBody({
   wrapTex,
-  garmentColor,
+  garmentColor: _legacyGarmentColor,
 }: {
   wrapTex?: THREE.Texture | null;
   garmentColor: string;
 }) {
+  // The supplied product is a white sublimation-coated aluminium blank. Keep
+  // the substrate neutral even if a legacy draft contains a colored swatch;
+  // only the artwork layer varies.
+  const sublimationBlank = "#f4f3f1";
+
   // ── Main printable body: straight cylinder (open-ended for UV wrap) ──
   // Uniform radius 0.38 — no taper — matches the real bottle silhouette.
   const bodyGeo = useMemo(
@@ -883,11 +968,11 @@ export function WaterBottleBody({
 
   return (
     <group scale={0.60}>
-      {/* ── Main glossy body (sublimation-coated aluminium) ── */}
+      {/* ── Main glossy body (white sublimation-coated aluminium) ── */}
       <mesh geometry={bodyGeo} castShadow receiveShadow>
         <meshPhysicalMaterial
-          color={garmentColor}
-          roughness={0.06}
+          color={sublimationBlank}
+          roughness={0.22}
           metalness={0.0}
           clearcoat={1.0}
           clearcoatRoughness={0.04}
@@ -911,32 +996,32 @@ export function WaterBottleBody({
         </mesh>
       )}
 
-      {/* ── Bottom cap disk ── */}
+      {/* ── Bottom blank disk ── */}
       <mesh geometry={bodyBotGeo} position={[0, -1.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <meshPhysicalMaterial
-          color={garmentColor}
-          roughness={0.25}
+          color={sublimationBlank}
+          roughness={0.30}
           metalness={0.0}
           clearcoat={0.5}
         />
       </mesh>
 
-      {/* ── Shoulder taper ── */}
+      {/* ── White blank shoulder taper ── */}
       <mesh geometry={shoulderGeo} position={[0, 1.16, 0]} castShadow>
         <meshPhysicalMaterial
-          color={garmentColor}
-          roughness={0.06}
+          color={sublimationBlank}
+          roughness={0.22}
           metalness={0.0}
           clearcoat={1.0}
           clearcoatRoughness={0.04}
         />
       </mesh>
 
-      {/* ── Neck ── */}
+      {/* ── White blank neck thread section ── */}
       <mesh geometry={neckGeo} position={[0, 1.35, 0]} castShadow>
         <meshPhysicalMaterial
-          color={garmentColor}
-          roughness={0.10}
+          color={sublimationBlank}
+          roughness={0.24}
           metalness={0.0}
           clearcoat={0.8}
         />
@@ -1096,7 +1181,7 @@ export function ViewerLoadingOverlay() {
               borderRadius: "50%",
               border: "3px solid rgba(232,93,4,0.1)",
               borderTopColor: "#E85D04",
-              animation: "trynex-spin 0.9s linear infinite",
+              animation: "trynext-spin 0.9s linear infinite",
             }}
           />
           {/* Inner icon placeholder */}
@@ -1142,7 +1227,7 @@ export function ViewerLoadingOverlay() {
           Loading 3D preview… {pct}%
         </div>
       </div>
-      <style>{`@keyframes trynex-spin { to { transform: rotate(360deg) } }`}</style>
+      <style>{`@keyframes trynext-spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   );
 }
@@ -1154,12 +1239,17 @@ export function ViewerLoadingOverlay() {
 export function NoWebGLFallback({
   garmentSrc,
   designSrc,
+  compositeSrc,
   garmentColor = "#ffffff",
+  requiresTint = false,
   message = "Your browser does not support 3D preview. Showing the 2D mockup instead.",
 }: {
   garmentSrc?: string;
   designSrc?: string;
+  /** Complete PSD-derived canvas, including base, shading, and protected details. */
+  compositeSrc?: string;
   garmentColor?: string;
+  requiresTint?: boolean;
   message?: string;
 }) {
   return (
@@ -1183,7 +1273,42 @@ export function NoWebGLFallback({
         maxHeight: "75%",
         aspectRatio: "1 / 1",
       }}>
-        {garmentSrc && (
+        {compositeSrc ? (
+          <img
+            src={compositeSrc}
+            alt="Product mockup with your design"
+            style={{
+              position: "absolute", inset: 0,
+              width: "100%", height: "100%",
+              objectFit: "contain",
+            }}
+          />
+        ) : garmentSrc && requiresTint ? (
+          <svg
+            viewBox="0 0 1024 1024"
+            width="100%"
+            height="100%"
+            style={{ position: "absolute", inset: 0, overflow: "visible" }}
+            aria-hidden="true"
+          >
+            <defs>
+              <filter id="fallback-garment-tint" x="0%" y="0%" width="100%" height="100%" colorInterpolationFilters="sRGB">
+                <feFlood floodColor={garmentColor} result="flood" />
+                <feBlend in="flood" in2="SourceGraphic" mode="multiply" result="blended" />
+                <feComposite in="blended" in2="SourceGraphic" operator="in" />
+              </filter>
+            </defs>
+            <image
+              href={garmentSrc}
+              x="0"
+              y="0"
+              width="1024"
+              height="1024"
+              preserveAspectRatio="xMidYMid meet"
+              filter="url(#fallback-garment-tint)"
+            />
+          </svg>
+        ) : garmentSrc ? (
           <img
             src={garmentSrc}
             alt="Product mockup"
@@ -1191,11 +1316,9 @@ export function NoWebGLFallback({
               position: "absolute", inset: 0,
               width: "100%", height: "100%",
               objectFit: "contain",
-              backgroundColor: garmentColor,
-              mixBlendMode: "multiply",
             }}
           />
-        )}
+        ) : null}
         {designSrc && (
           <img
             src={designSrc}
@@ -1248,7 +1371,9 @@ export function ResettableOrbitControls(props: React.ComponentProps<typeof Orbit
     };
   }, [gl]);
 
-  return <OrbitControls ref={ref} {...props} />;
+  // drei's control instance is structurally richer than the reset-only
+  // contract above; the ref is intentionally narrowed at this interop edge.
+  return <OrbitControls ref={ref as never} {...props} />;
 }
 
 /** Studio-quality lighting rig — hemisphere sky/ground + five-point directional.

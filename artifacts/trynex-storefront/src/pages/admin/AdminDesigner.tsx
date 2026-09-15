@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   useGetDesignerSettings, usePatchDesignerSettings,
   useAdminListTestimonials, useCreateTestimonial, useUpdateTestimonial, useDeleteTestimonial,
@@ -129,6 +130,7 @@ function TestimonialsManager() {
   const [editId, setEditId] = useState<number | null>(null);
   const [form, setForm] = useState<TestimonialFormData>({ name: "", role: "", location: "", body: "", stars: 5 });
   const [showAdd, setShowAdd] = useState(false);
+  const [deleteTestimonialConfirm, setDeleteTestimonialConfirm] = useState<number | null>(null);
 
   const resetForm = () => { setForm({ name: "", role: "", location: "", body: "", stars: 5 }); setEditId(null); setShowAdd(false); };
 
@@ -160,13 +162,15 @@ function TestimonialsManager() {
     } catch { toast({ title: "Failed to update", variant: "destructive" }); }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Delete this testimonial?")) return;
+  const handleDelete = (id: number) => setDeleteTestimonialConfirm(id);
+  const doDeleteTestimonial = async () => {
+    if (!deleteTestimonialConfirm) return;
     try {
-      await del({ id });
+      await del({ id: deleteTestimonialConfirm });
       invalidate();
       toast({ title: "Deleted." });
     } catch { toast({ title: "Delete failed", variant: "destructive" }); }
+    finally { setDeleteTestimonialConfirm(null); }
   };
 
   const beginEdit = (t: TestimonialRow) => {
@@ -260,6 +264,15 @@ function TestimonialsManager() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteTestimonialConfirm !== null}
+        title="Delete Testimonial"
+        description="This testimonial will be permanently removed."
+        confirmText="Delete"
+        onConfirm={doDeleteTestimonial}
+        onCancel={() => setDeleteTestimonialConfirm(null)}
+      />
     </div>
   );
 }
@@ -609,7 +622,7 @@ export default function AdminDesigner() {
                   <ToggleField label="Auto-Hide After 6 Seconds" desc="Slide the bar out automatically. Off by default — bar stays until visitor closes it." value={(watch("announcementAutoHide") as boolean) ?? false} onChange={v => { setValue("announcementAutoHide", v, { shouldDirty: true }); }} />
                 </div>
                 <Field label="Announcement Messages" full>
-                  <textarea {...reg("announcementBar")} className={inputClass} style={inputStyle} rows={3} placeholder="🚚 Free delivery on orders above ৳1,500! | COD available | WhatsApp: 01700-000000" />
+                  <textarea {...reg("announcementBar")} className={inputClass} style={inputStyle} rows={3} placeholder="🚚 Free delivery on orders above ৳1,500! | Pay 25% advance, rest on delivery | WhatsApp: 01700-000000" />
                   <p className="text-xs text-gray-400 mt-1.5">Separate messages with <code>|</code>. Each becomes a ticker item.</p>
                 </Field>
               </SectionCard>

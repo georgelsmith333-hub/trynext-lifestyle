@@ -1,0 +1,36 @@
+================================================================================
+  DEFAULT AGENT WORKFLOW — READ THIS FILE FIRST
+  PROJECT: Trynext Lifestyle Complete Product Rebuild
+  LOCATION: PROJECT_REBUILD_TRACKER/
+================================================================================
+
+1. BEFORE YOU START
+   • Read this file fully.
+   • Open "All Tasks Left To Do/PHASES_CHECKLIST.md" to see the 14-phase plan.
+   • Open "All Tasks Left To Do/CRITICAL_FINDINGS.md" to see what the audit found.
+   • Open "In Progress Works/CURRENT_AUDIT.md" to see what is currently being worked on.
+
+2. HOW TO MOVE WORK
+   • Pick the next task from "All Tasks Left To Do/".
+   • Create a matching file in "In Progress Works/" (e.g., phase-1-audit.md) and list the task as IN PROGRESS.
+   • When the task is complete, tested, and verified, move that file to "Done Tasks/" and add evidence (file paths, test results, screenshots, commit info).
+   • Never mark a task done until it is real, tested, and working — no placeholders.
+
+3. RULES
+   • Do not delete or rename these three folders.
+   • Update the tracker after every significant change.
+   • If a task is blocked, note it in "In Progress Works/" with the blocker and ask the user.
+   • All 14 phases must be completed before the project is considered finished.
+
+4. FOLDER MEANINGS
+   • In Progress Works/    — Tasks currently being worked on (by you or any agent).
+   • Done Tasks/           — Fully completed and verified work only.
+   • All Tasks Left To Do/ — Everything remaining, including the 14-phase checklist.
+
+5. QUICK COMMANDS
+   • Run a full audit: grep for TODO, FIXME, MOCK, hardcoded URLs, and mock data.
+   • Run typecheck: pnpm run typecheck
+   • Rebuild API after server edits: cd artifacts/api-server && node ./build.mjs
+   • Restart artifact workflow: use the exact workflow name from the project state.
+
+================================================================================

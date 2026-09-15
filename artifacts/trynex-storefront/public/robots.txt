@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Block admin pages from indexing
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /design-studio/drafts
+Disallow: /checkout
+Disallow: /account
+Disallow: /wishlist
+Disallow: /cart
+
+# Allow key bots to crawl everything else
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Sitemap location
+Sitemap: https://trynext.pages.dev/sitemap.xml

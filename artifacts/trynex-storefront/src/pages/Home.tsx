@@ -1,4 +1,5 @@
 import { Link, useLocation } from "wouter";
+import { prefetchDesignStudio } from "@/lib/prefetch";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProductCard } from "@/components/ProductCard";
@@ -15,10 +16,10 @@ import { useSiteSettings } from "@/context/SiteSettingsContext";
 import {
   ArrowRight, Sparkles, Zap, Package, Star, Check, Truck,
   ShieldCheck, Clock, Palette, Layers, Award, ChevronRight,
-  Users, BadgeCheck, Flame, Shirt, Coffee, Crown, TrendingUp, Eye
+  Users, Flame, Shirt, Coffee, Crown, TrendingUp, Eye
 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { TypewriterHero } from "@/components/home/TypewriterHero";
 
 const MARQUEE_ITEMS = [
@@ -60,43 +61,20 @@ const PROCESS = [
   { step: "03", title: "Fast Delivery", desc: "Packed with care, delivered express anywhere in Bangladesh within 3-7 business days.", icon: Truck },
 ];
 
-const TESTIMONIALS = [
-  {
-    name: "Rakib Hasan", role: "Fashion Influencer", stars: 5,
-    text: "TryNex is literally the best custom apparel brand in BD. The hoodie quality is insane — thick, premium, and the print doesn't fade. 10/10!",
-    location: "Dhaka"
-  },
-  {
-    name: "Mithila Chowdhury", role: "Small Business Owner", stars: 5,
-    text: "Ordered 50 custom tees for my brand launch. Every single one was perfect. The colors were exactly what I wanted. Will order again!",
-    location: "Chittagong"
-  },
-  {
-    name: "Farhan Ahmed", role: "University Student", stars: 5,
-    text: "Got a custom hoodie for my crew. Everyone was shocked at how premium it felt. The delivery was super fast too. Highly recommend!",
-    location: "Sylhet"
-  },
-  {
-    name: "Nadia Islam", role: "Corporate Manager", stars: 5,
-    text: "We use TryNex for all our company merch now. Professional quality, great service, and the best prices in Bangladesh. Absolutely love it!",
-    location: "Rajshahi"
-  },
-];
-
-const STATS = [
-  { value: "5000", suffix: "+", label: "Happy Customers", icon: Users, color: "var(--color-primary)" },
-  { value: "98", suffix: "%", label: "Satisfaction Rate", icon: Star, color: "#eab308" },
-  { value: "48", suffix: "h", label: "Production Time", icon: Zap, color: "#d97706" },
+const BASE_STATS = [
+  { value: "6", suffix: "", label: "Product Families", icon: Shirt, color: "var(--color-primary)" },
+  { value: "2", suffix: "", label: "T-Shirt Print Sides", icon: Layers, color: "#2563eb" },
+  { value: "25", suffix: "%", label: "Advance at Checkout", icon: ShieldCheck, color: "#d97706" },
   { value: "64", suffix: "", label: "Districts Served", icon: Truck, color: "#16a34a" },
 ];
 
 const CATEGORIES = [
-  { name: "T-Shirts",      icon: "tshirt",      desc: "Premium custom tees",         count: "Starting ৳599",   color: "#fff4ee", accent: "var(--color-primary)", href: "/products?category=t-shirts" },
-  { name: "Mugs",          icon: "mug",          desc: "Ceramic & sublimation",       count: "Starting ৳399",   color: "#fdf4ff", accent: "#9333ea",             href: "/products?category=mugs" },
+  { name: "T-Shirts",      icon: "tshirt",      desc: "230GSM premium cotton",       count: "Starting ৳450",   color: "#fff4ee", accent: "var(--color-primary)", href: "/products?category=t-shirts" },
+  { name: "Long Sleeve",  icon: "longsleeve",  desc: "Comfort fit long sleeves",     count: "Starting ৳599",   color: "#f0f7ff", accent: "#2563eb",             href: "/products?category=long-sleeves" },
   { name: "Hoodies",       icon: "hoodie",       desc: "320GSM premium fleece",       count: "Starting ৳1,299", color: "#ecfeff", accent: "#0891b2",             href: "/products?category=hoodies" },
+  { name: "Mugs",          icon: "mug",          desc: "Ceramic & sublimation",       count: "Starting ৳449",   color: "#fdf4ff", accent: "#9333ea",             href: "/products?category=mugs" },
   { name: "Caps",          icon: "cap",          desc: "Embroidered & printed",       count: "Starting ৳499",   color: "#f0fdf4", accent: "#16a34a",             href: "/products?category=caps" },
-  { name: "Water Bottles", icon: "waterbottle",  desc: "600ml aluminium custom",      count: "Starting ৳699",   color: "#eff6ff", accent: "#2563eb",             href: "/products?category=custom-orders" },
-  { name: "Custom",        icon: "custom",       desc: "Anything you imagine",        count: "Get a quote",     color: "#fffbeb", accent: "#d97706",             href: "/design-studio" },
+  { name: "Water Bottles", icon: "waterbottle",  desc: "600ml aluminium custom",      count: "Starting ৳699",   color: "#eff6ff", accent: "#2563eb",             href: "/products?category=water-bottles" },
 ];
 
 
@@ -112,14 +90,9 @@ const PAYMENT_METHODS = [
     labelStyle: { fontWeight: 900, letterSpacing: "0.02em" },
   },
   {
-    name: "Rocket", shortName: "Rocket",
+    name: "uPay", shortName: "uPay",
     color: "#8b2291", textColor: "#fff", bg: "#8b2291",
     labelStyle: { fontWeight: 900 },
-  },
-  {
-    name: "Cash on Delivery", shortName: "COD",
-    color: "#16a34a", textColor: "#fff", bg: "#16a34a",
-    labelStyle: { fontWeight: 900, letterSpacing: "0.05em" },
   },
   {
     name: "Visa", shortName: "VISA",
@@ -379,12 +352,14 @@ function useMagneticEffect<T extends HTMLElement>() {
   return { ref, magneticStyle, eventHandlers };
 }
 
-function MagneticButton({ children, className, style, href, onClick }: {
+function MagneticButton({ children, className, style, href, onClick, onMouseEnter, onTouchStart }: {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
   href?: string;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onTouchStart?: () => void;
 }) {
   const linkMagnet = useMagneticEffect<HTMLAnchorElement>();
   const btnMagnet = useMagneticEffect<HTMLButtonElement>();
@@ -399,6 +374,8 @@ function MagneticButton({ children, className, style, href, onClick }: {
         className={className}
         style={{ ...style, ...linkMagnet.magneticStyle }}
         {...linkMagnet.eventHandlers}
+        onMouseEnter={() => { linkMagnet.eventHandlers?.onMouseEnter?.(); onMouseEnter?.(); }}
+        onTouchStart={onTouchStart}
       >
         {children}
       </a>
@@ -468,25 +445,7 @@ function usePublicStats(): PublicStats {
 }
 
 function LiveSocialProof({ stats, primaryColor = 'var(--color-primary)' }: { stats: PublicStats; primaryColor?: string }) {
-  if (!stats) return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.92 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4 }}
-      className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-3"
-    >
-      <span className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
-        style={{ background: '#fff4ee', color: primaryColor, border: '1.5px solid #fdd5b4' }}>
-        <span className="w-2 h-2 rounded-full inline-block" style={{ background: primaryColor }} />
-        5,000+ happy customers
-      </span>
-      <span className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
-        style={{ background: '#f0fdf4', color: '#16a34a', border: '1.5px solid #bbf7d0' }}>
-        <span className="w-2 h-2 rounded-full inline-block bg-green-500" />
-        4.9★ rated nationwide
-      </span>
-    </motion.div>
-  );
+  if (!stats) return null;
 
   const lastOrderLabel = stats.minutesSinceLastOrder === null
     ? null
@@ -526,7 +485,7 @@ function LiveSocialProof({ stats, primaryColor = 'var(--color-primary)' }: { sta
             className="w-2 h-2 rounded-full inline-block"
             style={{ background: primaryColor }}
           />
-          {stats.totalOrders.toLocaleString()}+ happy customers
+          {stats.totalOrders.toLocaleString()} orders placed
         </span>
       )}
       {lastOrderLabel && (
@@ -580,7 +539,7 @@ function HomeTopPostsWidget() {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="py-14 px-4 bg-white"
     >
-      <div className="max-w-5xl mx-auto">
+      <div className="container-wide">
         <div className="text-center mb-10">
           <motion.span
             initial={{ opacity: 0, scale: 0.9 }}
@@ -656,38 +615,77 @@ function HomeTopPostsWidget() {
 }
 
 export default function Home() {
-  const { data: productsData, isLoading } = useListProducts({ limit: 9, featured: true });
+  // The home page only displays 20 curated cards. Keep the initial payload
+  // bounded so a mobile visitor does not download the full catalogue merely
+  // to choose those cards client-side.
+  const { data: productsData, isLoading, isError, refetch } = useListProducts({ limit: 24 });
   const { data: testimonialsData } = useGetTestimonials();
   const publicStats = usePublicStats();
-  const featuredProducts = productsData?.products || [];
+  const [spinWheelOpen, setSpinWheelOpen] = useState(false);
+  const allProducts = productsData?.products || [];
+  const featuredProducts = useMemo(() => {
+    const categoryMatchers: Array<(product: typeof allProducts[number]) => boolean> = [
+      p => /t-?shirt|tee/i.test(`${p.categoryName || ""} ${p.name}`),
+      p => /hoodie|sweatshirt/i.test(`${p.categoryName || ""} ${p.name}`),
+      p => /mug|cup/i.test(`${p.categoryName || ""} ${p.name}`),
+      p => /cap|hat/i.test(`${p.categoryName || ""} ${p.name}`),
+      p => /long.?sleeve/i.test(`${p.categoryName || ""} ${p.name}`),
+      p => /bottle|flask|canteen/i.test(`${p.categoryName || ""} ${p.name}`),
+    ];
+    const ranked = [...allProducts].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || (b.id || 0) - (a.id || 0));
+    const buckets = categoryMatchers.map(match => ranked.filter(match));
+    const selected: typeof ranked = [];
+    const selectedIds = new Set<number>();
+    let round = 0;
+    while (selected.length < 20 && round < 20) {
+      for (const bucket of buckets) {
+        const product = bucket[round];
+        if (product && !selectedIds.has(product.id)) {
+          selected.push(product);
+          selectedIds.add(product.id);
+        }
+        if (selected.length >= 20) break;
+      }
+      round += 1;
+    }
+    for (const product of ranked) {
+      if (selected.length >= 20) break;
+      if (!selectedIds.has(product.id)) selected.push(product);
+    }
+    return selected.slice(0, 20);
+  }, [allProducts]);
   const dynamicTestimonials = testimonialsData?.testimonials || [];
   const howItWorksRef = useRef<HTMLDivElement>(null);
   const howItWorksInView = useInView(howItWorksRef, { once: true, margin: "-80px" });
   const settings = useSiteSettings();
 
-  const testimonials = dynamicTestimonials.length > 0
-    ? dynamicTestimonials.map(t => ({ name: t.name, role: t.role || "", stars: t.stars ?? 5, text: t.body, location: t.location || "" }))
-    : TESTIMONIALS;
+  const testimonials = dynamicTestimonials.map(t => ({
+    name: t.name,
+    role: t.role || "",
+    stars: typeof t.stars === "number" && t.stars > 0 ? t.stars : null,
+    text: t.body,
+    location: t.location || "",
+  }));
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title="Premium Custom Apparel Bangladesh | Custom T-Shirts, Hoodies & Gifts"
-        description="TryNex Lifestyle — Bangladesh's #1 custom apparel brand. Order custom T-shirts, hoodies, mugs & gift hampers with fast delivery to all 64 districts. COD available."
+        description="Trynext Lifestyle offers custom T-shirts, hoodies, mugs, and gift hampers with delivery across Bangladesh."
         canonical="/"
         keywords="custom t-shirt bangladesh, premium apparel bangladesh, custom hoodie bd, custom mug bd, custom cap bangladesh, gift hamper dhaka, personalized gifts bd, কাস্টম টি-শার্ট, কাস্টম হুডি বাংলাদেশ, ট্রাইনেক্স"
         jsonLd={[
           {
             "@context": "https://schema.org",
             "@type": "ClothingStore",
-            "name": settings.siteName || "TryNex Lifestyle",
-            "alternateName": "TryNex",
-            "url": "https://trynexshop.com",
-            "logo": "https://trynexshop.com/favicon.svg",
-            "image": "https://trynexshop.com/opengraph.jpg",
+            "name": settings.siteName || "Trynext Lifestyle",
+            "alternateName": "Trynext",
+            "url": "https://trynext.pages.dev",
+            "logo": "https://trynext.pages.dev/favicon.svg",
+            "image": "https://trynext.pages.dev/opengraph.jpg",
             "description": "Bangladesh's #1 premium custom apparel brand. Custom T-shirts, Hoodies, Mugs & Caps with fast nationwide delivery.",
-            "telephone": "+8801903426915",
-            "email": "support@trynexshop.com",
+            ...(settings.phone ? { "telephone": settings.phone } : {}),
+            ...(settings.email ? { "email": settings.email } : {}),
             "address": {
               "@type": "PostalAddress",
               "streetAddress": "Dhaka",
@@ -697,21 +695,23 @@ export default function Home() {
             },
             "areaServed": { "@type": "Country", "name": "Bangladesh" },
             "currenciesAccepted": "BDT",
-            "paymentAccepted": "Cash on Delivery, bKash, Nagad, Rocket",
+            "paymentAccepted": "bKash, Nagad, uPay (25% advance or full payment; balance on delivery)",
             "priceRange": "৳399 - ৳3,999",
             "openingHoursSpecification": [
               { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "09:00", "closes": "22:00" }
             ],
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "telephone": "+8801903426915",
-              "contactType": "customer service",
-              "areaServed": "BD",
-              "availableLanguage": ["English", "Bengali"]
-            },
+            ...(settings.phone ? {
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": settings.phone,
+                "contactType": "customer service",
+                "areaServed": "BD",
+                "availableLanguage": ["English", "Bengali"]
+              }
+            } : {}),
             "sameAs": [
-              "https://www.facebook.com/trynexlifestyle",
-              "https://www.instagram.com/trynexlifestyle"
+              "https://www.facebook.com/trynextlifestyle",
+              "https://www.instagram.com/trynextlifestyle"
             ],
             "hasOfferCatalog": {
               "@type": "OfferCatalog",
@@ -727,26 +727,26 @@ export default function Home() {
           {
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": settings.siteName || "TryNex Lifestyle",
-            "url": "https://trynexshop.com",
-            "logo": { "@type": "ImageObject", "url": "https://trynexshop.com/favicon.svg", "width": 512, "height": 512 },
-            "contactPoint": { "@type": "ContactPoint", "telephone": "+8801903426915", "contactType": "sales", "areaServed": "BD" },
+             "name": settings.siteName || "Trynext Lifestyle",
+            "url": "https://trynext.pages.dev",
+            "logo": { "@type": "ImageObject", "url": "https://trynext.pages.dev/favicon.svg", "width": 512, "height": 512 },
+             ...(settings.phone ? { "contactPoint": { "@type": "ContactPoint", "telephone": settings.phone, "contactType": "sales", "areaServed": "BD" } } : {}),
           },
           {
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": settings.siteName || "TryNex Lifestyle",
-            "url": "https://trynexshop.com",
+             "name": settings.siteName || "Trynext Lifestyle",
+            "url": "https://trynext.pages.dev",
             "potentialAction": {
               "@type": "SearchAction",
-              "target": { "@type": "EntryPoint", "urlTemplate": "https://trynexshop.com/products?search={search_term_string}" },
+              "target": { "@type": "EntryPoint", "urlTemplate": "https://trynext.pages.dev/products?search={search_term_string}" },
               "query-input": "required name=search_term_string",
             },
           },
         ]}
       />
       <Navbar />
-      <SpinWheel autoOpen />
+      <SpinWheel autoOpen forceOpen={spinWheelOpen} onClose={() => setSpinWheelOpen(false)} />
 
       <TypewriterHero />
 
@@ -774,7 +774,7 @@ export default function Home() {
            the Payment Trust Ribbon and Categories grid.)
       ═══════════════════════════════════════ */}
       {settings.sectionFeaturedEnabled !== false && <section className="py-20 px-4 bg-white" data-testid="section-special-offers">
-        <div className="max-w-7xl mx-auto">
+        <div className="container-wide mx-auto">
           {/* Promo banner */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -800,25 +800,52 @@ export default function Home() {
                   Hand-picked best sellers at exclusive prices. Free design preview &amp; fast nationwide delivery.
                 </p>
               </div>
-              <Link href="/products?tab=offers"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-white text-orange-600 hover:bg-orange-50 transition-colors shadow-lg shrink-0 group">
-                Shop All Offers
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <div className="flex flex-wrap items-center gap-3 shrink-0">
+                <Link href="/products?tab=offers"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm bg-white text-orange-600 hover:bg-orange-50 transition-colors shadow-lg group focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-700">
+                  Shop All Offers
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                {settings.spinWheelEnabled !== false && (
+                  <button
+                    type="button"
+                    onClick={() => setSpinWheelOpen(true)}
+                    data-testid="button-open-spin-wheel"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/50 bg-white/10 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-orange-700"
+                  >
+                    <Sparkles className="h-4 w-4" aria-hidden="true" />
+                    Spin &amp; Win
+                  </button>
+                )}
+              </div>
             </div>
           </motion.div>
 
           {isLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-5" aria-label="Loading products" aria-busy="true">
-              {Array.from({ length: 9 }).map((_, i) => (
+            <div className="product-grid-responsive" aria-label="Loading products" aria-busy="true">
+              {Array.from({ length: 20 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
             </div>
+          ) : isError ? (
+            <div className="rounded-3xl border border-dashed border-orange-200 bg-orange-50/60 px-6 py-12 text-center" role="alert">
+              <Package className="mx-auto mb-3 h-10 w-10 text-orange-400" aria-hidden="true" />
+              <h3 className="font-display text-xl font-black text-gray-900">Featured products are taking a moment</h3>
+              <p className="mx-auto mt-2 max-w-md text-sm text-gray-600">The catalogue could not load right now. Try again or browse the full shop.</p>
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <button type="button" onClick={() => void refetch()} className="min-h-11 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2" data-testid="button-retry-featured-products">
+                  Try again
+                </button>
+                <Link href="/products" className="inline-flex min-h-11 items-center rounded-xl border border-orange-200 bg-white px-5 py-2.5 text-sm font-bold text-orange-700 transition hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2">
+                  Browse the shop
+                </Link>
+              </div>
+            </div>
           ) : featuredProducts.length === 0 ? null : (
             <ErrorBoundary section="featured products">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-5">
-                {featuredProducts.slice(0, 9).map((product, i) => (
-                  <ProductCard key={product.id} product={product} index={i} />
+              <div className="product-grid-responsive">
+                {featuredProducts.map((product, i) => (
+                  <ProductCard key={product.id} product={product} index={i} eagerImage={false} />
                 ))}
               </div>
               <div className="flex justify-center mt-10">
@@ -890,7 +917,7 @@ export default function Home() {
           CATEGORIES GRID
       ═══════════════════════════════════════ */}
       {settings.sectionCategoriesEnabled !== false && <section className="py-20 px-4" style={{ background: '#FAFAFA' }}>
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
+        <div className="container-wide mx-auto px-4 md:px-8 lg:px-16">
           <div className="text-center mb-10 md:mb-16">
             <motion.span
               initial={{ opacity: 0, scale: 0.9 }}
@@ -914,7 +941,7 @@ export default function Home() {
             </motion.p>
           </div>
 
-          <div className="flex overflow-x-auto pb-8 md:pb-0 md:grid md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+          <div className="flex gap-4 md:gap-6 overflow-x-auto pb-8 md:pb-0 md:grid md:grid-cols-3 lg:grid-cols-6 snap-x snap-mandatory no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
             {CATEGORIES.filter(cat => {
               if (cat.icon === "tshirt"      && settings.categoryTshirtsEnabled   === false) return false;
               if (cat.icon === "hoodie"      && settings.categoryHoodiesEnabled   === false) return false;
@@ -923,14 +950,15 @@ export default function Home() {
               if (cat.icon === "custom"      && settings.categoryCustomEnabled    === false) return false;
               return true;
             }).map((cat, i) => {
-              /* Use the realistic HD mockup photos from the Design Studio for category cards */
+              /* Use crisp mockup photos for category cards — clean on any background */
               const imageMap: Record<string, string> = {
-                tshirt:      "/images/cat-tshirt.png",
-                hoodie:      "/images/cat-hoodie.png",
-                cap:         "/images/cat-cap.png",
-                mug:         "/images/cat-mug.png",
-                waterbottle: "/images/cat-mug.png",
-                custom:      "/images/cat-tshirt.png",
+                tshirt:      "/mockups/psd-master-v10/runtime-roles/tshirt/white/front-base.png",
+                longsleeve:  "/mockups/psd-master-v10/runtime-roles/longsleeve/white/front-base.png",
+                hoodie:      "/mockups/psd-master-v10/runtime-roles/hoodie/white/front-base.png",
+                cap:         "/mockups/psd-master-v10/runtime-roles/cap/white/front-base.png",
+                mug:         "/mockups/psd-master-v10/runtime-roles/mug/white/front-base.png",
+                waterbottle: "/mockups/psd-master-v10/runtime-roles/waterbottle/white/front-base.png",
+                watertumbler:"/mockups/psd-master-v10/runtime-roles/waterbottle/white/front-base.png",
               };
 
               return (
@@ -951,6 +979,8 @@ export default function Home() {
                           <img
                             src="/images/cat-tshirt.png"
                             alt="Design Studio"
+                            width={400}
+                            height={500}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-orange-500/15 to-transparent pointer-events-none" />
@@ -964,7 +994,9 @@ export default function Home() {
                         <img 
                           src={imageMap[cat.icon as string] || "/images/product-placeholder.svg"} 
                           alt={cat.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          width={400}
+                          height={500}
+                          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 p-4"
                         />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -1061,7 +1093,7 @@ export default function Home() {
           FEATURES / WHY CHOOSE US
       ═══════════════════════════════════════ */}
       <section className="py-20 px-4" style={{ background: 'linear-gradient(180deg, #FFF8F3 0%, #FFF4EC 100%)' }}>
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
+        <div className="container-wide mx-auto px-4 md:px-8 lg:px-16">
           <div className="text-center mb-16">
             <motion.span
               initial={{ opacity: 0, scale: 0.9 }}
@@ -1069,7 +1101,7 @@ export default function Home() {
               viewport={{ once: true }}
               className="section-eyebrow mb-4"
             >
-              <Award className="w-3 h-3" /> Why TryNex?
+              <Award className="w-3 h-3" /> Why Trynext?
             </motion.span>
             <h2 className="section-heading mt-4">
               <SplitTextReveal text="Built for Bangladesh" delay={0.04} />
@@ -1190,7 +1222,7 @@ export default function Home() {
       ═══════════════════════════════════════ */}
       <section className="py-14 px-4 overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #1C1917 0%, #2d2116 100%)' }}>
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(ellipse 60% 80% at 15% 50%, rgba(232,93,4,0.12) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 85% 50%, rgba(251,133,0,0.08) 0%, transparent 70%)' }} />
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 relative">
+        <div className="container-wide flex flex-col md:flex-row items-center gap-8 md:gap-12 relative">
           <div className="flex-1 text-center md:text-left">
             <motion.span
               initial={{ opacity: 0, y: 8 }}
@@ -1229,6 +1261,8 @@ export default function Home() {
             >
               <a
                 href="/design-studio"
+                onMouseEnter={prefetchDesignStudio}
+                onTouchStart={prefetchDesignStudio}
                 className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-black text-white text-sm"
                 style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary))', boxShadow: '0 8px 24px var(--color-primary-medium)' }}
               >
@@ -1273,30 +1307,103 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Bar */}
-      {settings.sectionStatsEnabled !== false && <section className="py-12 bg-gray-50/50">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            {STATS.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
+      {/* ═══════════════════════════════════════
+          KEYWORD LANDING PAGE CARDS
+          "Most Popular Custom Products"
+      ═══════════════════════════════════════ */}
+      <section className="py-14 bg-white">
+        <div className="container-wide mx-auto px-4 md:px-8 lg:px-16">
+          <div className="text-center mb-10">
+            <motion.span
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="section-eyebrow mb-4"
+            >
+              Custom Products
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="font-display font-black text-2xl md:text-3xl text-gray-900 mt-4"
+            >
+              Most Popular Custom Products in Bangladesh
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-gray-500 mt-3 text-sm"
+            >
+              Fast nationwide delivery · Premium quality · No minimum order
+            </motion.p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+            {([
+              { href: "/custom-tshirt-bangladesh",  emoji: "👕", title: "Custom T-Shirt",     desc: "From ৳399 · DTG & Screen Print",  color: "#E85D04" },
+              { href: "/custom-hoodie-bangladesh",   emoji: "🧥", title: "Custom Hoodie",      desc: "340GSM premium fleece",            color: "#7c3aed" },
+              { href: "/custom-mug-bangladesh",      emoji: "☕", title: "Custom Mug",         desc: "Photo & name print mugs",         color: "#2563eb" },
+              { href: "/corporate-gift-dhaka",       emoji: "🏢", title: "Corporate Gift",     desc: "Bulk orders with brand logo",     color: "#16a34a" },
+              { href: "/custom-gift-bangladesh",     emoji: "🎁", title: "Custom Gift",        desc: "Personalised gift hampers",       color: "#db2777" },
+              { href: "/birthday-gift-bangladesh",   emoji: "🎂", title: "Birthday Gift",      desc: "Same-day Dhaka delivery",        color: "#d97706" },
+            ] as Array<{ href: string; emoji: string; title: string; desc: string; color: string }>).map((item, i) => (
+              <motion.a
+                key={item.href}
+                href={item.href}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center"
+                transition={{ delay: i * 0.06 }}
+                whileHover={{ y: -3, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
+                className="flex items-center gap-4 p-4 md:p-5 rounded-2xl border border-gray-100 bg-white hover:border-orange-200 transition-all group cursor-pointer"
+                style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}
               >
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: `${stat.color}10`, color: stat.color }}>
-                  <stat.icon className="w-5 h-5" />
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-2xl"
+                  style={{ background: `${item.color}14` }}
+                >
+                  {item.emoji}
                 </div>
-                <div className="text-2xl font-black text-gray-900">
-                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                <div className="min-w-0">
+                  <div className="font-black text-gray-900 text-sm group-hover:text-orange-600 transition-colors truncate">{item.title}</div>
+                  <div className="text-xs text-gray-400 mt-0.5 truncate">{item.desc}</div>
                 </div>
-                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
-                  {stat.label}
-                </div>
-              </motion.div>
+              </motion.a>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Bar */}
+      {settings.sectionStatsEnabled !== false && <section className="py-12 bg-gray-50/50">
+        <div className="container-wide mx-auto px-4 md:px-8 lg:px-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            {BASE_STATS.map((stat, i) => {
+              const liveValue = stat.value;
+              return (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center"
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: `${stat.color}10`, color: stat.color }}>
+                    <stat.icon className="w-5 h-5" />
+                  </div>
+                  <div className="text-2xl font-black text-gray-900">
+                    <AnimatedCounter target={liveValue} suffix={stat.suffix} />
+                  </div>
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    {stat.label}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>}
@@ -1304,8 +1411,8 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           TESTIMONIALS
       ═══════════════════════════════════════ */}
-      {settings.sectionTestimonialsEnabled !== false && <section className="py-20 px-4" style={{ background: 'linear-gradient(180deg, #FAFAFA 0%, #FFF4EC 100%)' }}>
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
+      {settings.sectionTestimonialsEnabled !== false && testimonials.length > 0 && <section className="py-20 px-4" style={{ background: 'linear-gradient(180deg, #FAFAFA 0%, #FFF4EC 100%)' }}>
+        <div className="container-wide mx-auto px-4 md:px-8 lg:px-16">
           <div className="text-center mb-12">
             <motion.span
               initial={{ opacity: 0, scale: 0.9 }}
@@ -1313,10 +1420,10 @@ export default function Home() {
               viewport={{ once: true }}
               className="section-eyebrow mb-4"
             >
-              <Star className="w-3 h-3" /> Testimonials
+              <Star className="w-3 h-3" /> Customer Feedback
             </motion.span>
             <h2 className="section-heading mt-4">
-              <SplitTextReveal text="Loved Across Bangladesh" delay={0.025} />
+              <SplitTextReveal text="Feedback From Our Customers" delay={0.025} />
             </h2>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -1325,35 +1432,9 @@ export default function Home() {
               transition={{ delay: 0.2 }}
               className="text-gray-500 mt-4"
             >
-              Real reviews from real customers — from Dhaka to Chittagong.
+              Approved feedback shared by customers who have ordered with Trynext.
             </motion.p>
           </div>
-
-          {/* Summary row */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-wrap items-center justify-center gap-6 mb-10"
-          >
-            <div className="flex items-center gap-2">
-              {[1,2,3,4,5].map(s => <Star key={s} className="w-5 h-5 fill-amber-400 text-amber-400" />)}
-              <span className="font-black text-gray-900 ml-1">4.9</span>
-              <span className="text-gray-400 text-sm">/5</span>
-            </div>
-            <div className="w-px h-5 bg-gray-200" />
-            <span className="text-gray-500 text-sm font-semibold">Based on 5,000+ reviews</span>
-            <div className="w-px h-5 bg-gray-200" />
-            <div className="flex -space-x-2">
-              {['#E85D04','#2563eb','#16a34a','#9333ea'].map((c, i) => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-black"
-                  style={{ background: `linear-gradient(135deg, ${c}, ${c}dd)` }}>
-                  {['R','M','F','N'][i]}
-                </div>
-              ))}
-            </div>
-            <span className="text-xs text-gray-500 font-semibold">+5,000 happy customers</span>
-          </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {(() => {
@@ -1384,11 +1465,13 @@ export default function Home() {
                   {/* Quote mark */}
                   <div className="absolute top-4 right-5 text-5xl font-black text-gray-100 leading-none select-none" aria-hidden="true">"</div>
 
-                  <div className="flex mb-3">
-                    {Array.from({ length: t.stars }).map((_, j) => (
-                      <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
+                  {t.stars !== null && (
+                    <div className="flex mb-3" aria-label={`${t.stars} out of 5 stars`}>
+                      {Array.from({ length: t.stars }).map((_, j) => (
+                        <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      ))}
+                    </div>
+                  )}
                   <p className="text-sm text-gray-600 leading-relaxed mb-5 relative">"{t.text}"</p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center font-black text-white text-sm shrink-0"
@@ -1398,7 +1481,6 @@ export default function Home() {
                     <div>
                       <p className="font-bold text-sm text-gray-900 flex items-center gap-1.5">
                         {t.name}
-                        <BadgeCheck className="w-3.5 h-3.5 text-blue-500" />
                       </p>
                       <p className="text-xs text-gray-400">{t.role}{t.location ? ` · ${t.location}` : ''}</p>
                     </div>
@@ -1414,13 +1496,13 @@ export default function Home() {
           TRUST BADGES
       ═══════════════════════════════════════ */}
       <section className="py-12 px-4 bg-white border-y border-gray-100">
-        <div className="max-w-5xl mx-auto">
+        <div className="container-wide">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { iconKey: settings.trustBadge1Icon || "shield", title: settings.trustBadge1Title || "100% Secure Payments", desc: settings.trustBadge1Desc || "bKash, Nagad, Rocket & COD", color: "#16a34a", bg: "#f0fdf4" },
+              { iconKey: settings.trustBadge1Icon || "shield", title: settings.trustBadge1Title || "100% Secure Payments", desc: settings.trustBadge1Desc || "bKash, Nagad & uPay — 25% advance", color: "#16a34a", bg: "#f0fdf4" },
               { iconKey: settings.trustBadge2Icon || "truck", title: settings.trustBadge2Title || "Nationwide Delivery", desc: settings.trustBadge2Desc || "All 64 districts of Bangladesh", color: "#2563eb", bg: "#eff6ff" },
               { iconKey: settings.trustBadge3Icon || "award", title: settings.trustBadge3Title || "Quality Guarantee", desc: settings.trustBadge3Desc || "230-320GSM premium fabric", color: 'var(--color-primary)', bg: "#fff4ee" },
-              { iconKey: settings.trustBadge4Icon || "users", title: settings.trustBadge4Title || "5,000+ Happy Customers", desc: settings.trustBadge4Desc || "98% satisfaction rate", color: "#9333ea", bg: "#fdf4ff" },
+              { iconKey: settings.trustBadge4Icon || "layers", title: settings.trustBadge4Title || "Design Studio Ready", desc: settings.trustBadge4Desc || "Preview artwork before checkout", color: "#9333ea", bg: "#fdf4ff" },
             ].map(({ iconKey, title, desc, color, bg }, i) => {
               const iconMap: Record<string, React.ElementType> = {
                 shield: ShieldCheck, truck: Truck, award: Award,
@@ -1496,6 +1578,8 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <MagneticButton
               href="/design-studio"
+              onMouseEnter={prefetchDesignStudio}
+              onTouchStart={prefetchDesignStudio}
               className="inline-flex items-center justify-center gap-2.5 px-10 py-5 rounded-2xl font-bold text-white text-lg shimmer-btn"
               style={{
                 background: 'linear-gradient(135deg, var(--color-primary), #FB8500)',
@@ -1514,7 +1598,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-sm font-semibold text-gray-500">
-            {["Free shipping above ৳1,500", "24-hour production", "100% satisfaction guarantee"].map(t => (
+            {["Free shipping above ৳1,500", "Design support", "Artwork preview before checkout"].map(t => (
               <span key={t} className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-orange-500" /> {t}
               </span>

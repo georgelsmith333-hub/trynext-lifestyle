@@ -1,111 +1,140 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import {
   useListProducts, useCreateProduct, useDeleteProduct, useUpdateProduct, useListCategories,
-  getListProductsQueryKey,
-  type Category, type Product, type CreateProductRequest, type UpdateProductRequest
+  getListProductsQueryKey, type Category, type Product,
 } from "@workspace/api-client-react";
 import { Loader } from "@/components/ui/Loader";
 import { getAuthHeaders, formatPrice, getApiUrl } from "@/lib/utils";
-import { Plus, Trash2, X, Package, Edit3, AlertTriangle, Search, Star, Upload, FileText, CheckCircle, Zap, Wand2, Loader2, Link, ImageIcon, CloudUpload, Check, ToggleLeft, ToggleRight } from "lucide-react";
+import {
+  AlertTriangle, ArrowUpDown, Check, CheckCircle, CloudUpload,
+  Edit3, FileText, ImageIcon, Link as LinkIcon, Loader2, Package, Plus, Search, SlidersHorizontal,
+  Trash2, ToggleLeft, ToggleRight, Upload, Wand2, X, Zap,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useSearch } from "wouter";
 
 const productSchema = z.object({
-  name: z.string().min(2, "Name required"),
-  slug: z.string().min(2, "Slug required"),
+  name: z.string().min(2, "Name needs at least 2 characters"),
+  slug: z.string().min(2, "Slug is required").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and hyphens"),
   description: z.string().optional(),
-  price: z.coerce.number().min(1, "Price required"),
-  discountPrice: z.coerce.number().optional(),
-  stock: z.coerce.number().min(0),
+  price: z.coerce.number().min(0, "Price cannot be negative"),
+  discountPrice: z.preprocess((value) => value === "" ? undefined : value, z.coerce.number().optional()),
+  stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
   categoryId: z.coerce.number().optional(),
   imageUrl: z.string().optional(),
+  galleryUrls: z.string().optional(),
   sizes: z.string().optional(),
   colors: z.string().optional(),
   featured: z.boolean().optional(),
   customizable: z.boolean().optional(),
-}).refine(
-  (data) => !data.discountPrice || data.discountPrice < data.price,
-  { message: "Discount price must be less than the regular price", path: ["discountPrice"] }
-);
+}).refine((value) => !value.discountPrice || value.discountPrice <= value.price, {
+  message: "Discount price must not exceed the regular price",
+  path: ["discountPrice"],
+});
 
 type ProductForm = z.infer<typeof productSchema>;
+type Variant = {
+  id: string;
+  name: string;
+  price: number;
+  customizationFee?: number;
+  stock: number;
+  sizes?: string[];
+  colors?: string[];
+  inStockColors?: string[];
+  mockupKey?: string;
+  oneSize?: boolean;
+  active?: boolean;
+};
+type EditingProduct = { id: number } & ProductForm;
+type ColorVariant = { name: string; inStock: boolean };
 
-const inputClass = "w-full px-3.5 py-2.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all placeholder:text-gray-400 border border-gray-200 bg-white text-gray-900";
-const inputStyle = { background: 'white', border: '1px solid #e5e7eb', color: '#111827' };
+const inputClass = "w-full rounded-xl border border-[#dfe5dd] bg-white px-3.5 py-2.5 text-sm font-medium text-[#172019] placeholder:text-[#9aa39a] transition focus:border-[#e85d04] focus:outline-none focus:ring-4 focus:ring-[#e85d04]/10";
+const labelClass = "mb-1.5 block text-[10px] font-black uppercase tracking-[.13em] text-[#788277]";
 
-const Label = ({ children }: { children: React.ReactNode }) => (
-  <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-1.5">{children}</label>
-);
+function readError(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === "object" && error && "message" in error) return String((error as { message?: unknown }).message);
+  return fallback;
+}
 
-type EditingProduct = { id: number } & ProductForm & { rawSizes?: string[]; rawColors?: string[] };
+function parseList(value: string | undefined) {
+  return value?.split(",").map((entry) => entry.trim()).filter(Boolean) ?? [];
+}
 
 export default function AdminProducts() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const searchString = useSearch();
-  const urlParams = new URLSearchParams(searchString);
-  const filterLowStock = urlParams.get("filter") === "lowstock";
+  const filterLowStock = new URLSearchParams(searchString).get("filter") === "lowstock";
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [sortBy, setSortBy] = useState<"name" | "stock" | "price">("name");
+  const [sortAscending, setSortAscending] = useState(true);
+  const [showLowStock, setShowLowStock] = useState(filterLowStock);
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<EditingProduct | null>(null);
   const [isSpecialOffer, setIsSpecialOffer] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: number; name: string } | null>(null);
-  const [showLowStock, setShowLowStock] = useState(filterLowStock);
-  const [colorVariants, setColorVariants] = useState<Array<{ name: string; inStock: boolean }>>([]);
-
-  /* ── Product image upload state ─────────────────── */
+  const [colorVariants, setColorVariants] = useState<ColorVariant[]>([]);
+  const [variants, setVariants] = useState<Variant[]>([]);
+  const [duplicateSlug, setDuplicateSlug] = useState(false);
   const [imgPickerMode, setImgPickerMode] = useState<"url" | "upload">("url");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [bulkText, setBulkText] = useState("");
+  const [bulkUploading, setBulkUploading] = useState(false);
+  const [bulkResult, setBulkResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
 
-  const { data, isLoading } = useListProducts({ limit: 200 }, { query: { queryKey: ["/api/products", { limit: 200 }], staleTime: 0, refetchOnMount: "always" } });
+  const { data, isLoading, isError, refetch } = useListProducts(
+    { limit: 200 },
+    { query: { queryKey: ["/api/products", { limit: 200 }], staleTime: 0, refetchOnMount: "always" } }
+  );
   const { data: categoriesData } = useListCategories({ query: { queryKey: ["/api/categories"], staleTime: 0, refetchOnMount: "always" } });
-  // The API endpoint for categories is /api/categories. useListCategories from @workspace/api-client-react
-  // uses the correct endpoint but we need to ensure the data is populated for the dropdown.
-  // Checking if there are any other category related calls.
-
   const reqOpts = { request: { headers: getAuthHeaders() } };
   const { mutateAsync: createProduct, isPending: isCreating } = useCreateProduct(reqOpts);
   const { mutateAsync: updateProduct, isPending: isUpdating } = useUpdateProduct(reqOpts);
   const { mutateAsync: deleteProduct } = useDeleteProduct(reqOpts);
-
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<ProductForm>({
     resolver: zodResolver(productSchema),
-    defaultValues: { featured: false, customizable: true, stock: 0 }
+    defaultValues: { featured: false, customizable: true, stock: 0 },
   });
 
+  const products = data?.products ?? [];
   const categories: Category[] = categoriesData?.categories ?? [];
-
-  const watchedColors = watch("colors") ?? "";
   const watchedName = watch("name") ?? "";
+  const watchedSlug = watch("slug") ?? "";
+  const watchedColors = watch("colors") ?? "";
+  const watchedImage = watch("imageUrl") ?? "";
+  const isSaving = isCreating || isUpdating;
 
-  // Auto-generate slug from product name when creating a new product
   useEffect(() => {
-    if (editingProduct) return; // don't override slug when editing
-    const slug = watchedName
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/[\s_]+/g, "-")
-      .replace(/^-+|-+$/g, "");
+    if (editingProduct) return;
+    const slug = watchedName.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_]+/g, "-").replace(/^-+|-+$/g, "");
     if (slug) setValue("slug", slug, { shouldValidate: false });
   }, [watchedName, editingProduct, setValue]);
 
   useEffect(() => {
-    const parsed = watchedColors.split(',').map(s => s.trim()).filter(Boolean);
-    setColorVariants(prev => {
-      const prevMap = new Map(prev.map(v => [v.name, v.inStock]));
-      return parsed.map(name => ({ name, inStock: prevMap.has(name) ? prevMap.get(name)! : true }));
+    const names = parseList(watchedColors);
+    setColorVariants((previous) => {
+      const previousMap = new Map(previous.map((variant) => [variant.name, variant.inStock]));
+      return names.map((name) => ({ name, inStock: previousMap.get(name) ?? true }));
     });
   }, [watchedColors]);
+
+  useEffect(() => {
+    setDuplicateSlug(Boolean(watchedSlug && products.some((product) => product.slug === watchedSlug && product.id !== editingProduct?.id)));
+  }, [watchedSlug, products, editingProduct]);
 
   const openAddModal = () => {
     setEditingProduct(null);
@@ -113,825 +142,307 @@ export default function AdminProducts() {
     setImagePreviewUrl(null);
     setImgPickerMode("url");
     setColorVariants([]);
-    reset({ featured: false, customizable: true, stock: 0, categoryId: categories[0]?.id });
+    setVariants([]);
+    setDuplicateSlug(false);
+    reset({ featured: false, customizable: true, stock: 0, categoryId: categories[0]?.id, name: "", slug: "", description: "", price: 0, discountPrice: undefined, imageUrl: "", galleryUrls: "", sizes: "", colors: "" });
     setModalOpen(true);
   };
 
   const openEditModal = (product: Product) => {
-    setEditingProduct({ id: product.id, slug: product.slug } as EditingProduct);
-    const tags: string[] = Array.isArray(product.tags) ? (product.tags as string[]) : [];
+    const record = product as Product & { colorVariants?: ColorVariant[]; variants?: Variant[]; images?: string[] };
+    setEditingProduct({ id: product.id } as EditingProduct);
+    const tags = Array.isArray(product.tags) ? product.tags as string[] : [];
     setIsSpecialOffer(tags.includes("special-offer"));
     setImagePreviewUrl(product.imageUrl || null);
     setImgPickerMode("url");
-    const existingVariants = Array.isArray((product as any).colorVariants)
-      ? (product as any).colorVariants
-      : (product.colors || []).map((c: string) => ({ name: c, inStock: true }));
-    setColorVariants(existingVariants);
+    setColorVariants(record.colorVariants?.length ? record.colorVariants : (product.colors ?? []).map((name) => ({ name, inStock: true })));
+    setVariants(Array.isArray(record.variants) ? record.variants : []);
     reset({
-      name: product.name,
-      slug: product.slug,
-      description: product.description || '',
-      price: product.price as any,
-      discountPrice: product.discountPrice ? product.discountPrice as any : undefined,
-      stock: product.stock,
-      categoryId: product.categoryId || undefined,
-      imageUrl: product.imageUrl || '',
-      sizes: (product.sizes || []).join(', '),
-      colors: (product.colors || []).join(', '),
-      featured: product.featured ?? false,
-      customizable: product.customizable ?? true,
+      name: product.name, slug: product.slug, description: product.description || "",
+      price: Number(product.price), discountPrice: product.discountPrice ? Number(product.discountPrice) : undefined,
+      stock: product.stock, categoryId: product.categoryId || undefined, imageUrl: product.imageUrl || "",
+      galleryUrls: (record.images ?? []).join("\n"), sizes: (product.sizes || []).join(", "), colors: (product.colors || []).join(", "),
+      featured: product.featured ?? false, customizable: product.customizable ?? true,
     });
     setModalOpen(true);
   };
 
+  const closeModal = () => { setModalOpen(false); setEditingProduct(null); };
+
   const handleImageFileUpload = async (file: File) => {
     if (!file.type.startsWith("image/")) {
-      toast({ title: "Invalid file", description: "Please choose a JPG, PNG, WebP or GIF image.", variant: "destructive" });
+      toast({ title: "Invalid image", description: "Choose a JPG, PNG, WebP or GIF file.", variant: "destructive" });
       return;
     }
     if (file.size > 20 * 1024 * 1024) {
-      toast({ title: "File too large", description: "Maximum 20 MB. Please compress or resize the image first.", variant: "destructive" });
+      toast({ title: "Image is too large", description: "Maximum file size is 20 MB.", variant: "destructive" });
       return;
     }
     setIsUploadingImage(true);
     try {
-      const reqRes = await fetch(getApiUrl("/api/storage/uploads/request-url"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+      const request = await fetch(getApiUrl("/api/storage/uploads/request-url"), {
+        method: "POST", headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
       });
-      if (!reqRes.ok) {
-        const errData = await reqRes.json().catch(() => ({})) as { message?: string };
-        throw new Error(errData.message ?? "Failed to get upload URL");
-      }
-      const { uploadURL, objectPath } = await reqRes.json() as { uploadURL: string; objectPath: string };
-      const putRes = await fetch(uploadURL, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-      if (!putRes.ok) throw new Error("Upload to storage failed");
+      if (!request.ok) throw new Error((await request.json().catch(() => ({})) as { message?: string }).message || "Could not prepare upload");
+      const { uploadURL, objectPath } = await request.json() as { uploadURL: string; objectPath: string };
+      const upload = await fetch(uploadURL, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+      if (!upload.ok) throw new Error("Storage upload failed");
       const url = getApiUrl(`/api/storage/public-objects${objectPath}`);
-      setValue("imageUrl", url);
+      setValue("imageUrl", url, { shouldDirty: true });
       setImagePreviewUrl(url);
-      setImgPickerMode("upload");
-      toast({ title: "Image uploaded!", description: "Your product image is ready." });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Upload failed";
-      toast({ title: "Upload failed", description: msg, variant: "destructive" });
+      toast({ title: "Image uploaded", description: "The product image is ready to save." });
+    } catch (error) {
+      toast({ title: "Upload failed", description: readError(error, "Please try again."), variant: "destructive" });
     } finally {
       setIsUploadingImage(false);
     }
   };
 
+  const handleFileDrop = (event: DragEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files?.[0];
+    if (file) void handleImageFileUpload(file);
+  };
+
   const onSubmit = async (formData: ProductForm) => {
+    if (duplicateSlug) {
+      toast({ title: "Slug already in use", description: "Choose a unique URL slug before saving.", variant: "destructive" });
+      return;
+    }
+    let gallery: string[] = [];
+    if (formData.galleryUrls?.trim()) {
+      gallery = formData.galleryUrls.split(/\n|,/).map((url) => url.trim()).filter(Boolean);
+    }
+    const currentProduct = editingProduct ? products.find((product) => product.id === editingProduct.id) : undefined;
+    const currentTags = currentProduct && Array.isArray(currentProduct.tags) ? currentProduct.tags as string[] : [];
+    const tags = isSpecialOffer ? [...currentTags.filter((tag) => tag !== "special-offer"), "special-offer"] : currentTags.filter((tag) => tag !== "special-offer");
+    const payload = {
+      name: formData.name, slug: formData.slug, description: formData.description || undefined,
+       price: Number(formData.price), discountPrice: formData.discountPrice === undefined ? (editingProduct ? null : undefined) : Number(formData.discountPrice),
+      stock: Number(formData.stock), categoryId: formData.categoryId || undefined, imageUrl: formData.imageUrl || undefined,
+      images: gallery, sizes: parseList(formData.sizes), colors: parseList(formData.colors), colorVariants, variants,
+      featured: formData.featured ?? false, customizable: formData.customizable ?? true, tags,
+    };
     try {
-      const sizes = formData.sizes ? formData.sizes.split(',').map(s => s.trim()).filter(Boolean) : [];
-      const colors = formData.colors ? formData.colors.split(',').map(s => s.trim()).filter(Boolean) : [];
-
-      // Compute tags: preserve existing non-special-offer tags, toggle "special-offer"
-      const currentProduct = editingProduct ? data?.products?.find(p => p.id === editingProduct.id) : null;
-      const existingTags: string[] = currentProduct && Array.isArray(currentProduct.tags)
-        ? (currentProduct.tags as string[]).filter(t => t !== "special-offer")
-        : [];
-      const computedTags = isSpecialOffer ? [...existingTags, "special-offer"] : existingTags;
-
-      const payload = {
-        ...formData,
-        sizes,
-        colors,
-        tags: computedTags,
-        discountPrice: formData.discountPrice || undefined,
-        customizable: formData.customizable ?? true,
-        featured: formData.featured ?? false,
-        categoryId: formData.categoryId || undefined,
-        description: formData.description || undefined,
-        imageUrl: formData.imageUrl || undefined,
-      };
-
-      if (editingProduct) {
-        const updatePayload = {
-          name: payload.name,
-          slug: payload.slug,
-          description: payload.description,
-          price: Number(payload.price),
-          discountPrice: payload.discountPrice ? Number(payload.discountPrice) : undefined,
-          stock: Number(payload.stock),
-          categoryId: payload.categoryId,
-          imageUrl: payload.imageUrl,
-          sizes: payload.sizes,
-          colors: payload.colors,
-          colorVariants,
-          featured: payload.featured,
-          customizable: payload.customizable,
-          tags: payload.tags,
-        } as any;
-        await updateProduct({ id: editingProduct.id, data: updatePayload });
-        toast({ title: "✓ Product updated successfully!" });
-      } else {
-        const createPayload = {
-          name: payload.name,
-          slug: payload.slug,
-          description: payload.description,
-          price: Number(payload.price),
-          discountPrice: payload.discountPrice ? Number(payload.discountPrice) : undefined,
-          stock: Number(payload.stock),
-          categoryId: payload.categoryId,
-          imageUrl: payload.imageUrl,
-          sizes: payload.sizes,
-          colors: payload.colors,
-          colorVariants,
-          featured: payload.featured,
-          customizable: payload.customizable,
-          tags: payload.tags,
-        } as any;
-        await createProduct({ data: createPayload });
-        toast({ title: "✓ Product added successfully!" });
-      }
-      queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
-      setModalOpen(false);
-      setEditingProduct(null);
+      if (editingProduct) await updateProduct({ id: editingProduct.id, data: payload as never });
+      else await createProduct({ data: payload as never });
+      await queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
+      toast({ title: editingProduct ? "Product updated" : "Product added", description: `${formData.name} is now in the catalogue.` });
+      closeModal();
       reset();
-    } catch {
-      toast({ title: `Failed to ${editingProduct ? 'update' : 'add'} product`, variant: "destructive" });
+    } catch (error) {
+      toast({ title: `Could not ${editingProduct ? "update" : "add"} product`, description: readError(error, "Check the fields and try again. Your changes are still here."), variant: "destructive" });
     }
   };
 
   const handleDelete = async (id: number) => {
     try {
       await deleteProduct({ id });
-      queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
+      await queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
       toast({ title: "Product deleted" });
-    } catch {
-      toast({ title: "Failed to delete product", variant: "destructive" });
+    } catch (error) {
+      toast({ title: "Delete failed", description: readError(error, "The product was not removed."), variant: "destructive" });
     }
   };
 
-  const filteredProducts = (data?.products ?? []).filter(p => {
-    if (showLowStock && p.stock > 5) return false;
-    if (!search) return true;
-    return p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.slug.toLowerCase().includes(search.toLowerCase());
-  });
-
-  const lowStockCount = (data?.products ?? []).filter(p => p.stock <= 5).length;
-  const isSaving = isCreating || isUpdating;
-
-  const [bulkModalOpen, setBulkModalOpen] = useState(false);
-  const [bulkText, setBulkText] = useState("");
-  const [bulkUploading, setBulkUploading] = useState(false);
-  const [bulkResult, setBulkResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const lowStockCount = products.filter((product) => product.stock <= 5).length;
+  const inventoryValue = products.reduce((total, product) => total + Number(product.price) * product.stock, 0);
+  const filteredProducts = useMemo(() => products
+    .filter((product) => !showLowStock || product.stock <= 5)
+    .filter((product) => categoryFilter === "all" || String(product.categoryId) === categoryFilter)
+    .filter((product) => !search || `${product.name} ${product.slug}`.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      const first = sortBy === "name" ? a.name.localeCompare(b.name) : sortBy === "stock" ? a.stock - b.stock : Number(a.price) - Number(b.price);
+      return sortAscending ? first : -first;
+    }), [products, showLowStock, categoryFilter, search, sortBy, sortAscending]);
 
   const handleAiDescription = async () => {
-    const name = watchedName.trim();
-    if (!name) {
+    if (!watchedName.trim()) {
       toast({ title: "Enter a product name first", variant: "destructive" });
       return;
     }
     setIsAiGenerating(true);
     try {
-      const prompt = `Write a concise, compelling 2-3 sentence product description for a Bangladesh e-commerce store called TryNex Lifestyle. Product: "${name}". Write in English, highlight quality and customizability. Be enthusiastic but professional. Output ONLY the description text, no labels.`;
-      const res = await fetch(getApiUrl("/api/ai/chat"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch(getApiUrl("/api/ai/chat"), {
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "openai-large",
-          messages: [{ role: "user", content: prompt }],
-          system: "You write product descriptions. Output ONLY the description text, no labels, no markdown, no quotes.",
+          messages: [{ role: "user", content: `Write a concise 2-3 sentence product description for Bangladesh store Trynext Lifestyle. Product: "${watchedName}". English only. Output only the description.` }],
+          system: "You write product descriptions. Output only text, no labels or markdown.",
         }),
       });
-      if (!res.ok) throw new Error("AI service unavailable");
-      const json = await res.json() as { content?: string; error?: string };
-      if (json.error) throw new Error(json.error);
-      const text = (json.content ?? "").trim().replace(/^["']|["']$/g, "");
-      if (text && text.length > 10) {
-        setValue("description", text, { shouldValidate: false, shouldDirty: true });
-        toast({ title: "✨ Description generated!" });
-      } else {
-        throw new Error("Empty response");
-      }
-    } catch {
-      toast({ title: "AI generation failed", description: "Please write the description manually.", variant: "destructive" });
+      if (!response.ok) throw new Error("AI service unavailable");
+      const result = await response.json() as { content?: string; error?: string };
+      if (result.error || !result.content?.trim()) throw new Error(result.error || "Empty response");
+      setValue("description", result.content.trim().replace(/^["']|["']$/g, ""), { shouldDirty: true });
+      toast({ title: "Description drafted" });
+    } catch (error) {
+      toast({ title: "AI draft failed", description: readError(error, "Write the description manually."), variant: "destructive" });
     } finally {
       setIsAiGenerating(false);
     }
   };
 
   const parseCsvRows = (text: string): string[][] => {
-    const rows: string[][] = [];
-    let current = '';
-    let inQuotes = false;
-    const fields: string[] = [];
-    const raw = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-    for (let i = 0; i < raw.length; i++) {
-      const ch = raw[i];
+    const rows: string[][] = []; let current = ""; let inQuotes = false; let fields: string[] = [];
+    const raw = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    for (let i = 0; i < raw.length; i += 1) {
+      const char = raw[i];
       if (inQuotes) {
-        if (ch === '"') {
-          if (i + 1 < raw.length && raw[i + 1] === '"') {
-            current += '"';
-            i++;
-          } else {
-            inQuotes = false;
-          }
-        } else {
-          current += ch;
-        }
-      } else {
-        if (ch === '"') {
-          inQuotes = true;
-        } else if (ch === ',') {
-          fields.push(current.trim());
-          current = '';
-        } else if (ch === '\n') {
-          fields.push(current.trim());
-          current = '';
-          if (fields.some(f => f.length > 0)) rows.push([...fields]);
-          fields.length = 0;
-        } else {
-          current += ch;
-        }
-      }
+        if (char === '"' && raw[i + 1] === '"') { current += '"'; i += 1; }
+        else if (char === '"') inQuotes = false;
+        else current += char;
+      } else if (char === '"') inQuotes = true;
+      else if (char === ",") { fields.push(current.trim()); current = ""; }
+      else if (char === "\n") { fields.push(current.trim()); if (fields.some(Boolean)) rows.push(fields); fields = []; current = ""; }
+      else current += char;
     }
-    fields.push(current.trim());
-    if (fields.some(f => f.length > 0)) rows.push([...fields]);
+    fields.push(current.trim()); if (fields.some(Boolean)) rows.push(fields);
     return rows;
   };
 
   const parseCsvToBulk = (text: string) => {
-    const rows = parseCsvRows(text);
-    if (rows.length < 2) return [];
-    const headers = rows[0].map(h => h.toLowerCase());
-    return rows.slice(1).map(row => {
-      const values = row;
-      const obj: any = {};
-      headers.forEach((h, i) => {
-        const val = values[i] || '';
-        if (h === 'name') obj.name = val;
-        else if (h === 'slug') obj.slug = val || val.toLowerCase().replace(/\s+/g, '-');
-        else if (h === 'price') obj.price = parseFloat(val) || 0;
-        else if (h === 'discountprice' || h === 'discount_price') obj.discountPrice = parseFloat(val) || undefined;
-        else if (h === 'stock') obj.stock = parseInt(val) || 0;
-        else if (h === 'description') obj.description = val;
-        else if (h === 'imageurl' || h === 'image_url' || h === 'image') obj.imageUrl = val;
-        else if (h === 'sizes') obj.sizes = val.split(/[;|]/).map((s: string) => s.trim()).filter(Boolean).join(',');
-        else if (h === 'colors') obj.colors = val.split(/[;|]/).map((s: string) => s.trim()).filter(Boolean).join(',');
-        else if (h === 'featured') obj.featured = val === 'true' || val === '1';
-        else if (h === 'customizable') obj.customizable = val === 'true' || val === '1';
-        else if (h === 'categoryid' || h === 'category_id') obj.categoryId = parseInt(val) || undefined;
+    const rows = parseCsvRows(text); if (rows.length < 2) return [];
+    const headers = rows[0].map((header) => header.toLowerCase());
+    return rows.slice(1).map((row) => {
+      const item: Record<string, unknown> = {};
+      headers.forEach((header, index) => {
+        const value = row[index] || "";
+        if (header === "name") item.name = value;
+        else if (header === "slug") item.slug = value || String(item.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        else if (header === "price") item.price = parseFloat(value) || 0;
+        else if (header === "discountprice" || header === "discount_price") item.discountPrice = parseFloat(value) || undefined;
+        else if (header === "stock") item.stock = parseInt(value, 10) || 0;
+        else if (header === "description") item.description = value;
+        else if (header === "imageurl" || header === "image_url" || header === "image") item.imageUrl = value;
+        else if (header === "sizes" || header === "colors") item[header] = value.split(/[;|]/).map((entry) => entry.trim()).filter(Boolean);
+        else if (header === "featured" || header === "customizable") item[header] = value === "true" || value === "1";
+        else if (header === "categoryid" || header === "category_id") item.categoryId = parseInt(value, 10) || undefined;
       });
-      if (!obj.slug && obj.name) obj.slug = obj.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      return obj;
-    }).filter(p => p.name && p.price);
+      return item;
+    }).filter((item) => item.name && item.price);
   };
 
-  const handleBulkFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleBulkFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      setBulkText(ev.target?.result as string || "");
-      setBulkResult(null);
-    };
-    reader.readAsText(file);
-    e.target.value = '';
+    reader.onload = (loadEvent) => { setBulkText(String(loadEvent.target?.result || "")); setBulkResult(null); };
+    reader.readAsText(file); event.target.value = "";
   };
 
   const handleBulkUpload = async () => {
-    const products = parseCsvToBulk(bulkText);
-    if (products.length === 0) {
-      toast({ title: "No valid products found", description: "Ensure CSV has headers: name,slug,price,stock", variant: "destructive" });
+    const bulkProducts = parseCsvToBulk(bulkText);
+    if (!bulkProducts.length) {
+      toast({ title: "No valid products found", description: "Use the required CSV headers shown below.", variant: "destructive" });
       return;
     }
-    setBulkUploading(true);
-    setBulkResult(null);
+    setBulkUploading(true); setBulkResult(null);
     try {
-      const resp = await fetch(getApiUrl('/api/products/bulk'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-        body: JSON.stringify({ products }),
+      const response = await fetch(getApiUrl("/api/products/bulk"), {
+        method: "POST", headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify({ products: bulkProducts }),
       });
-      const result = await resp.json();
+      const result = await response.json() as { success: number; failed: number; errors: string[] };
+      if (!response.ok) throw new Error((result as unknown as { message?: string }).message || "Bulk upload failed");
       setBulkResult(result);
       if (result.success > 0) {
-        queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
-        toast({ title: `${result.success} products added!`, description: result.failed > 0 ? `${result.failed} failed` : undefined });
+        await queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
+        toast({ title: `${result.success} products added`, description: result.failed ? `${result.failed} rows need attention.` : "Catalogue refreshed." });
       }
-    } catch {
-      toast({ title: "Bulk upload failed", variant: "destructive" });
-    } finally {
-      setBulkUploading(false);
-    }
+    } catch (error) {
+      toast({ title: "Bulk upload failed", description: readError(error, "Check the file and try again."), variant: "destructive" });
+    } finally { setBulkUploading(false); }
   };
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isModalOpen) {
-        setModalOpen(false);
-        setEditingProduct(null);
-      }
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape" && isModalOpen) closeModal(); };
+    document.addEventListener("keydown", onKeyDown); return () => document.removeEventListener("keydown", onKeyDown);
   }, [isModalOpen]);
 
   return (
     <AdminLayout>
-      {/* Header */}
-      <div className="flex items-start justify-between mb-8 gap-4 flex-wrap">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-orange-500 mb-2">Inventory</p>
-          <h1 className="text-4xl font-black font-display tracking-tighter text-gray-900">Products</h1>
-          <div className="flex items-center gap-3 mt-2">
-            <span className="text-xs text-gray-500 font-medium">{data?.total ?? 0} total products</span>
-            {lowStockCount > 0 && (
-              <span className="flex items-center gap-1 text-xs font-bold text-amber-500">
-                <AlertTriangle className="w-3 h-3" /> {lowStockCount} low stock
-              </span>
-            )}
+      <div className="animate-page-enter space-y-6">
+        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+          <div>
+            <p className="admin-kicker">Catalogue control</p>
+            <h1 className="mt-1 font-display text-4xl font-black tracking-[-.055em] text-[#172019] sm:text-5xl">Products</h1>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[#6f7d70]">Manage what is sellable, what is running low, and what gets made to order.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" data-testid="button-open-bulk-upload" onClick={() => { setBulkModalOpen(true); setBulkText(""); setBulkResult(null); }} className="flex items-center gap-2 rounded-xl border border-[#e85d04]/25 bg-[#fff7f0] px-4 py-2.5 text-sm font-bold text-[#c94e00] hover:bg-[#ffede0]">
+              <Upload className="h-4 w-4" /> Bulk CSV
+            </button>
+            <button type="button" data-testid="button-add-product" onClick={openAddModal} className="flex items-center gap-2 rounded-xl bg-[#e85d04] px-4 py-2.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(232,93,4,.2)] hover:bg-[#d95300]">
+              <Plus className="h-4 w-4" /> Add product
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() => { setBulkModalOpen(true); setBulkText(""); setBulkResult(null); }}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105 border border-orange-200 text-orange-600 bg-orange-50 hover:bg-orange-100"
-          >
-            <Upload className="w-4 h-4" /> Bulk Upload
-          </button>
-          <button
-            type="button"
-            onClick={openAddModal}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-white text-sm transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #E85D04, #FB8500)', boxShadow: '0 6px 24px rgba(232,93,4,0.3)' }}
-          >
-            <Plus className="w-4 h-4" /> Add Product
-          </button>
-        </div>
-      </div>
 
-      {/* Search + Filters */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search products..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-400 transition-all border border-gray-200 bg-white text-gray-900"
-          />
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="admin-panel p-4" data-testid="card-inventory-total"><div className="flex items-center justify-between"><span className="text-xs font-bold text-[#788277]">Catalogue</span><Package className="h-4 w-4 text-[#e85d04]" /></div><p className="mt-3 font-display text-3xl font-black">{products.length}</p><p className="mt-1 text-xs text-[#8b948a]">active products loaded</p></div>
+          <div className="admin-panel p-4" data-testid="card-inventory-stock"><div className="flex items-center justify-between"><span className="text-xs font-bold text-[#788277]">Units on hand</span><SlidersHorizontal className="h-4 w-4 text-[#3d8c65]" /></div><p className="mt-3 font-display text-3xl font-black">{products.reduce((sum, product) => sum + product.stock, 0).toLocaleString()}</p><p className="mt-1 text-xs text-[#8b948a]">across every listing</p></div>
+          <div className="admin-panel border-[#f2c98d] bg-[#fffaf0] p-4" data-testid="card-inventory-low-stock"><div className="flex items-center justify-between"><span className="text-xs font-bold text-[#9a6815]">Needs attention</span><AlertTriangle className="h-4 w-4 text-[#d89017]" /></div><p className="mt-3 font-display text-3xl font-black text-[#9a6815]">{lowStockCount}</p><p className="mt-1 text-xs text-[#aa7d35]">at or below 5 units</p></div>
+          <div className="admin-panel p-4" data-testid="card-inventory-value"><div className="flex items-center justify-between"><span className="text-xs font-bold text-[#788277]">Stock value</span><CheckCircle className="h-4 w-4 text-[#3d8c65]" /></div><p className="mt-3 font-display text-2xl font-black">{formatPrice(inventoryValue)}</p><p className="mt-1 text-xs text-[#8b948a]">retail value at current price</p></div>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowLowStock(!showLowStock)}
-          className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-            showLowStock
-              ? "text-white shadow-md"
-              : "text-gray-500 bg-gray-100 hover:bg-gray-200 border border-gray-200"
-          }`}
-          style={showLowStock ? { background: "linear-gradient(135deg, #d97706, #b45309)" } : {}}
-        >
-          <AlertTriangle className="w-3.5 h-3.5" />
-          Low Stock ({lowStockCount})
-        </button>
-      </div>
 
-      {isLoading ? <Loader /> : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[640px]">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="px-5 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Product</th>
-                <th className="px-5 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Category</th>
-                <th className="px-5 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Price</th>
-                <th className="px-5 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Stock</th>
-                <th className="px-5 py-4 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {filteredProducts.map((product, i) => (
-                <motion.tr
-                  key={product.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.02 }}
-                  className="hover:bg-gray-50/50 transition-colors group"
-                >
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
-                        <img src={product.imageUrl || "/images/product-placeholder.svg"} alt={product.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-gray-900 truncate max-w-[200px]">{product.name}</p>
-                        <p className="text-[10px] font-mono text-gray-400 truncate">{product.slug}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2 py-1 rounded-lg">
-                      {categories.find(c => c.id === product.categoryId)?.name || "Uncategorized"}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <p className="font-bold text-orange-600">{formatPrice(parseFloat(String(product.price)))}</p>
-                    {product.discountPrice && (
-                      <p className="text-[10px] text-gray-400 line-through">{formatPrice(parseFloat(String(product.discountPrice)))}</p>
-                    )}
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-bold ${product.stock <= 5 ? "text-red-500" : "text-gray-900"}`}>{product.stock}</span>
-                      {product.stock <= 5 && <AlertTriangle className="w-3.5 h-3.5 text-red-500" />}
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openEditModal(product)}
-                        className="p-2 rounded-lg text-gray-400 hover:text-orange-600 hover:bg-orange-50 transition-all"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm({ id: product.id, name: product.name })}
-                        className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-          {filteredProducts.length === 0 && (
-            <div className="py-20 text-center">
-              <Package className="w-14 h-14 mx-auto mb-4 text-gray-300" />
-              <p className="text-gray-400 font-medium text-lg">
-                {search ? `No products matching "${search}"` : 'No products yet. Add your first product!'}
-              </p>
+        <section className="admin-panel overflow-hidden" aria-label="Product inventory">
+          <div className="flex flex-col gap-3 border-b border-[#e8ede6] p-4 lg:flex-row lg:items-center">
+            <div className="relative min-w-0 flex-1">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8b948a]" aria-hidden="true" />
+              <input value={search} onChange={(event) => setSearch(event.target.value)} data-testid="input-product-search" aria-label="Search products" placeholder="Search name or slug…" className={`${inputClass} pl-10`} />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} data-testid="select-product-category" aria-label="Filter by category" className={`${inputClass} w-auto min-w-[145px] py-2.5`}>
+                <option value="all">All categories</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+              </select>
+              <button type="button" data-testid="button-filter-low-stock" aria-pressed={showLowStock} onClick={() => setShowLowStock((value) => !value)} className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-bold ${showLowStock ? "border-[#d89017] bg-[#fff4d7] text-[#9a6815]" : "border-[#dfe5dd] bg-white text-[#687468] hover:border-[#d89017]"}`}><AlertTriangle className="h-3.5 w-3.5" /> Low stock {lowStockCount}</button>
+              <button type="button" data-testid="button-sort-products" aria-label={`Sort by ${sortBy}`} onClick={() => setSortAscending((value) => !value)} className="flex items-center gap-2 rounded-xl border border-[#dfe5dd] bg-white px-3.5 py-2.5 text-xs font-bold text-[#687468] hover:border-[#e85d04]"><ArrowUpDown className="h-3.5 w-3.5" /> Sort</button>
+              <select value={sortBy} onChange={(event) => setSortBy(event.target.value as "name" | "stock" | "price")} data-testid="select-product-sort" aria-label="Sort products by" className={`${inputClass} w-auto py-2.5`}><option value="name">Name</option><option value="stock">Stock</option><option value="price">Price</option></select>
+            </div>
+          </div>
+          <div className="flex items-center justify-between bg-[#fafcf9] px-4 py-3 text-xs text-[#788277]"><span><strong className="text-[#172019]">{filteredProducts.length}</strong> visible products</span><button type="button" data-testid="button-refresh-products" onClick={() => void refetch()} className="font-bold text-[#c94e00] hover:underline">Refresh list</button></div>
+          {isLoading ? <div className="space-y-3 p-5"><div className="skeleton h-14 w-full" /><div className="skeleton h-14 w-full" /><div className="skeleton h-14 w-full" /></div> : isError ? <div className="p-12 text-center"><AlertTriangle className="mx-auto h-10 w-10 text-[#d89017]" /><h2 className="mt-3 font-display text-xl font-black">Catalogue unavailable</h2><p className="mt-1 text-sm text-[#788277]">The list could not be loaded. Your saved products are safe.</p><button type="button" data-testid="button-retry-products" onClick={() => void refetch()} className="mt-5 rounded-xl bg-[#172019] px-4 py-2.5 text-sm font-bold text-white">Try again</button></div> : filteredProducts.length === 0 ? <div className="p-14 text-center"><Package className="mx-auto h-10 w-10 text-[#b3bdb2]" /><h2 className="mt-3 font-display text-xl font-black">{search || showLowStock || categoryFilter !== "all" ? "No products match these filters" : "Your catalogue is empty"}</h2><p className="mt-1 text-sm text-[#788277]">{search || showLowStock || categoryFilter !== "all" ? "Adjust the filters to see more listings." : "Add a product or import your catalogue to get started."}</p>{!search && !showLowStock && categoryFilter === "all" && <button type="button" data-testid="button-empty-add-product" onClick={openAddModal} className="mt-5 rounded-xl bg-[#e85d04] px-4 py-2.5 text-sm font-bold text-white">Add first product</button>}</div> : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[720px] text-sm"><thead><tr className="border-b border-[#e8ede6] text-left"><th className="px-5 py-3 text-[10px] font-black uppercase tracking-[.13em] text-[#8b948a]">Product</th><th className="px-5 py-3 text-[10px] font-black uppercase tracking-[.13em] text-[#8b948a]">Category</th><th className="px-5 py-3 text-[10px] font-black uppercase tracking-[.13em] text-[#8b948a]">Price</th><th className="px-5 py-3 text-[10px] font-black uppercase tracking-[.13em] text-[#8b948a]">Stock</th><th className="px-5 py-3 text-right text-[10px] font-black uppercase tracking-[.13em] text-[#8b948a]">Actions</th></tr></thead>
+                <tbody className="divide-y divide-[#edf1eb]">{filteredProducts.map((product) => {
+                  const low = product.stock <= 5;
+                  return <tr key={product.id} data-testid={`row-product-${product.id}`} className="group hover:bg-[#fafcf9]">
+                    <td className="px-5 py-3.5"><div className="flex items-center gap-3"><div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#e4eae2] bg-[#f4f7f2]">{product.imageUrl ? <img src={product.imageUrl} alt="" className="h-full w-full object-cover" /> : <ImageIcon className="h-4 w-4 text-[#a9b4a8]" />}</div><div className="min-w-0"><p className="max-w-[250px] truncate font-bold text-[#172019]" data-testid={`text-product-name-${product.id}`}>{product.name}</p><p className="truncate font-mono text-[10px] text-[#8b948a]">{product.slug}</p></div></div></td>
+                    <td className="px-5 py-3.5"><span className="rounded-lg bg-[#f0f4ee] px-2 py-1 text-xs font-bold text-[#617061]">{categories.find((category) => category.id === product.categoryId)?.name || "Uncategorized"}</span></td>
+                     <td className="px-5 py-3.5">{product.discountPrice ? <><p className="font-bold text-[#c94e00]">{formatPrice(Number(product.discountPrice))}</p><p className="text-[10px] text-[#98a198] line-through">{formatPrice(Number(product.price))}</p></> : <p className="font-bold text-[#c94e00]">{formatPrice(Number(product.price))}</p>}</td>
+                    <td className="px-5 py-3.5"><span className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-bold ${low ? "bg-[#fff1e1] text-[#bb5c09]" : "bg-[#edf8f0] text-[#278052]"}`}>{low && <AlertTriangle className="h-3 w-3" />}{product.stock} units</span></td>
+                    <td className="px-5 py-3.5"><div className="flex justify-end gap-1"><button type="button" data-testid={`button-edit-product-${product.id}`} aria-label={`Edit ${product.name}`} onClick={() => openEditModal(product)} className="rounded-lg p-2 text-[#859085] hover:bg-[#fff0e5] hover:text-[#c94e00]"><Edit3 className="h-4 w-4" /></button><button type="button" data-testid={`button-delete-product-${product.id}`} aria-label={`Delete ${product.name}`} onClick={() => setDeleteConfirm({ id: product.id, name: product.name })} className="rounded-lg p-2 text-[#859085] hover:bg-[#fff0f0] hover:text-[#c43b3b]"><Trash2 className="h-4 w-4" /></button></div></td>
+                  </tr>;
+                })}</tbody>
+              </table>
             </div>
           )}
+        </section>
+      </div>
+
+      {isModalOpen && <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#111811]/65 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={(event) => { if (event.target === event.currentTarget) closeModal(); }}>
+        <div className="flex max-h-[96dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-3xl bg-[#f9fbf8] shadow-2xl sm:max-h-[92dvh] sm:rounded-3xl" role="dialog" aria-modal="true" aria-labelledby="product-editor-title">
+          <div className="flex items-start justify-between border-b border-[#e1e8df] bg-white px-5 py-4 sm:px-7"><div><p className="admin-kicker">{editingProduct ? "Edit listing" : "New listing"}</p><h2 id="product-editor-title" className="mt-1 font-display text-2xl font-black tracking-[-.04em]">{editingProduct ? "Update product" : "Add product"}</h2><p className="mt-1 text-xs text-[#788277]">{editingProduct ? `Product ID #${editingProduct.id}` : "Fill in the sellable details for your catalogue."}</p></div><button type="button" data-testid="button-close-product-editor" aria-label="Close product editor" onClick={closeModal} className="rounded-xl p-2 text-[#788277] hover:bg-[#f0f4ee]"><X className="h-5 w-5" /></button></div>
+          <form onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto p-5 sm:p-7">
+            <div className="grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
+              <div className="space-y-5">
+                <div className="rounded-2xl border border-[#e1e8df] bg-white p-4 sm:p-5"><div className="mb-4 flex items-center gap-2"><span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#fff0e5] text-[#e85d04]"><Package className="h-4 w-4" /></span><div><h3 className="text-sm font-black">Core listing</h3><p className="text-[11px] text-[#8b948a]">The details customers see first.</p></div></div><div className="grid gap-4 sm:grid-cols-2"><div className="sm:col-span-2"><label className={labelClass}>Product name *</label><input {...register("name")} data-testid="input-product-name" className={inputClass} placeholder="Premium oversized hoodie" />{errors.name && <p className="mt-1 text-xs font-bold text-red-500">{errors.name.message}</p>}</div><div><label className={labelClass}>URL slug *</label><input {...register("slug")} data-testid="input-product-slug" className={`${inputClass} ${duplicateSlug ? "border-red-400" : ""}`} placeholder="premium-hoodie" />{duplicateSlug && <p className="mt-1 text-xs font-bold text-red-500">This slug is already used.</p>}{errors.slug && <p className="mt-1 text-xs font-bold text-red-500">{errors.slug.message}</p>}</div><div><label className={labelClass}>Category</label><select {...register("categoryId")} data-testid="select-product-editor-category" className={inputClass}><option value="">Uncategorized</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></div><div><label className={labelClass}>Price (৳) *</label><input type="number" min="0" {...register("price")} data-testid="input-product-price" className={inputClass} placeholder="1200" />{errors.price && <p className="mt-1 text-xs font-bold text-red-500">{errors.price.message}</p>}</div><div><label className={labelClass}>Sale price (৳)</label><input type="number" min="0" {...register("discountPrice")} data-testid="input-product-discount-price" className={inputClass} placeholder="Optional" />{errors.discountPrice && <p className="mt-1 text-xs font-bold text-red-500">{errors.discountPrice.message}</p>}</div><div><label className={labelClass}>Stock quantity *</label><input type="number" min="0" {...register("stock")} data-testid="input-product-stock" className={inputClass} placeholder="50" /></div><div><label className={labelClass}>Sizes</label><input {...register("sizes")} data-testid="input-product-sizes" className={inputClass} placeholder="S, M, L, XL" /></div><div className="sm:col-span-2"><label className={labelClass}>Description</label><div className="relative"><textarea {...register("description")} data-testid="input-product-description" rows={5} className={`${inputClass} resize-y`} placeholder="Describe the material, fit and why it belongs in a customer’s cart." /><button type="button" data-testid="button-ai-product-description" onClick={() => void handleAiDescription()} disabled={isAiGenerating} className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg border border-[#f2c6a5] bg-[#fff7f0] px-2.5 py-1.5 text-[11px] font-bold text-[#c94e00] disabled:opacity-50">{isAiGenerating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Wand2 className="h-3 w-3" />}{isAiGenerating ? "Writing…" : "AI draft"}</button></div></div></div></div>
+                <div className="rounded-2xl border border-[#e1e8df] bg-white p-4 sm:p-5"><div className="mb-4 flex items-center gap-2"><span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#edf5ff] text-[#3972a8]"><ImageIcon className="h-4 w-4" /></span><div><h3 className="text-sm font-black">Product media</h3><p className="text-[11px] text-[#8b948a]">One primary image plus optional gallery URLs.</p></div></div><div className="mb-2 flex w-fit gap-1 rounded-lg bg-[#f0f4ee] p-1"><button type="button" data-testid="button-image-url-mode" onClick={() => setImgPickerMode("url")} className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold ${imgPickerMode === "url" ? "bg-white text-[#c94e00] shadow-sm" : "text-[#788277]"}`}><LinkIcon className="h-3 w-3" /> URL</button><button type="button" data-testid="button-image-upload-mode" onClick={() => setImgPickerMode("upload")} className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold ${imgPickerMode === "upload" ? "bg-white text-[#c94e00] shadow-sm" : "text-[#788277]"}`}><CloudUpload className="h-3 w-3" /> Upload</button></div>{imgPickerMode === "url" ? <input {...register("imageUrl")} data-testid="input-product-image-url" className={inputClass} placeholder="https://…" onChange={(event) => { setValue("imageUrl", event.target.value, { shouldDirty: true }); setImagePreviewUrl(event.target.value || null); }} /> : <><input ref={imageFileInputRef} type="file" accept="image/*" className="hidden" data-testid="input-product-image-file" onChange={(event) => { const file = event.target.files?.[0]; if (file) void handleImageFileUpload(file); }} /><button type="button" data-testid="button-upload-product-image" onClick={() => imageFileInputRef.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop} disabled={isUploadingImage} className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#f2c6a5] bg-[#fff9f4] py-7 text-[#c94e00] disabled:opacity-50">{isUploadingImage ? <Loader2 className="h-6 w-6 animate-spin" /> : <CloudUpload className="h-6 w-6" />}<span className="text-xs font-bold">{isUploadingImage ? "Uploading to storage…" : "Choose or drop primary image"}</span><span className="text-[10px] text-[#c98b68]">JPG, PNG, WebP or GIF · max 20 MB</span></button></>}{(imagePreviewUrl || watchedImage) && <div className="mt-3 flex items-center gap-3 rounded-xl border border-[#e8ede6] bg-[#fafcf9] p-2"><img src={imagePreviewUrl || watchedImage} alt="Product preview" className="h-14 w-14 rounded-lg object-cover" /><p className="min-w-0 flex-1 truncate text-[10px] text-[#788277]">{imagePreviewUrl || watchedImage}</p><button type="button" data-testid="button-remove-product-image" aria-label="Remove product image" onClick={() => { setValue("imageUrl", "", { shouldDirty: true }); setImagePreviewUrl(null); }} className="rounded-lg p-1 text-[#8b948a] hover:text-red-500"><X className="h-4 w-4" /></button></div>}<label className={`${labelClass} mt-4`}>Gallery image URLs</label><textarea {...register("galleryUrls")} data-testid="input-product-gallery-urls" rows={3} className={`${inputClass} resize-y`} placeholder={"One URL per line\nhttps://…"} /><p className="mt-1 text-[11px] text-[#8b948a]">The first image remains the primary thumbnail.</p></div>
+              </div>
+              <div className="space-y-5">
+                <div className="rounded-2xl border border-[#e1e8df] bg-white p-4 sm:p-5"><div className="mb-4 flex items-center gap-2"><span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#eef8f1] text-[#3d8c65]"><SlidersHorizontal className="h-4 w-4" /></span><div><h3 className="text-sm font-black">Options & availability</h3><p className="text-[11px] text-[#8b948a]">Fine-tune how this listing is sold.</p></div></div><label className={labelClass}>Colors</label><input {...register("colors")} data-testid="input-product-colors" className={inputClass} placeholder="Black, White, Grey" />{colorVariants.length > 0 && <div className="mt-3 space-y-1.5 rounded-xl bg-[#fafcf9] p-3"><p className="mb-2 text-[10px] font-black uppercase tracking-[.13em] text-[#8b948a]">Color availability</p>{colorVariants.map((variant) => <div key={variant.name} className="flex items-center justify-between gap-2"><span className="text-xs font-bold text-[#536153]">{variant.name}</span><button type="button" data-testid={`button-toggle-color-${variant.name.toLowerCase().replace(/\s+/g, "-")}`} onClick={() => setColorVariants((current) => current.map((item) => item.name === variant.name ? { ...item, inStock: !item.inStock } : item))} className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-bold ${variant.inStock ? "bg-[#e8f7ed] text-[#278052]" : "bg-[#fff0f0] text-[#c43b3b]"}`}>{variant.inStock ? <ToggleRight className="h-3.5 w-3.5" /> : <ToggleLeft className="h-3.5 w-3.5" />}{variant.inStock ? "In stock" : "Out of stock"}</button></div>)}</div>}<div className="mt-5 space-y-3 border-t border-[#edf1eb] pt-4"><label className="flex items-center gap-3 text-sm font-bold text-[#536153]"><input type="checkbox" {...register("featured")} data-testid="checkbox-product-featured" className="h-4 w-4 accent-[#e85d04]" /> Featured product</label><label className="flex items-center gap-3 text-sm font-bold text-[#536153]"><input type="checkbox" checked={isSpecialOffer} onChange={(event) => setIsSpecialOffer(event.target.checked)} data-testid="checkbox-product-special-offer" className="h-4 w-4 accent-[#e85d04]" /><Zap className="h-3.5 w-3.5 text-[#e85d04]" /> Special offer</label><label className="flex items-center gap-3 text-sm font-bold text-[#536153]"><input type="checkbox" {...register("customizable")} data-testid="checkbox-product-customizable" className="h-4 w-4 accent-[#e85d04]" /> Allow customization</label></div></div>
+                <div className="rounded-2xl border border-[#e1e8df] bg-white p-4 sm:p-5"><div className="mb-4 flex items-center justify-between"><div><h3 className="text-sm font-black">Structured variants</h3><p className="mt-1 text-[11px] text-[#8b948a]">Optional variant-level price and stock.</p></div><button type="button" data-testid="button-add-product-variant" onClick={() => setVariants((current) => [...current, { id: `variant-${Date.now()}`, name: "", price: Number(watch("price") || 0), stock: 0, active: true }])} className="flex items-center gap-1 rounded-lg bg-[#172019] px-2.5 py-1.5 text-[10px] font-bold text-white"><Plus className="h-3 w-3" /> Add</button></div>{variants.length === 0 ? <p className="rounded-xl border border-dashed border-[#dfe5dd] p-4 text-center text-xs text-[#8b948a]">No variants. The base product options will be used.</p> : <div className="space-y-3">{variants.map((variant, index) => <div key={variant.id} className="rounded-xl border border-[#e8ede6] bg-[#fafcf9] p-3"><div className="mb-2 flex items-center justify-between"><span className="text-[10px] font-black uppercase tracking-[.13em] text-[#8b948a]">Variant {index + 1}</span><button type="button" data-testid={`button-remove-product-variant-${index}`} aria-label={`Remove variant ${index + 1}`} onClick={() => setVariants((current) => current.filter((item) => item.id !== variant.id))} className="text-[#9aa39a] hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button></div><div className="grid grid-cols-2 gap-2"><input value={variant.name} onChange={(event) => setVariants((current) => current.map((item) => item.id === variant.id ? { ...item, name: event.target.value } : item))} data-testid={`input-product-variant-name-${index}`} className={inputClass} placeholder="Name" /><input type="number" min="0" value={variant.price} onChange={(event) => setVariants((current) => current.map((item) => item.id === variant.id ? { ...item, price: Number(event.target.value) } : item))} data-testid={`input-product-variant-price-${index}`} className={inputClass} placeholder="Price" /><input type="number" min="0" value={variant.stock} onChange={(event) => setVariants((current) => current.map((item) => item.id === variant.id ? { ...item, stock: Number(event.target.value) } : item))} data-testid={`input-product-variant-stock-${index}`} className={`${inputClass} col-span-2`} placeholder="Stock" /></div></div>)}</div>}</div>
+              </div>
+            </div>
+            <div className="mt-5 flex flex-col-reverse gap-2 border-t border-[#e1e8df] pt-4 sm:flex-row sm:justify-end"><button type="button" data-testid="button-cancel-product-editor" onClick={closeModal} className="rounded-xl border border-[#dfe5dd] bg-white px-5 py-3 text-sm font-bold text-[#687468]">Cancel</button><button type="submit" data-testid="button-save-product" disabled={isSaving || duplicateSlug} className="flex items-center justify-center gap-2 rounded-xl bg-[#e85d04] px-6 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(232,93,4,.2)] disabled:opacity-50">{isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : editingProduct ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}{isSaving ? "Saving…" : editingProduct ? "Save changes" : "Add product"}</button></div>
+          </form>
         </div>
-      )}
+      </div>}
 
-      {/* Add / Edit Product Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
-            onClick={(e) => e.target === e.currentTarget && setModalOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="w-full max-w-lg rounded-3xl overflow-hidden max-h-[90vh] overflow-y-auto bg-white"
-              style={{ border: '1px solid #e5e7eb', boxShadow: '0 25px 60px rgba(0,0,0,0.15)' }}
-            >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                <div>
-                  <h2 className="text-xl font-black font-display text-gray-900">
-                    {editingProduct ? 'Edit Product' : 'Add New Product'}
-                  </h2>
-                  {editingProduct && (
-                    <p className="text-xs text-gray-400 mt-0.5">ID #{editingProduct.id} · {editingProduct.slug}</p>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => { setModalOpen(false); setEditingProduct(null); }}
-                  aria-label="Close modal"
-                  className="p-2 text-gray-400 hover:text-gray-700 rounded-xl transition-colors hover:bg-gray-100"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+      {bulkModalOpen && <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#111811]/65 p-0 backdrop-blur-sm sm:items-center sm:p-5"><div className="w-full max-w-2xl rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl"><div className="flex items-start justify-between border-b border-[#e8ede6] px-5 py-4 sm:px-7"><div><p className="admin-kicker">Import catalogue</p><h2 className="mt-1 font-display text-2xl font-black">Bulk CSV upload</h2></div><button type="button" data-testid="button-close-bulk-upload" aria-label="Close bulk upload" onClick={() => setBulkModalOpen(false)} className="rounded-xl p-2 text-[#788277] hover:bg-[#f0f4ee]"><X className="h-5 w-5" /></button></div><div className="space-y-4 p-5 sm:p-7"><div className="rounded-xl border border-[#f2d2b8] bg-[#fff8f2] p-3"><p className="text-xs font-bold text-[#a94c0a]">Required columns</p><code className="mt-1 block overflow-x-auto text-[10px] text-[#c16b32]">name,slug,price,stock,description,sizes,colors,imageUrl,featured,customizable</code><p className="mt-1 text-[10px] text-[#b27a55]">Separate sizes and colors with semicolons.</p></div><input ref={fileInputRef} type="file" accept=".csv,.txt" onChange={handleBulkFileSelect} className="hidden" data-testid="input-bulk-csv-file" /><button type="button" data-testid="button-choose-bulk-csv" onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 rounded-xl border border-[#dfe5dd] px-4 py-2.5 text-sm font-bold text-[#536153] hover:bg-[#fafcf9]"><FileText className="h-4 w-4" /> Choose CSV file</button><textarea value={bulkText} onChange={(event) => { setBulkText(event.target.value); setBulkResult(null); }} data-testid="input-bulk-csv-text" rows={8} className={`${inputClass} font-mono text-xs`} placeholder={"name,slug,price,stock,sizes,colors\nPremium Hoodie,premium-hoodie,1500,50,S;M;L,Black;White"} />{bulkText && <p className="text-xs text-[#687468]"><strong>{parseCsvToBulk(bulkText).length}</strong> valid rows detected</p>}{bulkResult && <div className={`rounded-xl border p-3 ${bulkResult.failed ? "border-[#f2d69b] bg-[#fff9eb]" : "border-[#b9e3c7] bg-[#f0fbf3]"}`}><p className="text-sm font-bold">{bulkResult.success} added, {bulkResult.failed} failed</p>{bulkResult.errors?.slice(0, 8).map((error, index) => <p key={index} className="mt-1 text-xs text-red-500">{error}</p>)}</div>}<button type="button" data-testid="button-submit-bulk-upload" onClick={() => void handleBulkUpload()} disabled={bulkUploading || !bulkText.trim()} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#e85d04] py-3.5 text-sm font-bold text-white disabled:opacity-50">{bulkUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}{bulkUploading ? "Importing…" : "Import products"}</button></div></div></div>}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="p-7 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2">
-                    <Label>Product Name *</Label>
-                    <input {...register("name")} className={inputClass} style={inputStyle} placeholder="e.g. Premium Oversized Hoodie" />
-                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-                  </div>
-                  <div>
-                    <Label>URL Slug *</Label>
-                    <input {...register("slug")} className={inputClass} style={inputStyle} placeholder="premium-hoodie" />
-                    {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>}
-                  </div>
-                  <div>
-                    <Label>Category</Label>
-                    <select {...register("categoryId")} className={inputClass} style={inputStyle}>
-                      <option value="">Select category...</option>
-                      {categories.map((cat: Category) => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <Label>Price (৳) *</Label>
-                    <input type="number" {...register("price")} className={inputClass} style={inputStyle} placeholder="1200" />
-                    {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
-                  </div>
-                  <div>
-                    <Label>Discount Price (৳)</Label>
-                    <input type="number" {...register("discountPrice")} className={inputClass} style={inputStyle} placeholder="950 (optional)" />
-                    {errors.discountPrice && <p className="text-red-500 text-xs mt-1">{errors.discountPrice.message}</p>}
-                  </div>
-                  <div>
-                    <Label>Stock Quantity *</Label>
-                    <input type="number" {...register("stock")} className={inputClass} style={inputStyle} placeholder="50" />
-                  </div>
-                  <div className="col-span-2">
-                    <Label>Product Image</Label>
-                    {/* Tab toggle */}
-                    <div className="flex items-center gap-1 p-0.5 rounded-xl mb-2 w-fit" style={{ background: "#f3f4f6" }}>
-                      <button type="button" onClick={() => setImgPickerMode("url")}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all"
-                        style={{ background: imgPickerMode === "url" ? "white" : "transparent", color: imgPickerMode === "url" ? "#E85D04" : "#6b7280", boxShadow: imgPickerMode === "url" ? "0 1px 4px rgba(0,0,0,0.1)" : "none" }}>
-                        <Link className="w-3 h-3" /> URL
-                      </button>
-                      <button type="button" onClick={() => setImgPickerMode("upload")}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all"
-                        style={{ background: imgPickerMode === "upload" ? "white" : "transparent", color: imgPickerMode === "upload" ? "#E85D04" : "#6b7280", boxShadow: imgPickerMode === "upload" ? "0 1px 4px rgba(0,0,0,0.1)" : "none" }}>
-                        <CloudUpload className="w-3 h-3" /> Upload
-                      </button>
-                    </div>
-
-                    {imgPickerMode === "url" ? (
-                      <input
-                        {...register("imageUrl")}
-                        className={inputClass}
-                        style={inputStyle}
-                        placeholder="https://..."
-                        onChange={e => {
-                          register("imageUrl").onChange(e);
-                          setImagePreviewUrl(e.target.value || null);
-                        }}
-                      />
-                    ) : (
-                      <div>
-                        <input
-                          ref={imageFileInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={e => { const f = e.target.files?.[0]; if (f) handleImageFileUpload(f); }}
-                        />
-                        <button type="button"
-                          onClick={() => imageFileInputRef.current?.click()}
-                          disabled={isUploadingImage}
-                          onDragOver={e => { e.preventDefault(); }}
-                          onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleImageFileUpload(f); }}
-                          className="w-full flex flex-col items-center justify-center gap-2 py-5 rounded-xl border-2 border-dashed transition-all disabled:opacity-60"
-                          style={{ borderColor: "#fdd5b4", background: "#fff7ed", color: "#E85D04" }}>
-                          {isUploadingImage
-                            ? <><Loader2 className="w-6 h-6 animate-spin" /><span className="text-xs font-bold">Uploading to cloud…</span></>
-                            : <><CloudUpload className="w-6 h-6" /><span className="text-xs font-bold">Click or drag & drop image</span><span className="text-[10px] text-orange-400">JPG, PNG, WebP, GIF · max 20 MB</span></>}
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Image preview */}
-                    {(imagePreviewUrl || watch("imageUrl")) && (
-                      <div className="mt-2 flex items-center gap-3 p-2 rounded-xl" style={{ background: "#f9fafb", border: "1px solid #f3f4f6" }}>
-                        <img
-                          src={imagePreviewUrl || watch("imageUrl") || ""}
-                          alt="Preview"
-                          className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
-                          style={{ border: "1px solid #e5e7eb" }}
-                          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[11px] font-bold text-gray-500 mb-0.5">Preview</p>
-                          <p className="text-[10px] text-gray-400 truncate">{imagePreviewUrl || watch("imageUrl")}</p>
-                        </div>
-                        <button type="button" onClick={() => { setValue("imageUrl", ""); setImagePreviewUrl(null); }}
-                          className="p-1 rounded-lg text-gray-400 hover:text-red-500 transition-colors">
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="col-span-2">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <Label>Description</Label>
-                      <button
-                        type="button"
-                        onClick={handleAiDescription}
-                        disabled={isAiGenerating}
-                        className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-bold transition-all"
-                        style={{ background: isAiGenerating ? '#f3f4f6' : 'linear-gradient(135deg,#fff4ee,#fde8d8)', border: '1px solid #fdd5b4', color: isAiGenerating ? '#9ca3af' : '#E85D04' }}
-                      >
-                        {isAiGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                        {isAiGenerating ? "Writing..." : "AI Write"}
-                      </button>
-                    </div>
-                    <textarea {...register("description")} rows={3} className={`${inputClass} resize-none`} style={inputStyle} placeholder="Product description... or click AI Write above." />
-                  </div>
-                  <div>
-                    <Label>Sizes (comma separated)</Label>
-                    <input {...register("sizes")} className={inputClass} style={inputStyle} placeholder="S, M, L, XL, XXL" />
-                  </div>
-                  <div>
-                    <Label>Colors (comma separated)</Label>
-                    <input {...register("colors")} className={inputClass} style={inputStyle} placeholder="Black, White, Grey" />
-                    {colorVariants.length > 0 && (
-                      <div className="mt-2 p-3 rounded-xl space-y-1.5" style={{ background: '#f9fafb', border: '1px solid #e5e7eb' }}>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Per-Color Stock Availability</p>
-                        {colorVariants.map(v => (
-                          <div key={v.name} className="flex items-center justify-between gap-2">
-                            <span className="text-sm font-semibold text-gray-700">{v.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => setColorVariants(prev =>
-                                prev.map(x => x.name === v.name ? { ...x, inStock: !x.inStock } : x)
-                              )}
-                              className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg transition-all"
-                              style={{
-                                background: v.inStock ? '#dcfce7' : '#fee2e2',
-                                color: v.inStock ? '#16a34a' : '#dc2626',
-                                border: `1px solid ${v.inStock ? '#86efac' : '#fca5a5'}`,
-                              }}
-                            >
-                              {v.inStock
-                                ? <><ToggleRight className="w-3.5 h-3.5" /> In Stock</>
-                                : <><ToggleLeft className="w-3.5 h-3.5" /> Out of Stock</>
-                              }
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" {...register("featured")} id="featured" className="w-4 h-4 rounded accent-orange-500" />
-                    <label htmlFor="featured" className="text-sm font-semibold text-gray-600 cursor-pointer">Mark as Featured</label>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      id="isSpecialOffer"
-                      checked={isSpecialOffer}
-                      onChange={e => setIsSpecialOffer(e.target.checked)}
-                      className="w-4 h-4 rounded accent-orange-500"
-                    />
-                    <label htmlFor="isSpecialOffer" className="flex items-center gap-1.5 text-sm font-semibold cursor-pointer">
-                      <Zap className="w-3.5 h-3.5 text-orange-500" />
-                      <span className="text-gray-800">Show in Special Offers & Deals tab</span>
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" {...register("customizable")} id="customizable" className="w-4 h-4 rounded accent-orange-500" />
-                    <label htmlFor="customizable" className="text-sm font-semibold text-gray-600 cursor-pointer">Allow Customization</label>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="w-full py-4 mt-2 rounded-xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:scale-[1.02]"
-                  style={{ background: 'linear-gradient(135deg, #E85D04, #FB8500)', boxShadow: '0 6px 24px rgba(232,93,4,0.3)' }}
-                >
-                  {editingProduct ? <Edit3 className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                  {isSaving ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
-                </button>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {/* Bulk Upload Modal */}
-      <AnimatePresence>
-        {bulkModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
-            onClick={(e) => e.target === e.currentTarget && setBulkModalOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="w-full max-w-2xl rounded-3xl overflow-hidden max-h-[90vh] overflow-y-auto bg-white"
-              style={{ border: '1px solid #e5e7eb', boxShadow: '0 25px 60px rgba(0,0,0,0.15)' }}
-            >
-              <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                <div>
-                  <h2 className="text-xl font-black font-display text-gray-900">Bulk Product Upload</h2>
-                  <p className="text-xs text-gray-400 mt-0.5">Upload CSV file or paste data</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setBulkModalOpen(false)}
-                  className="p-2 text-gray-400 hover:text-gray-700 rounded-xl transition-colors hover:bg-gray-100"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="p-7 space-y-5">
-                <div className="p-4 rounded-2xl bg-orange-50 border border-orange-100">
-                  <p className="text-xs font-bold text-orange-700 mb-2">CSV Format (required headers):</p>
-                  <code className="text-[11px] text-orange-600 block font-mono">
-                    name,slug,price,stock,description,sizes,colors,imageUrl,featured,customizable
-                  </code>
-                  <p className="text-[11px] text-orange-500 mt-2">Sizes & colors: use semicolons to separate (e.g. "S;M;L;XL")</p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".csv,.txt"
-                    onChange={handleBulkFileSelect}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-all"
-                  >
-                    <FileText className="w-4 h-4" /> Choose CSV File
-                  </button>
-                  <span className="text-xs text-gray-400">or paste below</span>
-                </div>
-
-                <textarea
-                  value={bulkText}
-                  onChange={(e) => { setBulkText(e.target.value); setBulkResult(null); }}
-                  placeholder={`name,slug,price,stock,sizes,colors\nPremium Hoodie,premium-hoodie,1500,50,S;M;L;XL,Black;White\nCustom Mug,custom-mug,450,100,,`}
-                  rows={8}
-                  className="w-full px-4 py-3 rounded-2xl text-xs font-mono focus:outline-none bg-white border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all resize-none text-gray-800 placeholder-gray-400"
-                />
-
-                {bulkText && (
-                  <p className="text-xs text-gray-500">
-                    {parseCsvToBulk(bulkText).length} valid products detected
-                  </p>
-                )}
-
-                {bulkResult && (
-                  <div className={`p-4 rounded-2xl border ${bulkResult.failed > 0 ? 'bg-amber-50 border-amber-200' : 'bg-green-50 border-green-200'}`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle className={`w-4 h-4 ${bulkResult.failed > 0 ? 'text-amber-600' : 'text-green-600'}`} />
-                      <p className={`text-sm font-bold ${bulkResult.failed > 0 ? 'text-amber-700' : 'text-green-700'}`}>
-                        {bulkResult.success} added, {bulkResult.failed} failed
-                      </p>
-                    </div>
-                    {bulkResult.errors.length > 0 && (
-                      <div className="space-y-1 mt-2">
-                        {bulkResult.errors.slice(0, 10).map((err, i) => (
-                          <p key={i} className="text-xs text-red-500">{err}</p>
-                        ))}
-                        {bulkResult.errors.length > 10 && (
-                          <p className="text-xs text-gray-400">...and {bulkResult.errors.length - 10} more</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleBulkUpload}
-                  disabled={bulkUploading || !bulkText.trim()}
-                  className="w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-50 transition-all hover:scale-[1.02]"
-                  style={{ background: 'linear-gradient(135deg, #E85D04, #FB8500)', boxShadow: '0 6px 24px rgba(232,93,4,0.3)' }}
-                >
-                  <Upload className="w-4 h-4" />
-                  {bulkUploading ? "Uploading..." : "Upload Products"}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <ConfirmDialog
-        open={deleteConfirm !== null}
-        title={`Delete "${deleteConfirm?.name}"?`}
-        description="This action cannot be undone. The product will be permanently removed."
-        confirmText="Delete Product"
-        onConfirm={() => {
-          if (deleteConfirm) {
-            handleDelete(deleteConfirm.id);
-            setDeleteConfirm(null);
-          }
-        }}
-        onCancel={() => setDeleteConfirm(null)}
-      />
+      <ConfirmDialog open={deleteConfirm !== null} title={`Delete "${deleteConfirm?.name}"?`} description="This action cannot be undone. The product will be permanently removed." confirmText="Delete product" onConfirm={() => { if (deleteConfirm) void handleDelete(deleteConfirm.id); setDeleteConfirm(null); }} onCancel={() => setDeleteConfirm(null)} />
     </AdminLayout>
   );
 }

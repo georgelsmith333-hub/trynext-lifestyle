@@ -1,0 +1,97 @@
+# Trynext Lifestyle
+
+> Bangladesh's #1 premium custom print-on-demand e-commerce platform. Customers design and order custom-printed apparel, mugs, caps, and lifestyle products online, with nationwide delivery across all 64 districts of Bangladesh.
+
+## About
+
+Trynext Lifestyle (trynext.pages.dev) is a full-stack custom print-on-demand e-commerce store based in Bangladesh. Founded to bring premium-quality custom apparel to the Bangladeshi market, Trynext allows anyone to design their own t-shirts, hoodies, long sleeves, mugs, caps, and waterbottles using an in-browser Design Studio — with no minimum order quantity.
+
+- **Website**: https://trynext.pages.dev
+- **WhatsApp**: +8801903426915
+- **Email**: support@trynextshop.com
+- **Location**: Dhaka, Bangladesh
+- **Delivery**: All 64 districts of Bangladesh + International
+
+## Products
+
+Trynext offers 6 customisable product categories:
+
+- **Unisex T-Shirt** — 230GSM premium cotton, sizes XS–XXXL, 8 colour options, front & back print
+- **Unisex Hoodie** — 320GSM fleece, sizes XS–XXXL, 10 colour options, front & back print
+- **Unisex Long Sleeve** — 240GSM cotton, sizes XS–XXXL, 10 colour options, front & back print
+- **Coffee Mug** — 11oz ceramic, dishwasher safe, 360° wrap print, 10 colour options
+- **Structured Cap** — 6-panel cotton, adjustable strap, front panel print, 6 colour options
+- **Waterbottle** — 500ml stainless steel, insulated, wrap print, 5 colour options
+
+All products are customisable. Customers can upload their own designs, add text, or use the AI-powered design generator.
+
+## Design Studio
+
+The Design Studio is Trynext's browser-native product customiser. Features include:
+- Upload your own artwork (JPG/PNG/WebP up to 10MB)
+- AI art generation from text prompts
+- Custom text with 100+ Google Fonts
+- Real-time photorealistic garment mockup preview
+- Front and back view for all apparel
+- Save designs for later
+- Pre-built design templates
+
+URL: https://trynext.pages.dev/design-studio
+
+## Payment Methods
+
+- Cash on Delivery (COD) — most popular, available across Bangladesh
+- bKash mobile banking
+- Nagad mobile banking
+- Rocket (DBBL) mobile banking
+
+## Shipping & Delivery
+
+- Express delivery: 1–3 business days (Dhaka)
+- Standard delivery: 3–7 business days (nationwide, all 64 districts)
+- Free shipping on orders above ৳1500
+- International shipping available
+
+## Pricing
+
+- Custom T-Shirts: Starting from ৳399
+- Custom Hoodies: Starting from ৳799
+- Custom Long Sleeves: Starting from ৳549
+- Custom Mugs: Starting from ৳299
+- Custom Caps: Starting from ৳449
+- Custom Waterbottles: Starting from ৳599
+
+## Gift Hampers
+
+Trynext offers curated premium gift hamper sets — ideal for birthdays, corporate gifting, and special occasions. Custom-branded hampers with multiple items are available.
+
+URL: https://trynext.pages.dev/hampers
+
+## Blog
+
+The Trynext blog covers custom apparel tips, fashion trends, garment care guides, and design inspiration for the Bangladeshi market.
+
+URL: https://trynext.pages.dev/blog
+
+## Technology
+
+- Frontend: React 19 + Vite, deployed on Cloudflare Pages (global CDN)
+- Backend: Express.js REST API, deployed on Render
+- Database: Neon PostgreSQL (serverless)
+- Mobile: Expo React Native (iOS & Android)
+- PWA: Installable as a mobile app from the browser
+
+## Social Media
+
+- Facebook: https://www.facebook.com/trynextlifestyle
+- Instagram: https://www.instagram.com/trynextlifestyle
+
+## Order Tracking
+
+Customers can track their orders at: https://trynext.pages.dev/track
+
+## Contact
+
+- WhatsApp: +8801903426915
+- Email: support@trynextshop.com
+- Website: https://trynext.pages.dev

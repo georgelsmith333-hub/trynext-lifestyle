@@ -1,0 +1,45 @@
+{
+  "root": "artifacts/trynex-storefront/public/mockups/smart-v4",
+  "families": {
+    "tshirt": {
+      "required": 40,
+      "present": 40,
+      "missing": [],
+      "invalid": []
+    },
+    "longsleeve": {
+      "required": 50,
+      "present": 50,
+      "missing": [],
+      "invalid": []
+    },
+    "hoodie": {
+      "required": 50,
+      "present": 50,
+      "missing": [],
+      "invalid": []
+    },
+    "mug": {
+      "required": 30,
+      "present": 30,
+      "missing": [],
+      "invalid": []
+    },
+    "cap": {
+      "required": 16,
+      "present": 16,
+      "missing": [],
+      "invalid": []
+    },
+    "waterbottle": {
+      "required": 16,
+      "present": 16,
+      "missing": [],
+      "invalid": []
+    }
+  },
+  "errors": [],
+  "legacy_removed": true,
+  "total_required": 202,
+  "total_present": 202
+}

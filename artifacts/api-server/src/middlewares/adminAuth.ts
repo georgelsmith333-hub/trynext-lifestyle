@@ -63,9 +63,11 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction): v
           const refererOrigin = referer
             ? (() => { try { return new URL(referer).origin; } catch { return ""; } })()
             : "";
+            const isTrustedTrynextOrigin = (value: string): boolean =>
+              /^https:\/\/(?:[a-z0-9-]+\.)?trynext-lifestyle-shop\.pages\.dev$/i.test(value);
           const ok =
-            (origin && allowed.includes(origin)) ||
-            (refererOrigin && allowed.includes(refererOrigin));
+            (origin && (allowed.includes(origin) || isTrustedTrynextOrigin(origin))) ||
+            (refererOrigin && (allowed.includes(refererOrigin) || isTrustedTrynextOrigin(refererOrigin)));
           if (!ok) {
             res.status(403).json({ error: "csrf_blocked", message: "Cross-site request blocked (origin mismatch)" });
             return;

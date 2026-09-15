@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "cap:black:back",
+  "category": "cap",
+  "colorSlug": "black",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/cap-black-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/cap/black/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/cap-black-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    162,
+    184,
+    862,
+    839
+  ],
+  "sha256": "fabedb36664fc006307abb2c1896311ff637987c5237706a0a939d5a8e9e8c59",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

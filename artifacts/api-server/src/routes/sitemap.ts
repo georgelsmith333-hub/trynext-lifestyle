@@ -1,11 +1,15 @@
 import { Router, type IRouter } from "express";
 import { db, productsTable, categoriesTable, blogPostsTable } from "@workspace/db";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, max } from "drizzle-orm";
 import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
-const SITE_URL = process.env.API_PUBLIC_URL || "https://trynexshop.com";
+// Sitemap links must point to customer-facing storefront pages, never the API
+// host. API_PUBLIC_URL is intentionally not used here because Render sets it
+// to a backend host. Use the explicit storefront variable when a custom domain
+// is fully connected; otherwise stay on the live Pages origin.
+const SITE_URL = process.env.STOREFRONT_PUBLIC_URL || "https://trynext.pages.dev";
 
 router.get("/sitemap.xml", async (_req, res) => {
   try {
@@ -46,7 +50,6 @@ router.get("/sitemap.xml", async (_req, res) => {
 
     const staticPages = [
       { loc: "/", priority: "1.0", changefreq: "daily" },
-      { loc: "/index.html", priority: "0.9", changefreq: "daily" },
       { loc: "/products", priority: "0.9", changefreq: "daily" },
       { loc: "/blog", priority: "0.7", changefreq: "weekly" },
       { loc: "/sale", priority: "0.8", changefreq: "daily" },
@@ -60,12 +63,26 @@ router.get("/sitemap.xml", async (_req, res) => {
       { loc: "/privacy-policy", priority: "0.4", changefreq: "monthly" },
       { loc: "/terms-of-service", priority: "0.4", changefreq: "monthly" },
       { loc: "/referral", priority: "0.5", changefreq: "monthly" },
+      { loc: "/custom-tshirt-bangladesh",  priority: "0.9", changefreq: "weekly" },
+      { loc: "/custom-hoodie-bangladesh",  priority: "0.9", changefreq: "weekly" },
+      { loc: "/custom-gift-bangladesh",    priority: "0.9", changefreq: "weekly" },
+      { loc: "/corporate-gift-dhaka",      priority: "0.8", changefreq: "weekly" },
+      { loc: "/custom-mug-bangladesh",     priority: "0.8", changefreq: "weekly" },
+      { loc: "/birthday-gift-bangladesh",  priority: "0.8", changefreq: "weekly" },
     ];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
     xml += `        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"\n`;
     xml += `        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n\n`;
+
+    const [latestProductRow] = await db.select({ updatedAt: max(productsTable.updatedAt) }).from(productsTable);
+    const latestProductLastmod = formatDate(latestProductRow?.updatedAt) ?? today;
+
+    const latestCategoryLastmod = today;
+
+    const [latestBlogRow] = await db.select({ updatedAt: max(blogPostsTable.updatedAt) }).from(blogPostsTable).where(eq(blogPostsTable.published, true));
+    const latestBlogLastmod = formatDate(latestBlogRow?.updatedAt) ?? today;
 
     for (const page of staticPages) {
       xml += `  <url>\n`;
@@ -81,16 +98,14 @@ router.get("/sitemap.xml", async (_req, res) => {
     for (const cat of categories) {
       xml += `  <url>\n`;
       xml += `    <loc>${SITE_URL}/products?category=${encodeURIComponent(cat.slug)}</loc>\n`;
-      xml += `    <lastmod>${today}</lastmod>\n`;
+      xml += `    <lastmod>${latestCategoryLastmod}</lastmod>\n`;
       xml += `    <changefreq>weekly</changefreq>\n`;
       xml += `    <priority>0.8</priority>\n`;
       xml += `  </url>\n`;
     }
 
     for (const product of products) {
-      const lastmod = product.updatedAt
-        ? new Date(product.updatedAt).toISOString().split("T")[0]
-        : today;
+      const lastmod = formatDate(product.updatedAt) ?? latestProductLastmod;
       xml += `  <url>\n`;
       xml += `    <loc>${SITE_URL}/product/${product.slug}</loc>\n`;
       xml += `    <lastmod>${lastmod}</lastmod>\n`;
@@ -98,7 +113,7 @@ router.get("/sitemap.xml", async (_req, res) => {
       xml += `    <priority>0.8</priority>\n`;
       if (product.imageUrl) {
         xml += `    <image:image>\n`;
-        xml += `      <image:loc>${escapeXml(product.imageUrl)}</image:loc>\n`;
+        xml += `      <image:loc>${escapeXml(toAbsoluteSiteUrl(product.imageUrl))}</image:loc>\n`;
         xml += `      <image:title>${escapeXml(product.name)}</image:title>\n`;
         xml += `    </image:image>\n`;
       }
@@ -106,9 +121,7 @@ router.get("/sitemap.xml", async (_req, res) => {
     }
 
     for (const post of blogPosts) {
-      const lastmod = post.updatedAt
-        ? new Date(post.updatedAt).toISOString().split("T")[0]
-        : today;
+      const lastmod = formatDate(post.updatedAt) ?? latestBlogLastmod;
       xml += `  <url>\n`;
       xml += `    <loc>${SITE_URL}/blog/${post.slug}</loc>\n`;
       xml += `    <lastmod>${lastmod}</lastmod>\n`;
@@ -116,7 +129,7 @@ router.get("/sitemap.xml", async (_req, res) => {
       xml += `    <priority>0.6</priority>\n`;
       if (post.imageUrl) {
         xml += `    <image:image>\n`;
-        xml += `      <image:loc>${escapeXml(post.imageUrl)}</image:loc>\n`;
+        xml += `      <image:loc>${escapeXml(toAbsoluteSiteUrl(post.imageUrl))}</image:loc>\n`;
         xml += `      <image:title>${escapeXml(post.title)}</image:title>\n`;
         xml += `    </image:image>\n`;
       }
@@ -167,6 +180,17 @@ function escapeXml(str: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+function toAbsoluteSiteUrl(value: string): string {
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${SITE_URL}${value.startsWith("/") ? value : `/${value}`}`;
+}
+
+function formatDate(value: Date | string | null | undefined): string | null {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString().split("T")[0];
 }
 
 export default router;

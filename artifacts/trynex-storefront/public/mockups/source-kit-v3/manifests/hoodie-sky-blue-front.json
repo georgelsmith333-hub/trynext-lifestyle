@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "hoodie:sky-blue:front",
+  "category": "hoodie",
+  "colorSlug": "sky-blue",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/hoodie-sky-blue-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/hoodie/sky-blue/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/hoodie-sky-blue-front.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    73,
+    63,
+    951,
+    949
+  ],
+  "sha256": "d987cf20f4b47ce8f0062ee45da7bffdcafac36799e6e02d86337a7db1bb12e7",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

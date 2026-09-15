@@ -1,0 +1,49 @@
+{
+  "seed_definition_count": 67,
+  "live_api_count": 69,
+  "missing_seed_slugs": [
+    "t-shirts",
+    "hoodies",
+    "mugs",
+    "caps",
+    "long-sleeves",
+    "water-bottles",
+    "custom-orders",
+    "birthday-celebration-tee"
+  ],
+  "missing_seed_names": [
+    "T-Shirts",
+    "Hoodies",
+    "Mugs",
+    "Caps",
+    "Long Sleeves",
+    "Water Bottles",
+    "Custom Orders",
+    "Birthday Celebration Tee"
+  ],
+  "live_duplicate_slugs": {},
+  "live_duplicate_names": {},
+  "shared_image_references": {
+    "/assets/products/longsleeve_artistic.png": [
+      "artistic-brush-stroke-long-sleeve",
+      "modern-geometric-long-sleeve"
+    ]
+  },
+  "live_categories": {
+    "Water Bottles": 10,
+    "Long Sleeves": 10,
+    "Caps": 12,
+    "Mugs": 12,
+    "Hoodies": 12,
+    "T-Shirts": 12,
+    "Custom Orders": 1
+  }
+}
+
+POST-RESTORE VERIFIED RESULTS
+
+Live Admin Products showed 70 total products after the authenticated missing-only restore: 49 products added in the first upload and Birthday Celebration Tee added separately (1 added, 0 failed). The live public API reconciliation then showed 70 products, with no duplicate slugs or duplicate names. Category totals were: Water Bottles 10, Long Sleeves 10, Caps 12, Mugs 12, Hoodies 12, T-Shirts 13, and Custom Orders 1.
+
+The only image-reference collision found was the pre-existing/shared mapping of `/assets/products/longsleeve_artistic.png` between `artistic-brush-stroke-long-sleeve` and `modern-geometric-long-sleeve`. Modern Geometric Long Sleeve was corrected through the authenticated Admin Products edit form to `/assets/products/longsleeve_typographic.png`; the live API independently confirmed that URL after save. This establishes the root cause of the repeated long-sleeve imagery as a data-level product image mapping defect, not duplicate product identity.
+
+Sources: live Admin Products page, this audit artifact, and live `https://trynex-api.onrender.com/api/products?limit=200` response queried after save.

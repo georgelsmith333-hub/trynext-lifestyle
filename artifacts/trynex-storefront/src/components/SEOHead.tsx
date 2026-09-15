@@ -13,7 +13,12 @@ interface SEOHeadProps {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const SITE_URL = "https://trynexshop.com";
+type BreadcrumbItem = {
+  name: string;
+  item: string;
+};
+
+const SITE_URL = "https://trynext.pages.dev";
 const DEFAULT_IMAGE = "/opengraph.jpg";
 
 export function SEOHead({
@@ -45,6 +50,12 @@ export function SEOHead({
   const canonicalPath = canonical ?? location;
   const canonicalUrl = `${SITE_URL}${canonicalPath}`;
   const fullOgImage = finalOgImage.startsWith("http") ? finalOgImage : `${SITE_URL}${finalOgImage}`;
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(canonicalUrl, title);
+  const jsonLdEntries = [
+    ...(breadcrumbJsonLd ? [breadcrumbJsonLd] : []),
+    ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []),
+  ];
 
   return (
     <Helmet>
@@ -82,19 +93,63 @@ export function SEOHead({
       {seoTwitterHandle && <meta name="twitter:site" content={seoTwitterHandle} />}
       {seoTwitterHandle && <meta name="twitter:creator" content={seoTwitterHandle} />}
 
-      {jsonLd && (
-        Array.isArray(jsonLd) ? (
-          jsonLd.map((ld, i) => (
-            <script key={i} type="application/ld+json">
-              {JSON.stringify(ld)}
-            </script>
-          ))
-        ) : (
-          <script type="application/ld+json">
-            {JSON.stringify(jsonLd)}
-          </script>
-        )
-      )}
+      {jsonLdEntries.map((ld, i) => (
+        <script key={i} type="application/ld+json">
+          {JSON.stringify(ld)}
+        </script>
+      ))}
     </Helmet>
   );
+}
+
+function buildBreadcrumbJsonLd(canonicalUrl: string, title?: string): Record<string, unknown> | null {
+  const path = new URL(canonicalUrl).pathname;
+  const segments = path.split("/").filter(Boolean);
+  if (!segments.length) return null;
+
+  const breadcrumbs: BreadcrumbItem[] = [{ name: "Home", item: SITE_URL }];
+  let currentPath = "";
+
+  for (const segment of segments) {
+    currentPath += `/${segment}`;
+    const label = formatBreadcrumbLabel(segment);
+    if (!label) continue;
+    breadcrumbs.push({
+      name: label,
+      item: `${SITE_URL}${currentPath}`,
+    });
+  }
+
+  if (breadcrumbs.length < 2) return null;
+  if (title && breadcrumbs.length > 1) {
+    breadcrumbs[breadcrumbs.length - 1] = {
+      name: title,
+      item: canonicalUrl,
+    };
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbs.map((entry, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: entry.name,
+      item: entry.item,
+    })),
+  };
+}
+
+function formatBreadcrumbLabel(segment: string): string {
+  if (!segment) return "";
+  if (segment === "admin") return "Admin";
+  if (segment === "faq") return "FAQ";
+  if (segment === "seo") return "SEO";
+  if (segment.includes("-")) {
+    return segment
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+  }
+  return segment.charAt(0).toUpperCase() + segment.slice(1);
 }

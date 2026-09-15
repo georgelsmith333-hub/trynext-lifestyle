@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
 
-const APP_NAME = "TryNex Admin";
+const APP_NAME = "Trynext Admin";
 const TOTP_STEP = 30;
 const TOTP_DIGITS = 6;
 const TOTP_WINDOW = 1; // accept codes from 1 step before/after

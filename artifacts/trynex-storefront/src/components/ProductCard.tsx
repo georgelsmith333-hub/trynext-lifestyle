@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ShoppingCart, Star, Heart, Check, Eye, ArrowRight, MessageCircle, Flame, Loader2 } from "lucide-react";
+import { ShoppingCart, Heart, Check, Eye, ArrowRight, MessageCircle, Flame, Loader2 } from "lucide-react";
 import { formatPrice, resolveImageUrl, cn, getApiUrl } from "@/lib/utils";
 import type { Product } from "@workspace/api-client-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,8 @@ import { QuickViewModal } from "@/components/QuickViewModal";
 interface ProductCardProps {
   product: Product;
   index?: number;
+  /** Keep high-priority loading for the leading card on catalogue routes only. */
+  eagerImage?: boolean;
 }
 
 const COLOR_MAP: Record<string, string> = {
@@ -26,12 +28,22 @@ const COLOR_MAP: Record<string, string> = {
   'Sky Blue': '#0ea5e9', 'Lime': '#84cc16', 'Coral': '#f97316', 'Indigo': '#6366f1',
 };
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
+function getProductFallback(product: Product): string {
+  const text = `${product.name ?? ""} ${(product as any).category?.name ?? ""} ${(product as any).categoryName ?? ""}`.toLowerCase();
+  if (text.includes("mug") || text.includes("cup")) return "/mockups/psd-master-v10/runtime-roles/mug/white/front-base.png";
+  if (text.includes("hoodie") || text.includes("sweatshirt")) return "/mockups/psd-master-v10/runtime-roles/hoodie/white/front-base.png";
+  if (text.includes("bottle") || text.includes("flask") || text.includes("tumbler")) return "/mockups/psd-master-v10/runtime-roles/waterbottle/white/front-base.png";
+  if (text.includes("cap") || text.includes("hat")) return "/mockups/psd-master-v10/runtime-roles/cap/white/front-base.png";
+  if (text.includes("long sleeve") || text.includes("longsleeve") || text.includes("long-sleeve")) return "/mockups/psd-master-v10/runtime-roles/longsleeve/white/front-base.png";
+  return "/mockups/psd-master-v10/runtime-roles/tshirt/white/front-base.png";
+}
+
+export function ProductCard({ product, index = 0, eagerImage = true }: ProductCardProps) {
     const [, navigate] = useLocation();
     const { addToCart } = useCartActions();
     const { toggleWishlist, isWishlisted } = useWishlist();
     const { toast } = useToast();
-    const { scarcityThreshold } = useSiteSettings();
+    const { scarcityThreshold, phone, whatsappNumber } = useSiteSettings();
     const [isAdding, setIsAdding] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [imgLoaded, setImgLoaded] = useState(false);
@@ -39,6 +51,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
     const cardRef = useRef<HTMLDivElement>(null);
     const [tilt, setTilt] = useState({ x: 0, y: 0, glare: { x: 50, y: 50 } });
     const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+    const [shouldLoadImage, setShouldLoadImage] = useState(eagerImage && index === 0);
 
     // Track mobile breakpoint correctly
     useEffect(() => {
@@ -47,22 +60,51 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       return () => window.removeEventListener('resize', check);
     }, []);
 
+    // Browser `loading="lazy"` is only a hint and can fetch a long catalogue
+    // on some mobile engines. Keep distant cards source-free until their layout
+    // is near the viewport; the leading catalogue card remains prioritized.
+    useEffect(() => {
+      if (eagerImage && index === 0) {
+        setShouldLoadImage(true);
+        return;
+      }
+      const card = cardRef.current;
+      if (!card || typeof IntersectionObserver === 'undefined') {
+        setShouldLoadImage(true);
+        return;
+      }
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry?.isIntersecting) return;
+          setShouldLoadImage(true);
+          observer.disconnect();
+        },
+        { rootMargin: '400px 0px' },
+      );
+      observer.observe(card);
+      return () => observer.disconnect();
+    }, [eagerImage, index]);
+
     const price = parseFloat(String(product.price)) || 0;
+    const fallbackImage = getProductFallback(product);
+    const imageSrc = resolveImageUrl(product.imageUrl) || fallbackImage;
     const discountPrice = product.discountPrice ? parseFloat(String(product.discountPrice)) : null;
     const discount = discountPrice
       ? Math.round(((price - discountPrice) / price) * 100)
       : 0;
 
-    const rating = product.rating ? parseFloat(String(product.rating)) : 4.9;
     const wishlisted = isWishlisted(product.id);
     const isLowStock = product.stock > 0 && product.stock <= (scarcityThreshold || 10);
 
     // Build WhatsApp order URL
-    const whatsappNumber = "8801903426915";
+    const waNumber = (whatsappNumber || phone || "").replace(/[^0-9]/g, "");
+    const productLink = typeof window !== "undefined"
+      ? new URL(`/product/${product.slug || product.id}`, window.location.origin).toString()
+      : `/product/${product.slug || product.id}`;
     const whatsappMsg = encodeURIComponent(
-      `Hello TryNex! I want to order:\n*${product.name}*\nPrice: ${formatPrice(discountPrice || price)}\nProduct link: https://trynexshop.com/product/${product.id}`
+      `Hello Trynext! I want to order:\n*${product.name}*\nPrice: ${formatPrice(discountPrice || price)}\nProduct link: ${productLink}`
     );
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMsg}`;
+    const whatsappUrl = waNumber ? `https://wa.me/${waNumber}?text=${whatsappMsg}` : "";
 
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
       if (isMobile) return;
@@ -132,7 +174,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       });
     };
 
-    const goToDetail = () => navigate(`/product/${product.id}`);
+    const goToDetail = () => navigate(`/product/${product.slug || product.id}`);
 
     /* ──────────────────────────────────────────────────────────────────────
        Hover/focus prefetch — eliminates the "blank page for a moment" flash
@@ -167,11 +209,13 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         staleTime: 60 * 1000,
       });
 
-      // The list endpoint intentionally omits gallery images. The primary
-      // image is already in the browser's normal loading path; the detail
-      // page owns gallery loading so a large catalog never downloads hidden
-      // product photos during browsing.
-    }, [queryClient, product.id, product.imageUrl]);
+      // Preload images so the gallery doesn't show a blank gray box.
+      const urls: string[] = [];
+      if (product.imageUrl) urls.push(resolveImageUrl(product.imageUrl));
+      const extra = (product as unknown as { images?: string[] | null }).images;
+      if (Array.isArray(extra)) urls.push(...extra.slice(0, 2));
+      urls.forEach(u => { try { const img = new Image(); img.src = u; } catch {} });
+    }, [queryClient, product.id, product.imageUrl, (product as any).images]);
 
     return (
       <>
@@ -206,7 +250,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         >
           {/* Stretched semantic link — covers card for click + keyboard nav */}
           <Link
-            href={`/product/${product.id}`}
+            href={`/product/${product.slug || product.id}`}
             aria-label={`View ${product.name}`}
             className="absolute inset-0 z-10 rounded-2xl focus:outline-none"
           />
@@ -224,23 +268,23 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
 
           {/* Image */}
           <div className="relative aspect-[4/5] overflow-hidden" style={{ background: '#f9f5f2', aspectRatio: '4/5' }}>
-            {resolveImageUrl(product.imageUrl) ? (
-              <>
-                {!imgLoaded && (
-                  <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-gray-100 to-gray-200" aria-hidden="true" />
-                )}
-                <img
-                  src={resolveImageUrl(product.imageUrl)}
+            <>
+              {!imgLoaded && (
+                <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-gray-100 to-gray-200" aria-hidden="true" />
+              )}
+              <img
+                  src={shouldLoadImage ? imageSrc : undefined}
                   alt={product.name}
                   width={400}
                   height={500}
-                  loading={index < 2 ? "eager" : "lazy"}
+                  loading={eagerImage && index === 0 ? "eager" : "lazy"}
                   decoding="async"
-                  fetchPriority={index < 2 ? "high" : "auto"}
+                  fetchPriority={eagerImage && index === 0 ? "high" : "auto"}
                   onLoad={() => setImgLoaded(true)}
                   onError={e => {
-                    setImgLoaded(true);
-                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                    const img = e.currentTarget as HTMLImageElement;
+                    if (!img.src.endsWith(fallbackImage)) img.src = fallbackImage;
+                    else setImgLoaded(true);
                   }}
                   className="w-full h-full object-cover"
                   style={{
@@ -249,18 +293,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                     transition: 'transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.25s ease',
                   }}
                 />
-                {/* Fallback shown when image URL is broken */}
-                {imgLoaded && (
-                  <div className="absolute inset-0 -z-10 flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
-                    <ShoppingCart className="w-16 h-16 text-orange-200" aria-hidden="true" />
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50">
-                <ShoppingCart className="w-16 h-16 text-orange-300" aria-hidden="true" />
-              </div>
-            )}
+            </>
 
             {/* Discount / Stock Badges */}
             <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 pointer-events-none">
@@ -343,6 +376,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                   <button
                     type="button"
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickViewOpen(true); }}
+                    aria-label={`Quick view ${product.name}`}
                     className="btn-press pointer-events-auto w-full py-2 rounded-xl font-bold text-sm text-gray-700 flex items-center justify-center gap-2 transition-all"
                     style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', border: '1px solid rgba(0,0,0,0.08)' }}
                   >
@@ -355,18 +389,6 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
 
           {/* Product Info */}
           <div className="p-3 sm:p-4 flex-1 flex flex-col relative z-20 pointer-events-none">
-            {/* Rating */}
-            <div className="flex items-center gap-1 mb-1.5">
-              {Array.from({ length: 5 }).map((_, j) => (
-                <Star key={j} className="w-3 h-3"
-                  style={{ fill: j < Math.floor(rating) ? '#FB8500' : '#e5e7eb', color: j < Math.floor(rating) ? '#FB8500' : '#e5e7eb' }} />
-              ))}
-              <span className="text-xs text-gray-400 ml-1 font-semibold">{rating}</span>
-              {discount > 0 && (
-                <span className="ml-auto savings-badge">Save {discount}%</span>
-              )}
-            </div>
-
             {/* Name */}
             <h3 className="font-bold text-gray-900 text-sm leading-snug mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
               {product.name}
@@ -455,16 +477,18 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                     <><ShoppingCart className="w-4 h-4" /> Add to Bag</>
                   )}
                 </motion.button>
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Order via WhatsApp"
-                  className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-95"
-                  style={{ background: '#25D366', boxShadow: '0 2px 8px rgba(37,211,102,0.3)', minHeight: '44px' }}
-                >
-                  <MessageCircle className="w-5 h-5 text-white" />
-                </a>
+                {whatsappUrl && (
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Order via WhatsApp"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-95"
+                    style={{ background: '#25D366', boxShadow: '0 2px 8px rgba(37,211,102,0.3)', minHeight: '44px' }}
+                  >
+                    <MessageCircle className="w-5 h-5 text-white" />
+                  </a>
+                )}
               </div>
             )}
           </div>
@@ -479,4 +503,3 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       </>
     );
   }
-  

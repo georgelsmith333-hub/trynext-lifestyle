@@ -1,4 +1,4 @@
-import { X, Star, ShoppingCart, ArrowRight, Check, Loader2, Heart, Minus, Plus } from "lucide-react";
+import { X, ShoppingCart, ArrowRight, Check, Loader2, Heart, Minus, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -9,6 +9,7 @@ import { useCartActions } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { lockBodyScroll } from "@/lib/scrollLock";
 
 const COLOR_MAP: Record<string, string> = {
   'Black': '#1a1a1a', 'White': '#f0f0f0', 'Grey': '#6b7280', 'Gray': '#6b7280',
@@ -49,11 +50,10 @@ export function QuickViewModal({ product, open, onClose }: QuickViewModalProps) 
     if (!open) return;
     const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handleEsc);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const unlock = lockBodyScroll();
     return () => {
       document.removeEventListener('keydown', handleEsc);
-      document.body.style.overflow = prev;
+      unlock();
     };
   }, [open, onClose]);
 
@@ -62,7 +62,6 @@ export function QuickViewModal({ product, open, onClose }: QuickViewModalProps) 
   const price = parseFloat(String(product.price)) || 0;
   const discountPrice = product.discountPrice ? parseFloat(String(product.discountPrice)) : null;
   const discount = discountPrice ? Math.round(((price - discountPrice) / price) * 100) : 0;
-  const rating = product.rating ? parseFloat(String(product.rating)) : 4.9;
   const wishlisted = isWishlisted(product.id);
 
   const handleAddToCart = () => {
@@ -195,17 +194,6 @@ export function QuickViewModal({ product, open, onClose }: QuickViewModalProps) 
                     {product.name}
                   </h2>
 
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="flex">
-                      {Array.from({ length: 5 }).map((_, j) => (
-                        <Star key={j} className="w-3.5 h-3.5"
-                          style={{ fill: j < Math.floor(rating) ? '#FB8500' : '#e5e7eb', color: j < Math.floor(rating) ? '#FB8500' : '#e5e7eb' }} />
-                      ))}
-                    </div>
-                    <span className="text-sm font-bold text-gray-500">{rating}</span>
-                    <span className="text-xs text-gray-400">· Verified Quality</span>
-                  </div>
-
                   <div className="flex items-baseline gap-3 mb-5 p-3 rounded-2xl" style={{ background: '#fff8f5', border: '1px solid #fde4d0' }}>
                     {discountPrice ? (
                       <>
@@ -327,7 +315,7 @@ export function QuickViewModal({ product, open, onClose }: QuickViewModalProps) 
                     </button>
 
                     <Link
-                      href={`/product/${product.id}`}
+                      href={`/product/${product.slug || product.id}`}
                       onClick={onClose}
                       className="h-12 px-4 rounded-xl font-bold text-gray-700 border border-gray-200 flex items-center gap-1.5 hover:border-orange-400 hover:text-orange-600 transition-all whitespace-nowrap text-sm"
                     >

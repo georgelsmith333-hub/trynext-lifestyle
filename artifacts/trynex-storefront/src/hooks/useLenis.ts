@@ -12,6 +12,10 @@ export function useLenis() {
   useEffect(() => {
     if (lenisInstance) return;
 
+    // Disable Lenis on Design Studio — it intercepts wheel events that the canvas
+    // needs for zooming layers, and the sidebar needs for independent scrolling.
+    if (window.location.pathname.includes("/design-studio")) return;
+
     if (isTouchDevice()) return;
 
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

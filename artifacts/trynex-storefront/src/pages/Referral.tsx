@@ -86,8 +86,8 @@ export default function Referral() {
     if (!referralCode) return;
     try {
       await navigator.share({
-        title: "Get 10% off at TryNex!",
-        text: `Use my referral link to get 10% off your first order at TryNex Lifestyle!`,
+        title: "Get 10% off at Trynext!",
+        text: `Use my referral link to get 10% off your first order at Trynext Lifestyle!`,
         url: shareUrl,
       });
     } catch {
@@ -97,7 +97,7 @@ export default function Referral() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SEOHead title="Refer & Earn 10% | TryNex Lifestyle" description="Refer friends to TryNex and earn 10% credit. They get 10% off their first order!" />
+      <SEOHead title="Refer & Earn 10% | Trynext Lifestyle" description="Refer friends to Trynext and earn 10% credit. They get 10% off their first order!" />
       <Navbar />
 
       <section className="pt-header py-10 sm:py-16 px-4" style={{ background: "linear-gradient(135deg, #1C1917, #292524)" }}>
@@ -191,7 +191,7 @@ export default function Referral() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => {
-                        const msg = encodeURIComponent(`🎁 TryNex Lifestyle থেকে কাস্টম টি-শার্ট, হুডি, মগ অর্ডার করুন!\n\n✅ আমার লিঙ্ক দিয়ে অর্ডার করলে আপনি পাবেন ১০% ছাড়!\n👉 ${shareUrl}`);
+                        const msg = encodeURIComponent(`🎁 Trynext Lifestyle থেকে কাস্টম টি-শার্ট, হুডি, মগ অর্ডার করুন!\n\n✅ আমার লিঙ্ক দিয়ে অর্ডার করলে আপনি পাবেন ১০% ছাড়!\n👉 ${shareUrl}`);
                         window.open(`https://wa.me/?text=${msg}`, '_blank');
                       }}
                       className="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm text-white"
@@ -256,7 +256,7 @@ export default function Referral() {
                     <p className="text-xs text-gray-500 mb-3">People can scan this at events, markets, or print it on flyers to use your referral link</p>
                     <a
                       href={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(shareUrl)}&color=E85D04&bgcolor=ffffff`}
-                      download="trynex-referral-qr.png"
+                      download="trynext-referral-qr.png"
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-600 hover:underline"
@@ -287,17 +287,17 @@ export default function Referral() {
                     {
                       lang: "বাংলা",
                       flag: "🇧🇩",
-                      text: `🎁 TryNex Lifestyle থেকে কাস্টম টি-শার্ট, হুডি, মগ ও ক্যাপ অর্ডার করুন!\n\n✅ প্রিমিয়াম কোয়ালিটি\n✅ ২৪ ঘণ্টায় প্রোডাকশন\n✅ বাংলাদেশের ৬৪ জেলায় ডেলিভারি\n\n🔗 আমার লিঙ্ক দিয়ে অর্ডার করলে পাবেন ১০% ছাড়:\n${referralCode ? `${window.location.origin}?ref=${referralCode}` : ''}`,
+                      text: `🎁 Trynext Lifestyle থেকে কাস্টম টি-শার্ট, হুডি, মগ ও ক্যাপ অর্ডার করুন!\n\n✅ প্রিমিয়াম কোয়ালিটি\n✅ ২৪ ঘণ্টায় প্রোডাকশন\n✅ বাংলাদেশের ৬৪ জেলায় ডেলিভারি\n\n🔗 আমার লিঙ্ক দিয়ে অর্ডার করলে পাবেন ১০% ছাড়:\n${referralCode ? `${window.location.origin}?ref=${referralCode}` : ''}`,
                     },
                     {
                       lang: "English",
                       flag: "🇬🇧",
-                      text: `🎁 Get custom T-shirts, hoodies, mugs & caps from TryNex Lifestyle!\n\n✅ Premium quality\n✅ 24hr production\n✅ Delivery across Bangladesh\n\n🔗 Use my link and get 10% OFF your first order:\n${referralCode ? `${window.location.origin}?ref=${referralCode}` : ''}`,
+                      text: `🎁 Get custom T-shirts, hoodies, mugs & caps from Trynext Lifestyle!\n\n✅ Premium quality\n✅ 24hr production\n✅ Delivery across Bangladesh\n\n🔗 Use my link and get 10% OFF your first order:\n${referralCode ? `${window.location.origin}?ref=${referralCode}` : ''}`,
                     },
                     {
                       lang: "ফেসবুক পোস্ট",
                       flag: "📘",
-                      text: `কাস্টম প্রিন্টেড টি-শার্ট বা হুডি চাই? 👕\n\nTryNex Lifestyle তোমার ডিজাইন প্রিন্ট করে দিচ্ছে মাত্র ২৪ ঘণ্টায়! বাংলাদেশের সেরা কাস্টম অ্যাপারেল ব্র্যান্ড 🔥\n\n👇 আমার লিঙ্ক দিয়ে অর্ডার করো, ১০% ছাড় পাবে!\n${referralCode ? `${window.location.origin}?ref=${referralCode}` : ''}\n\n#TryNex #CustomTshirt #Bangladesh #প্রিন্টেড_টিশার্ট`,
+                      text: `কাস্টম প্রিন্টেড টি-শার্ট বা হুডি চাই? 👕\n\nTrynext Lifestyle তোমার ডিজাইন প্রিন্ট করে দিচ্ছে মাত্র ২৪ ঘণ্টায়! বাংলাদেশের সেরা কাস্টম অ্যাপারেল ব্র্যান্ড 🔥\n\n👇 আমার লিঙ্ক দিয়ে অর্ডার করো, ১০% ছাড় পাবে!\n${referralCode ? `${window.location.origin}?ref=${referralCode}` : ''}\n\n#Trynext #CustomTshirt #Bangladesh #প্রিন্টেড_টিশার্ট`,
                     },
                   ].map(({ lang, flag, text }) => (
                     <div key={lang} className="border border-gray-100 rounded-xl overflow-hidden">
@@ -330,7 +330,7 @@ export default function Referral() {
                   <p className="text-xs text-gray-500 mb-3">Print on flyers, business cards, or display at events. Anyone who scans it goes straight to your referral link.</p>
                   <a
                     href={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(`${window.location.origin}?ref=${referralCode}`)}&color=E85D04&bgcolor=ffffff`}
-                    download="trynex-referral-qr.png"
+                    download="trynext-referral-qr.png"
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-orange-50 text-orange-600 font-bold text-xs hover:bg-orange-100 transition-colors"
@@ -349,7 +349,7 @@ export default function Referral() {
                   style={{ background: "rgba(232,93,4,0.2)", color: "#FB8500", border: "1px solid rgba(232,93,4,0.3)" }}>
                   <ShoppingBag className="w-3.5 h-3.5" /> Reseller Program
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">Sell TryNex,<br /><span style={{ color: "#FB8500" }}>Your Way</span></h2>
+                <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">Sell Trynext,<br /><span style={{ color: "#FB8500" }}>Your Way</span></h2>
                 <p className="text-gray-400 text-sm max-w-lg mx-auto">
                   Use your referral link through any channel — Facebook groups, WhatsApp broadcasts, Instagram, or your own online shop. You earn 10% on every sale automatically.
                 </p>
@@ -358,7 +358,7 @@ export default function Referral() {
                 {[
                   { icon: "📱", title: "WhatsApp Broadcast", desc: "Send your referral link to your WhatsApp contacts. Set up a broadcast list and send the Bangla message template above." },
                   { icon: "👥", title: "Facebook Groups", desc: "Post in local buy/sell groups, student groups, and office groups. Use the Facebook post template above — just copy and paste." },
-                  { icon: "🛒", title: "Your Own Shop", desc: "Sell custom products on your page or profile. Accept orders, place them on TryNex with your code, earn 10% every time." },
+                  { icon: "🛒", title: "Your Own Shop", desc: "Sell custom products on your page or profile. Accept orders, place them on Trynext with your code, earn 10% every time." },
                   { icon: "📣", title: "Instagram & TikTok", desc: "Create content showing the products, add your referral link in bio. Every customer who clicks and orders earns you 10%." },
                   { icon: "🖨️", title: "Flyers & Prints", desc: "Download your QR code above and print it on flyers, posters, or cards. Hand them out physically in your area." },
                   { icon: "💬", title: "Messenger & Telegram", desc: "Share in Messenger group chats or Telegram channels. The more people see your link, the more you earn." },

@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "waterbottle:forest:back",
+  "category": "waterbottle",
+  "colorSlug": "forest",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/waterbottle-forest-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/waterbottle/forest/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psb/waterbottle-forest-back.psb",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    351,
+    78,
+    673,
+    944
+  ],
+  "sha256": "4a4e46c435b7082c831effda05d8f94fe4da18fab8d527ff4025aa266b09574f",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

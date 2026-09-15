@@ -83,7 +83,7 @@ export async function loadSavedChatId(): Promise<void> {
 
 async function cmdHelp(): Promise<string> {
   return [
-    `🤖 <b>TryNex Admin Bot</b>`,
+    `🤖 <b>Trynext Admin Bot</b>`,
     ``,
     `📦 <b>Orders</b>`,
     `/orders — Today's orders`,
@@ -219,7 +219,7 @@ async function cmdStats(): Promise<string> {
   });
 
   return [
-    `📊 <b>TryNex Stats</b>`,
+    `📊 <b>Trynext Stats</b>`,
     ``,
     `📅 <b>Today (${dateStr})</b>`,
     `  🛍️ Orders: ${today.count}`,
@@ -304,7 +304,7 @@ async function cmdInvoice(orderNumber: string): Promise<string> {
   const shipping = parseFloat(String(o.shippingCost || 0));
   const discount = parseFloat(String(o.promoDiscount || 0));
   const total = parseFloat(String(o.total || 0));
-  const advance = Math.ceil(total * 0.15);
+  const advance = Math.ceil(total * 0.25);
   const due = total - advance;
 
   const dateStr = new Date(o.createdAt).toLocaleDateString("en-BD", {
@@ -315,7 +315,7 @@ async function cmdInvoice(orderNumber: string): Promise<string> {
   const sEmoji = statusEmoji[o.status || "pending"] ?? "📋";
 
   const lines = [
-    `📄 <b>INVOICE — TryNex Lifestyle</b>`,
+    `📄 <b>INVOICE — Trynext Lifestyle</b>`,
     `━━━━━━━━━━━━━━━━━━━━`,
     `📝 Order: <code>#${o.orderNumber}</code>`,
     `📅 Date: ${dateStr}`,
@@ -340,11 +340,11 @@ async function cmdInvoice(orderNumber: string): Promise<string> {
     `💳 Payment: ${(o.paymentMethod || "COD").toUpperCase()}`,
     `💚 Pay Status: <b>${(o.paymentStatus || "not_paid").toUpperCase()}</b>`,
     ...(o.paymentMethod !== "cod" ? [
-      `🏷️ Advance (15%): ৳${advance.toLocaleString()}`,
+      `🏷️ Advance (25%): ৳${advance.toLocaleString()}`,
       `💸 Balance Due:   ৳${due.toLocaleString()}`,
     ] : []),
     ``,
-    `🏪 TryNex Lifestyle | trynexshop.com`,
+    `🏪 Trynext Lifestyle | trynext.pages.dev`,
     `📱 WhatsApp/Call: 01903426915`,
     ...(o.notes ? [``, `📝 Notes: ${o.notes}`] : []),
   ];
@@ -375,13 +375,13 @@ async function cmdCustomer(orderNumber: string): Promise<string> {
     `📋 <b>Message Templates (copy &amp; paste):</b>`,
     ``,
     `<i>✅ Order Confirmed:</i>`,
-    `"আপনার অর্ডার <b>#${o.orderNumber}</b> কনফার্ম হয়েছে! ${itemSummary}। ২-৩ কার্যদিবসের মধ্যে ডেলিভারি হবে। ধন্যবাদ! — TryNex Lifestyle"`,
+    `"আপনার অর্ডার <b>#${o.orderNumber}</b> কনফার্ম হয়েছে! ${itemSummary}। ২-৩ কার্যদিবসের মধ্যে ডেলিভারি হবে। ধন্যবাদ! — Trynext Lifestyle"`,
     ``,
     `<i>🚚 Shipped:</i>`,
-    `"আপনার অর্ডার <b>#${o.orderNumber}</b> পাঠানো হয়েছে! ২-৩ দিনের মধ্যে পৌঁছে যাবে। কোনো প্রশ্ন থাকলে জানান। — TryNex Lifestyle"`,
+    `"আপনার অর্ডার <b>#${o.orderNumber}</b> পাঠানো হয়েছে! ২-৩ দিনের মধ্যে পৌঁছে যাবে। কোনো প্রশ্ন থাকলে জানান। — Trynext Lifestyle"`,
     ``,
     `<i>✅ Delivered:</i>`,
-    `"আপনার অর্ডার <b>#${o.orderNumber}</b> ডেলিভার হয়েছে! ধন্যবাদ TryNex Lifestyle-এ অর্ডার করার জন্য। রিভিউ দিলে আমরা খুশি হব ⭐ — TryNex"`,
+    `"আপনার অর্ডার <b>#${o.orderNumber}</b> ডেলিভার হয়েছে! ধন্যবাদ Trynext Lifestyle-এ অর্ডার করার জন্য। রিভিউ দিলে আমরা খুশি হব ⭐ — Trynext"`,
   ];
   return lines.join("\n");
 }
@@ -500,13 +500,13 @@ router.post("/telegram/webhook", async (req, res) => {
         // First person to message — auto-register as admin
         await saveAdminChatId(chatId);
         await tgReply(chatId,
-          `✅ <b>TryNex Admin Bot — Registered!</b>\n\n` +
+          `✅ <b>Trynext Admin Bot — Registered!</b>\n\n` +
           `Your chat (<code>${chatId}</code>) is now set as the admin chat.\n\n` +
           `Order notifications will arrive here. Send /help to see all commands.`
         );
         // Fall through to process the /start command normally
       } else {
-        await tgReply(chatId, "⛔ Unauthorized. This bot only responds to the TryNex admin.");
+        await tgReply(chatId, "⛔ Unauthorized. This bot only responds to the Trynext admin.");
         return;
       }
     }
@@ -691,7 +691,7 @@ router.post("/admin/telegram/test", requireAdmin, async (_req, res) => {
     const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text: "✅ TryNex admin bot is connected and working!", parse_mode: "HTML" }),
+      body: JSON.stringify({ chat_id: chatId, text: "✅ Trynext admin bot is connected and working!", parse_mode: "HTML" }),
       signal: AbortSignal.timeout(8000),
     });
     const data: any = await r.json();

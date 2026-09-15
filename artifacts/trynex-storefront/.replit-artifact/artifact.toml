@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "TryNex Lifestyle"
+title = "Trynext Lifestyle"
 version = "1.0.0"
 router = "path"
 
@@ -14,14 +14,14 @@ paths = [ "/" ]
 localPort = 8080
 
 [services.development]
-run = "pnpm --filter @workspace/trynex-storefront run dev"
+run = "pnpm --filter @workspace/trynext-storefront run dev"
 
 [services.production]
 publicDir = "artifacts/trynex-storefront/dist"
 serve = "static"
 
 [services.production.build]
-args = ["pnpm", "--filter", "@workspace/trynex-storefront", "run", "build"]
+args = ["pnpm", "--filter", "@workspace/trynext-storefront", "run", "build"]
 
 [services.production.build.env]
 VITE_API_BASE_URL = ""

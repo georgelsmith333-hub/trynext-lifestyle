@@ -68,7 +68,7 @@ export function AnnouncementBar() {
         height: '36px',
       }}
     >
-      <div className="overflow-hidden h-full flex items-center relative">
+      <div className="overflow-hidden h-full flex items-center relative pr-8">
         <div className="animate-ticker flex items-center">
           {doubled.map((text, i) => {
             const Icon = ICON_MAP[i % ICON_MAP.length];
@@ -83,10 +83,10 @@ export function AnnouncementBar() {
         </div>
         <button
           onClick={handleClose}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/15 transition-all flex-shrink-0"
+          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/15 transition-all flex-shrink-0 z-10 touch-target"
           aria-label="Close announcement"
         >
-          <X className="w-3.5 h-3.5" />
+          <X className="w-4 h-4" />
         </button>
       </div>
     </div>

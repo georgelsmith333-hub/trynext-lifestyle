@@ -1,25 +1,55 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
-import { HealthCheckResponse } from "@workspace/api-zod";
 import { getConfiguredGoogleClientId } from "./auth";
 import { ObjectStorageService } from "../lib/objectStorage";
-import { requireAdmin } from "../middlewares/adminAuth";
-import { redisCacheGet, redisCacheSet, redisCacheDel } from "../lib/redis";
-import { tgIsConfigured, tgSend } from "../lib/telegram";
+import { getRedisStatus } from "../lib/redis";
 
 const router: IRouter = Router();
 
 router.get("/healthz", async (_req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-  let dbStatus = "ok";
-  try {
-    await db.execute(sql`SELECT 1`);
-  } catch (err) {
-    dbStatus = "error";
+
+  // Run DB + Redis checks concurrently so a slow dependency doesn't block the other.
+  // getRedisStatus() bypasses the in-process fallback so a real Upstash outage
+  // is reported as "error" instead of silently succeeding via in-memory map.
+  const [dbResult, redisResult] = await Promise.allSettled([
+    db.execute(sql`SELECT 1`),
+    getRedisStatus(),
+  ]);
+
+  const dbStatus = dbResult.status === "fulfilled" ? "ok" : "error";
+
+  // Extract Redis mode — default to "error" if the check itself threw (shouldn't happen).
+  const redisMode = redisResult.status === "fulfilled" ? redisResult.value.mode : "error";
+  const redisDetail = redisResult.status === "fulfilled" ? redisResult.value.detail : undefined;
+
+  const storageBackend = new ObjectStorageService().getBackendName();
+
+  // Overall status hierarchy:
+  //   "error"    — DB is unreachable (requests cannot be served)
+  //   "degraded" — Upstash Redis was configured but is unreachable (cache misses, no data loss)
+  //   "ok"       — all configured services healthy (redis "not_configured" is intentional, not a problem)
+  let overallStatus: "ok" | "degraded" | "error";
+  if (dbStatus === "error") {
+    overallStatus = "error";
+  } else if (redisMode === "error") {
+    overallStatus = "degraded";
+  } else {
+    overallStatus = "ok";
   }
-  const data = HealthCheckResponse.parse({ status: "ok", db: dbStatus });
-  res.json(data);
+
+  res.json({
+    status: overallStatus,
+    db: dbStatus,
+    redis: redisMode,
+    ...(redisDetail ? { redis_detail: redisDetail } : {}),
+    storage: storageBackend,
+    runtimeRole: process.env.TRYNEXT_RUNTIME_ROLE ?? "primary",
+    schedulerEnabled: process.env.SCHEDULER_ENABLED !== "false",
+    backupSyncEnabled: process.env.BACKUP_SYNC_ENABLED === "true",
+    ts: new Date().toISOString(),
+  });
 });
 
 // Storage backend health. Reports the active backend, whether it is a
@@ -67,88 +97,58 @@ router.get("/health/auth", async (_req, res) => {
   });
 });
 
-router.get("/admin/system/health", requireAdmin, async (req, res) => {
+// NOTE: /admin/system/health and /admin/system/env-status must remain defined
+// only in routes/systemHealth.ts. Keep this router free of duplicate handlers so
+// the nested `services.*` and `vars` shapes stay the single source of truth.
+
+// Note: POST /api/admin/system/flush-cache is handled by routes/systemHealth.ts
+// which is mounted correctly at /api and uses redisCacheDel.
+
+// ── GET /api/health/liveness ──────────────────────────────────────────────
+// Lightweight liveness probe for external monitoring (K8s, UptimeRobot, etc.).
+// Returns fast 200 with minimal overhead — no DB query needed.
+router.get("/health/liveness", (_req, res) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: Math.floor(process.uptime()),
+    runtimeRole: process.env.TRYNEXT_RUNTIME_ROLE ?? "primary",
+  });
+});
+
+// ── GET /api/health/readiness and /api/readyz ──────────────────────────────
+// Readiness probe — checks that the API can serve real requests by
+// pinging the database. Keep both paths as aliases because the gateway,
+// monitors, and older deployment documentation use both contracts.
+const readinessHandler = async (_req: Request, res: Response) => {
+  let dbOk = false;
+  let dbLatencyMs = 0;
   try {
-    const results: any = {};
-
-    // DB
-    try {
-      await db.execute(sql`SELECT 1`);
-      results.db = "ok";
-    } catch (e) {
-      results.db = "error";
-      results.dbError = e instanceof Error ? e.message : String(e);
-    }
-
-    // Redis
-    try {
-      await redisCacheSet("_health_test", "1", 5);
-      const val = await redisCacheGet("_health_test");
-      results.redis = val !== null && String(val) === "1" ? "ok" : "mismatch";
-    } catch (e) {
-      results.redis = "error";
-      results.redisError = e instanceof Error ? e.message : String(e);
-    }
-
-    // R2 / Storage
-    const storageSvc = new ObjectStorageService();
-    results.storageBackend = storageSvc.getBackendName();
-    try {
-      await storageSvc.getObjectEntityUploadURL();
-      results.storage = "ok";
-    } catch (e) {
-      results.storage = "error";
-      results.storageError = e instanceof Error ? e.message : String(e);
-    }
-
-    // Telegram
-    results.telegramConfigured = tgIsConfigured();
-    results.telegram = results.telegramConfigured ? "ok" : "not_configured";
-
-    res.json(results);
-  } catch (err) {
-    res.status(500).json({ error: "health_check_failed" });
-  }
-});
-
-router.post("/api/admin/system/flush-cache", requireAdmin, async (req, res) => {
-  try {
-    // We don't have a flushAll in the lib, but we can at least clear known prefixes
-    // or if it's the fallback Map we can clear it.
-    // Since our redis lib uses a Map fallback, let's just clear that for now if we can.
-    // Better: add a flush method to the lib.
-    await redisCacheDel("_health_test");
-    // For now just return success as a placeholder if we can't do a full flush easily
-    res.json({ success: true, message: "Cache flush triggered" });
-  } catch (err) {
-    res.status(500).json({ error: "flush_failed" });
-  }
-});
-
-router.get("/admin/system/env-status", requireAdmin, async (req, res) => {
-  const vars = [
-    "DATABASE_URL_MAIN",
-    "UPSTASH_REDIS_REST_URL",
-    "UPSTASH_REDIS_REST_TOKEN",
-    "R2_ACCOUNT_ID",
-    "R2_ACCESS_KEY_ID",
-    "R2_SECRET_ACCESS_KEY",
-    "R2_BUCKET",
-    "JWT_SECRET",
-    "ADMIN_JWT_SECRET",
-    "ADMIN_PASSWORD",
-    "TELEGRAM_BOT_TOKEN",
-    "TELEGRAM_CHAT_ID",
-    "GOOGLE_CLIENT_ID",
-    "CLOUDFLARE_API_TOKEN"
-  ];
-
-  const status: Record<string, boolean> = {};
-  for (const v of vars) {
-    status[v] = !!process.env[v];
+    const t0 = Date.now();
+    await db.execute(sql`SELECT 1 AS ok`);
+    dbLatencyMs = Date.now() - t0;
+    dbOk = true;
+  } catch {
+    // dbOk stays false
   }
 
-  res.json(status);
-});
+  const overall = dbOk ? "ok" : "error";
+  const httpStatus = dbOk ? 200 : 503;
+
+  res.status(httpStatus).json({
+    status: overall,
+    db: dbOk,
+    dbLatencyMs,
+    uptime: Math.floor(process.uptime()),
+    memoryMB: Math.round(process.memoryUsage().rss / 1024 / 1024),
+    runtimeRole: process.env.TRYNEXT_RUNTIME_ROLE ?? "primary",
+    schedulerEnabled: process.env.SCHEDULER_ENABLED !== "false",
+    backupSyncEnabled: process.env.BACKUP_SYNC_ENABLED === "true",
+    timestamp: new Date().toISOString(),
+  });
+};
+
+router.get("/health/readiness", readinessHandler);
+router.get("/readyz", readinessHandler);
 
 export default router;

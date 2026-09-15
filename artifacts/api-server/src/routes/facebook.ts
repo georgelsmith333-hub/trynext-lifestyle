@@ -104,7 +104,7 @@ function generateSEOTitle(rawTitle: string, category?: string): string {
     title = `${title} - Premium ${category} Bangladesh`;
   }
 
-  const keywords = ["Custom", "Premium", "Bangladesh", "TryNex"];
+  const keywords = ["Custom", "Premium", "Bangladesh", "Trynext"];
   const hasKeyword = keywords.some(k => title.toLowerCase().includes(k.toLowerCase()));
   if (!hasKeyword && title.length < 100) {
     title = `${title} | Custom Apparel BD`;

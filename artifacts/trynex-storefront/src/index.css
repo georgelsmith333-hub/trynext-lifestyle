@@ -45,7 +45,7 @@
   --color-primary-light: #E85D0422;
   --color-primary-medium: #E85D0444;
 
-  /* Warm Premium Light Theme - TryNex BD 2026 */
+  /* Warm Premium Light Theme - Trynext BD 2026 */
   --background: 30 20% 99%;
   --foreground: 20 14% 8%;
 
@@ -78,11 +78,25 @@
   /* BD Green for trust/success */
   --green: 158 64% 34%;
   --green-light: 158 60% 95%;
+
+  /* Admin command-center tokens */
+  --admin-ink: #172019;
+  --admin-shell: #151915;
+  --admin-shell-muted: #8f988e;
+  --admin-canvas: #f3f5f1;
+  --admin-line: #dfe5dd;
+  --admin-orange: #e85d04;
+  --admin-orange-soft: #fff0e5;
 }
 
 @layer base {
   * { @apply border-border; box-sizing: border-box; }
-  html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+  /* scroll-behavior: smooth removed — Lenis (useLenis hook) already drives
+     smooth scrolling on desktop via requestAnimationFrame. Having both active
+     causes the browser's native smooth-scroll and Lenis's JS-driven scroll to
+     fight over the same scrollTop, which is what caused inconsistent/broken
+     mouse-wheel scrolling in some areas. */
+  html { -webkit-tap-highlight-color: transparent; }
   html, body { overflow-x: hidden; }
   body {
     @apply font-sans antialiased bg-background text-foreground;
@@ -126,7 +140,9 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
 
   .pt-header {
-    padding-top: calc(var(--announcement-height, 0px) + 4rem);
+    /* Navbar is 4.25rem tall; the former 4rem offset clipped the first
+       0.25rem of page bodies on routes using this shared utility. */
+    padding-top: calc(var(--announcement-height, 0px) + 4.25rem);
   }
 
   /* Premium orange gradient text */
@@ -389,6 +405,30 @@
     box-shadow: 0 1px 8px rgba(0,0,0,0.05);
   }
 
+  .admin-canvas {
+    background:
+      radial-gradient(circle at 90% 0%, rgba(232, 93, 4, 0.05), transparent 30rem),
+      var(--admin-canvas);
+  }
+  .admin-grid {
+    background-image: linear-gradient(rgba(23,32,25,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(23,32,25,.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .admin-panel {
+    background: rgba(255,255,255,.9);
+    border: 1px solid var(--admin-line);
+    border-radius: 1.1rem;
+    box-shadow: 0 10px 30px rgba(23,32,25,.055);
+  }
+  .admin-kicker {
+    color: var(--admin-orange);
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
   /* Trust badge */
   .trust-badge {
     display: inline-flex;
@@ -572,7 +612,7 @@
 }
 
   /* ═══════════════════════════════════════════════════
-     MOBILE-FIRST ENHANCEMENTS — TryNex BD 2026 Update
+     MOBILE-FIRST ENHANCEMENTS — Trynext BD 2026 Update
      ═══════════════════════════════════════════════════ */
 
   /* Safe area insets (notched phones, iPhone 14 Pro etc.) */
@@ -741,7 +781,7 @@
   .animate-slide-in { animation: slide-in-right 0.25s ease-out; }
   
 /* ═══════════════════════════════════════════════════
-   PREMIUM EFFECTS 2026 — TryNex Full Polish Sprint
+   PREMIUM EFFECTS 2026 — Trynext Full Polish Sprint
    ═══════════════════════════════════════════════════ */
 
 /* Custom scrollbar — branded orange */
@@ -946,4 +986,42 @@ iframe[src*="badge.replit"] {
   opacity: 0 !important;
   pointer-events: none !important;
   visibility: hidden !important;
+}
+
+@layer utilities {
+  .container-wide { 
+    max-width: 1400px; 
+    margin: 0 auto; 
+    padding: 0 clamp(16px, 4vw, 64px); 
+  }
+
+  .product-grid-responsive {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .product-grid-responsive { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .product-grid-responsive { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1600px) {
+    .product-grid-responsive { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  }
+}
+@layer base {
+  h1 { @apply text-[clamp(2.5rem,6vw,4.5rem)] leading-tight; }
+  h2 { @apply text-[clamp(2rem,5vw,3.5rem)] leading-tight; }
+  h3 { @apply text-[clamp(1.75rem,4vw,2.5rem)] leading-snug; }
+  h4 { @apply text-[clamp(1.5rem,3vw,2rem)] leading-snug; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

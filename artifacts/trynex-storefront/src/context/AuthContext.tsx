@@ -57,9 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [customer, setCustomer] = useState<CustomerProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getToken = () => localStorage.getItem("trynex_customer_token");
-  const setToken = (token: string) => localStorage.setItem("trynex_customer_token", token);
-  const clearToken = () => localStorage.removeItem("trynex_customer_token");
+  const getToken = () => localStorage.getItem("trynext_customer_token");
+  const setToken = (token: string) => localStorage.setItem("trynext_customer_token", token);
+  const clearToken = () => localStorage.removeItem("trynext_customer_token");
 
   const fetchMe = useCallback(async () => {
     const token = getToken();
@@ -153,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Store both the synthetic email (used by /auth/login) and the
           // username so the buyer can sign back in with either identifier.
           localStorage.setItem(
-            "trynex_guest_credentials",
+            "trynext_guest_credentials",
             JSON.stringify({
               id: data.id,
               username,

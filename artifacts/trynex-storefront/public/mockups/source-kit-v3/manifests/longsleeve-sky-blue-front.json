@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "longsleeve:sky-blue:front",
+  "category": "longsleeve",
+  "colorSlug": "sky-blue",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/longsleeve-sky-blue-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/longsleeve/sky-blue/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/longsleeve-sky-blue-front.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    73,
+    113,
+    951,
+    912
+  ],
+  "sha256": "b039ecb2727b50ab7f71e8f2e20dd24f407df0ff22b2d9664535023e78cd0547",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

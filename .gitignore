@@ -1,56 +1,25 @@
-# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# Secrets - NEVER commit these
+.env
+production.env
+*.env
+!.env.example
 
-# compiled output
-dist
-tmp
-out-tsc
-*.tsbuildinfo
-.expo
-.expo-shared
-
-# dependencies
-node_modules
-
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
-
-# System Files
-.DS_Store
-Thumbs.db
-
-.cursor/rules/nx-rules.mdc
-.github/instructions/nx.instructions.md
-
-# Replit
-.cache/
-.local/
-
-# Workspace-only materials
+# Replit chat / history (may contain secrets)
 .replit
-.agents/
-attached_assets/
-screenshots/
-artifacts/*/.replit-artifact/artifact.edit.toml
+.repl*
+artifacts/*/.replit-artifact/
+!artifacts/api-server/.replit-artifact/
+!artifacts/api-server/.replit-artifact/artifact.toml
+!artifacts/trynex-storefront/.replit-artifact/
+!artifacts/trynex-storefront/.replit-artifact/artifact.toml
+*.log
+attached_assets/Pasted-*.txt
+.DS_Store
+
+# Dependencies & Build
+node_modules/
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo

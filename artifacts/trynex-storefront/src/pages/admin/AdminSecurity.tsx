@@ -4,9 +4,10 @@ import { Shield, ShieldCheck, ShieldOff, KeyRound, Smartphone, Trash2, RefreshCw
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { getApiUrl } from "@/lib/utils";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 function getToken() {
-  return sessionStorage.getItem("trynex_admin_token") || "";
+  return sessionStorage.getItem("trynext_admin_token") || "";
 }
 
 async function apiFetch(path: string, opts: RequestInit = {}) {
@@ -48,6 +49,9 @@ export default function AdminSecurity() {
   const [showDisable, setShowDisable] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loadingSessions, setLoadingSessions] = useState(true);
+  const [sessionsError, setSessionsError] = useState<string | null>(null);
+  const [revokeId, setRevokeId] = useState<number | null>(null);
+  const [revokingId, setRevokingId] = useState<number | null>(null);
 
   // Change password
   const [currentPw, setCurrentPw] = useState("");
@@ -71,7 +75,7 @@ export default function AdminSecurity() {
       setTotpEnabled(data.admin?.totpEnabled ?? false);
     } catch (err: any) {
       if (err.status === 401) {
-        sessionStorage.removeItem("trynex_admin_token");
+        sessionStorage.removeItem("trynext_admin_token");
         setLocation("/admin/login");
       }
     }
@@ -79,11 +83,13 @@ export default function AdminSecurity() {
 
   async function loadSessions() {
     setLoadingSessions(true);
+    setSessionsError(null);
     try {
       const data = await apiFetch("/admin/sessions");
       setSessions(data.sessions || []);
-    } catch {
+    } catch (err: unknown) {
       setSessions([]);
+      setSessionsError(err instanceof Error ? err.message : "Could not load active sessions.");
     } finally {
       setLoadingSessions(false);
     }
@@ -184,12 +190,16 @@ export default function AdminSecurity() {
   }
 
   async function revokeSession(id: number) {
+    setRevokingId(id);
     try {
       await apiFetch(`/admin/sessions/${id}`, { method: "DELETE" });
       setSessions(s => s.filter(x => x.id !== id));
       showToast("success", "Session revoked.");
     } catch {
       showToast("error", "Could not revoke session.");
+    } finally {
+      setRevokingId(null);
+      setRevokeId(null);
     }
   }
 
@@ -391,6 +401,7 @@ export default function AdminSecurity() {
                   className={inputClass + " pr-12"}
                 />
                 <button type="button" onClick={() => setShowCurrentPw(!showCurrentPw)}
+                  aria-label={showCurrentPw ? "Hide current password" : "Show current password"}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                   {showCurrentPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -412,6 +423,7 @@ export default function AdminSecurity() {
                     className={inputClass + " pr-12"}
                   />
                   <button type="button" onClick={() => setShowNewPw(!showNewPw)}
+                    aria-label={showNewPw ? "Hide new password" : "Show new password"}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                     {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -469,13 +481,21 @@ export default function AdminSecurity() {
                 <p className="text-sm text-gray-500">Revoke any session you don't recognise.</p>
               </div>
             </div>
-            <button type="button" onClick={loadSessions} className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
+            <button type="button" onClick={loadSessions} disabled={loadingSessions} aria-label="Refresh active sessions" className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all disabled:opacity-50">
               <RefreshCw className="w-4 h-4" />
             </button>
           </div>
 
           {loadingSessions ? (
             <div className="text-center py-6 text-gray-400 text-sm">Loading sessions…</div>
+          ) : sessionsError ? (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              <p className="font-semibold">Could not load active sessions.</p>
+              <p className="mt-1 text-xs">{sessionsError}</p>
+              <button type="button" onClick={loadSessions} className="mt-3 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-bold hover:bg-red-100">
+                Try again
+              </button>
+            </div>
           ) : sessions.length === 0 ? (
             <div className="text-center py-6 text-gray-400 text-sm">No active sessions found.</div>
           ) : (
@@ -492,7 +512,9 @@ export default function AdminSecurity() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => revokeSession(s.id)}
+                    onClick={() => setRevokeId(s.id)}
+                    disabled={revokingId !== null}
+                    aria-label={`Revoke ${shortenUA(s.userAgent)} session`}
                     className="p-2 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all"
                     title="Revoke session"
                   >
@@ -505,6 +527,14 @@ export default function AdminSecurity() {
         </div>
       </div>
     </div>
+      <ConfirmDialog
+        open={revokeId !== null}
+        title="Revoke this admin session?"
+        description="The selected session will be signed out immediately. This cannot be undone."
+        confirmText={revokingId !== null ? "Revoking…" : "Revoke session"}
+        onConfirm={() => revokeId !== null && void revokeSession(revokeId)}
+        onCancel={() => revokingId === null && setRevokeId(null)}
+      />
     </AdminLayout>
   );
 }

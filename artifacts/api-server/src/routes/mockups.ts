@@ -2,8 +2,260 @@ import { Router, type Request, type Response } from "express";
 import { db, mockupsTable } from "@workspace/db";
 import { eq, desc, asc, ilike, and, or, sql } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/adminAuth";
+import { validateSmartMockupIngestionManifest } from "../lib/mockupContract";
+import { ObjectNotFoundError, ObjectStorageService } from "../lib/objectStorage";
+import { parsePsdMaster, type ParsedPsdMaster } from "../lib/psdMasterParser";
 
 const router = Router();
+
+/**
+ * The Design Studio is source-kit driven. The public endpoint is deliberately
+ * release-pinned: administrator-uploaded rows remain available through the
+ * admin endpoint, but legacy database rows must never be allowed to reintroduce
+ * an older customer-facing runtime.
+ */
+type CanonicalCategory = "tshirt" | "longsleeve" | "hoodie" | "mug" | "cap" | "waterbottle";
+
+type CanonicalVariant = { category: CanonicalCategory; productName: string; color: string };
+
+const CANONICAL_COLORS: Record<CanonicalCategory, readonly string[]> = {
+  tshirt: ["white", "black", "navy", "maroon", "olive", "sky-blue", "grey", "red"],
+  longsleeve: ["white", "black", "charcoal", "heather-grey", "navy", "royal-blue", "forest-green", "burgundy", "red", "sand"],
+  hoodie: ["white", "black", "charcoal", "heather-grey", "navy", "royal-blue", "forest-green", "burgundy", "red", "sand"],
+  mug: ["white", "black", "navy", "red", "green", "purple", "sky-blue", "pink", "maroon", "orange"],
+  cap: ["white", "black", "navy", "maroon", "olive", "red", "grey", "forest"],
+  // White sublimation-coated aluminium blank; do not synthesize colored-body variants.
+  waterbottle: ["white"],
+};
+
+const CANONICAL_VIEWS: Record<CanonicalCategory, readonly string[]> = {
+  tshirt: ["front", "back", "left-sleeve", "right-sleeve", "neck-label"],
+  longsleeve: ["front", "back", "left-sleeve", "right-sleeve", "neck-label"],
+  hoodie: ["front", "back", "left-sleeve", "right-sleeve", "neck-label"],
+  mug: ["front", "back", "wrap"],
+  cap: ["front", "back"],
+  waterbottle: ["front", "back"],
+};
+
+const PRODUCT_NAMES: Record<CanonicalCategory, string> = {
+  tshirt: "Unisex T-Shirt", longsleeve: "Unisex Long Sleeve", hoodie: "Unisex Hoodie",
+  mug: "Coffee Mug", cap: "Structured Cap", waterbottle: "Water Bottle — White Sublimation Aluminium",
+};
+
+const CANONICAL_VARIANTS: CanonicalVariant[] = (Object.keys(CANONICAL_COLORS) as CanonicalCategory[]).flatMap((category) =>
+  CANONICAL_COLORS[category].map((color) => ({ category, productName: PRODUCT_NAMES[category], color }))
+);
+
+export function canonicalMockups() {
+  let id = -1;
+  return CANONICAL_VARIANTS.flatMap((variant) => CANONICAL_VIEWS[variant.category].map((face) => ({
+    id: id--,
+    name: `${variant.productName} — ${variant.color} — ${face}`,
+    description: "Canonical source-kit mockup used by the Design Studio",
+    productId: null,
+    productName: variant.productName,
+    imageUrl: `/mockups/psd-master-v10/runtime-roles/${variant.category}/${variant.color}/${face}-base.png?v=smart-v10.3`,
+    thumbUrl: null,
+    tags: ["source-kit", variant.category, variant.color, face],
+    isActive: true,
+    sortOrder: Math.abs(id),
+    masterFileUrl: null,
+    masterFileName: null,
+    masterFileMime: null,
+    masterFileSize: null,
+    masterFileSha256: null,
+    sourceKitKey: `${variant.category}/${variant.color}/${face}`,
+    face,
+    color: variant.color,
+    manifestJson: {
+       schema: "trynext-smartobject-runtime-surface/v1",
+      assetPath: `/mockups/psd-master-v10/runtime-roles/${variant.category}/${variant.color}/${face}-base.png`,
+      sourceKitKey: `${variant.category}:${variant.color}:${face}`,
+      releaseVersion: "smart-v10.3",
+       runtimeStatus: "approved",
+       masterFormat: variant.category === "mug" || variant.category === "waterbottle" ? "psb" : "psd",
+       masterStatus: "verified-source-package",
+       masterStorageStatus: "staging-only",
+       runtimeRoles: ["studioBackground", "base", "shadow", "protected", "highlight", "printMask"],
+       roleContract: "six checksum-bound browser-safe derivatives",
+    },
+    ingestionStatus: "ready",
+    ingestionError: null,
+    createdAt: new Date(0).toISOString(),
+    updatedAt: new Date(0).toISOString(),
+    isCanonical: true,
+  })));
+}
+
+function isValidImageUrl(value: unknown): value is string {
+  if (typeof value !== "string" || value.trim().length < 1) return false;
+  if (value.startsWith("/")) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+const MASTER_MIMES = new Set([
+  "image/vnd.adobe.photoshop",
+  "application/vnd.adobe.photoshop",
+  "image/x-photoshop",
+]);
+const INGESTION_STATUSES = new Set(["preview-only", "pending", "ready", "failed"]);
+const objectStorageService = new ObjectStorageService();
+
+async function resolveIngestionState(args: {
+  masterFileUrl: unknown;
+  manifestJson: unknown;
+  requestedStatus: unknown;
+  metadata: {
+    masterFileName?: unknown;
+    masterFileMime?: unknown;
+    masterFileSize?: unknown;
+    masterFileSha256?: unknown;
+    sourceKitKey?: unknown;
+    face?: unknown;
+    color?: unknown;
+  };
+}): Promise<{
+  status: "preview-only" | "ready" | "failed";
+  error: string | null;
+  manifestJson?: unknown;
+  parsedMaster?: ParsedPsdMaster;
+}> {
+  if (!args.masterFileUrl) {
+    return {
+      status: args.requestedStatus === "failed" ? "failed" : "preview-only",
+      error: args.requestedStatus === "failed" ? "Marked failed by administrator." : null,
+    };
+  }
+
+  if (!isValidMasterUrl(args.masterFileUrl)) {
+    return {
+      status: "failed",
+      error: "Smart v10.3 ingestion rejected: editable masters must remain private object paths.",
+    };
+  }
+
+  let buffer: Buffer;
+  try {
+    buffer = await objectStorageService.getObjectBuffer(args.masterFileUrl);
+  } catch (error) {
+    return {
+      status: "failed",
+      error: error instanceof ObjectNotFoundError
+        ? "Smart v10.3 ingestion rejected: the private PSD/PSB object was not found."
+        : "Smart v10.3 ingestion rejected: the private PSD/PSB object could not be read.",
+    };
+  }
+
+  const parsed = parsePsdMaster(
+    buffer,
+    typeof args.metadata.masterFileName === "string" ? args.metadata.masterFileName : "",
+    typeof args.metadata.masterFileMime === "string" ? args.metadata.masterFileMime : null,
+  );
+  if (!parsed.ok) {
+    return {
+      status: "failed",
+      error: `Smart v10.3 PSD/PSB parser rejected the master: ${parsed.errors.join("; ")}`,
+    };
+  }
+
+  const manifestRecord = args.manifestJson && typeof args.manifestJson === "object" && !Array.isArray(args.manifestJson)
+    ? args.manifestJson as Record<string, any>
+    : null;
+  const manifestMaster = manifestRecord?.master && typeof manifestRecord.master === "object"
+    ? manifestRecord.master as Record<string, any>
+    : null;
+  const identityErrors: string[] = [];
+  if (manifestMaster?.smartObjectLayer && manifestMaster.smartObjectLayer !== parsed.value.smartObject.layerName) {
+    identityErrors.push("manifest Smart Object layer does not match the parsed PSD/PSB layer");
+  }
+  const manifestGeometry = manifestMaster?.geometry;
+  if (
+    manifestGeometry &&
+    (manifestGeometry.canvasWidth !== parsed.value.canvas.width ||
+      manifestGeometry.canvasHeight !== parsed.value.canvas.height)
+  ) {
+    identityErrors.push("manifest canvas dimensions do not match the parsed PSD/PSB document");
+  }
+  if (identityErrors.length > 0) {
+    return {
+      status: "failed",
+      error: `Smart v10.3 ingestion rejected: ${identityErrors.join("; ")}`,
+    };
+  }
+
+  const normalizedManifest = manifestRecord
+    ? {
+        ...manifestRecord,
+        master: {
+          ...manifestMaster,
+          fileName: parsed.value.fileName,
+          mime: parsed.value.mime,
+          size: parsed.value.size,
+          sha256: parsed.value.sha256,
+          provenance: "catalog-psd-smart-object",
+          smartObjectLayer: parsed.value.smartObject.layerName,
+          ...(parsed.value.smartObject.smartObjectId ? { smartObjectId: parsed.value.smartObject.smartObjectId } : {}),
+          ...(parsed.value.smartObject.smartObjectType ? { smartObjectType: parsed.value.smartObject.smartObjectType } : {}),
+          smartObjectBounds: parsed.value.smartObject.bounds,
+          ...(parsed.value.smartObject.transform ? { smartObjectTransform: parsed.value.smartObject.transform } : {}),
+          geometry: {
+            ...(manifestMaster?.geometry ?? {}),
+            canvasWidth: parsed.value.canvas.width,
+            canvasHeight: parsed.value.canvas.height,
+          },
+        },
+      }
+    : args.manifestJson;
+
+  const validation = validateSmartMockupIngestionManifest(normalizedManifest, {
+    ...args.metadata,
+    masterFileName: parsed.value.fileName,
+    masterFileMime: parsed.value.mime,
+    masterFileSize: parsed.value.size,
+    masterFileSha256: parsed.value.sha256,
+  });
+  if (validation.errors.length > 0) {
+    return {
+      status: "failed",
+      error: `Smart v10.3 ingestion rejected: ${validation.errors.join("; ")}`,
+    };
+  }
+
+  return { status: "ready", error: null, manifestJson: normalizedManifest, parsedMaster: parsed.value };
+}
+
+function isValidMasterUrl(value: unknown): value is string {
+  return value === undefined || value === null ||
+    (typeof value === "string" && value.startsWith("/objects/") && value.length > "/objects/".length);
+}
+
+function isValidOptionalInt(value: unknown): boolean {
+  return value === undefined || value === null || (Number.isInteger(value) && Number(value) >= 0);
+}
+
+function parseOptionalPositiveInt(value: unknown): number | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null || value === "") return null;
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : undefined;
+}
+
+router.get("/mockups", async (req: Request, res: Response) => {
+  try {
+    // This endpoint is the public runtime contract. Do not merge arbitrary
+    // database rows here: older rows can contain retired paths and would
+    // otherwise win over the accepted v10.3 source-kit package.
+    res.json(canonicalMockups());
+  } catch (err) {
+    req.log.error({ err }, "Failed to list public mockup overrides");
+    res.status(500).json({ error: "internal_error", message: "Failed to list mockups" });
+  }
+});
 
 router.get("/admin/mockups", requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -25,7 +277,12 @@ router.get("/admin/mockups", requireAdmin, async (req: Request, res: Response) =
       ? await db.select().from(mockupsTable).where(and(...conditions)).orderBy(asc(mockupsTable.sortOrder), desc(mockupsTable.createdAt))
       : await db.select().from(mockupsTable).orderBy(asc(mockupsTable.sortOrder), desc(mockupsTable.createdAt));
 
-    res.json(rows);
+    const canonical = canonicalMockups().filter((row) => {
+      if (q && typeof q === "string" && !row.name.toLowerCase().includes(q.toLowerCase())) return false;
+      if (active !== undefined && active !== "true") return false;
+      return true;
+    });
+    res.json([...rows, ...canonical]);
   } catch (err) {
     req.log.error({ err }, "Failed to list mockups");
     res.status(500).json({ error: "internal_error", message: "Failed to list mockups" });
@@ -34,21 +291,78 @@ router.get("/admin/mockups", requireAdmin, async (req: Request, res: Response) =
 
 router.post("/admin/mockups", requireAdmin, async (req: Request, res: Response) => {
   try {
-    const { name, description, productId, productName, imageUrl, thumbUrl, tags, isActive, sortOrder } = req.body;
-    if (!name || !imageUrl) {
+    const {
+      name, description, productId, productName, imageUrl, thumbUrl, tags, isActive, sortOrder,
+      masterFileUrl, masterFileName, masterFileMime, masterFileSize, masterFileSha256,
+      sourceKitKey, face, color, manifestJson, ingestionStatus, ingestionError,
+    } = req.body;
+    const parsedProductId = parseOptionalPositiveInt(productId);
+    const parsedSortOrder = parseOptionalPositiveInt(sortOrder);
+    const parsedMasterFileSize = parseOptionalPositiveInt(masterFileSize);
+    if (typeof name !== "string" || !name.trim() || !isValidImageUrl(imageUrl)) {
       res.status(400).json({ error: "validation_error", message: "name and imageUrl are required" });
       return;
     }
+    if ((productId !== undefined && parsedProductId === undefined) || (sortOrder !== undefined && parsedSortOrder === undefined)) {
+      res.status(400).json({ error: "validation_error", message: "productId and sortOrder must be non-negative integers" });
+      return;
+    }
+    if (thumbUrl !== undefined && thumbUrl !== null && !isValidImageUrl(thumbUrl)) {
+      res.status(400).json({ error: "validation_error", message: "thumbUrl must be a valid URL or local path" });
+      return;
+    }
+    if (!isValidMasterUrl(masterFileUrl)) {
+      res.status(400).json({ error: "validation_error", message: "masterFileUrl must be a private /objects path" });
+      return;
+    }
+    if (masterFileMime !== undefined && masterFileMime !== null && !MASTER_MIMES.has(String(masterFileMime))) {
+      res.status(400).json({ error: "validation_error", message: "masterFileMime must be a PSD or PSB MIME type" });
+      return;
+    }
+    if (!isValidOptionalInt(parsedMasterFileSize)) {
+      res.status(400).json({ error: "validation_error", message: "masterFileSize must be a non-negative integer" });
+      return;
+    }
+    if (ingestionStatus !== undefined && !INGESTION_STATUSES.has(String(ingestionStatus))) {
+      res.status(400).json({ error: "validation_error", message: "invalid ingestionStatus" });
+      return;
+    }
+    const ingestion = await resolveIngestionState({
+      masterFileUrl,
+      manifestJson,
+      requestedStatus: ingestionStatus,
+      metadata: {
+        masterFileName,
+        masterFileMime,
+        masterFileSize: parsedMasterFileSize,
+        masterFileSha256,
+        sourceKitKey,
+        face,
+        color,
+      },
+    });
+    const parsedMaster = ingestion.parsedMaster;
     const [row] = await db.insert(mockupsTable).values({
-      name,
+      name: name.trim(),
       description: description ?? null,
-      productId: productId ? parseInt(productId, 10) : null,
+      productId: parsedProductId ?? null,
       productName: productName ?? null,
       imageUrl,
       thumbUrl: thumbUrl ?? null,
+      masterFileUrl: masterFileUrl ?? null,
+       masterFileName: parsedMaster?.fileName ?? masterFileName ?? null,
+       masterFileMime: parsedMaster?.mime ?? masterFileMime ?? null,
+       masterFileSize: parsedMaster?.size ?? parsedMasterFileSize ?? null,
+       masterFileSha256: parsedMaster?.sha256 ?? masterFileSha256 ?? null,
+      sourceKitKey: sourceKitKey ?? null,
+      face: face ?? null,
+      color: color ?? null,
+       manifestJson: ingestion.manifestJson ?? manifestJson ?? null,
+      ingestionStatus: ingestion.status,
+      ingestionError: ingestion.error ?? (ingestionStatus === "failed" ? ingestionError ?? "Marked failed by administrator." : null),
       tags: Array.isArray(tags) ? tags : [],
       isActive: isActive !== false,
-      sortOrder: sortOrder ?? 0,
+      sortOrder: parsedSortOrder ?? 0,
     }).returning();
     res.status(201).json(row);
   } catch (err) {
@@ -64,23 +378,120 @@ router.patch("/admin/mockups/:id", requireAdmin, async (req: Request, res: Respo
       res.status(400).json({ error: "validation_error", message: "Invalid id" });
       return;
     }
-    const { name, description, productId, productName, imageUrl, thumbUrl, tags, isActive, sortOrder } = req.body;
-    const update: Partial<typeof mockupsTable.$inferInsert> = { updatedAt: new Date() };
-    if (name !== undefined) update.name = name;
-    if (description !== undefined) update.description = description;
-    if (productId !== undefined) update.productId = productId ? parseInt(productId, 10) : null;
-    if (productName !== undefined) update.productName = productName;
-    if (imageUrl !== undefined) update.imageUrl = imageUrl;
-    if (thumbUrl !== undefined) update.thumbUrl = thumbUrl;
-    if (tags !== undefined) update.tags = Array.isArray(tags) ? tags : [];
-    if (isActive !== undefined) update.isActive = isActive;
-    if (sortOrder !== undefined) update.sortOrder = sortOrder;
-
-    const [row] = await db.update(mockupsTable).set(update).where(eq(mockupsTable.id, id)).returning();
-    if (!row) {
+    const {
+      name, description, productId, productName, imageUrl, thumbUrl, tags, isActive, sortOrder,
+      masterFileUrl, masterFileName, masterFileMime, masterFileSize, masterFileSha256,
+      sourceKitKey, face, color, manifestJson, ingestionStatus, ingestionError,
+    } = req.body;
+    const [existing] = await db.select().from(mockupsTable).where(eq(mockupsTable.id, id)).limit(1);
+    if (!existing) {
       res.status(404).json({ error: "not_found", message: "Mockup not found" });
       return;
     }
+    const update: Partial<typeof mockupsTable.$inferInsert> = { updatedAt: new Date() };
+    if (name !== undefined) {
+      if (typeof name !== "string" || !name.trim()) {
+        res.status(400).json({ error: "validation_error", message: "name must be a non-empty string" });
+        return;
+      }
+      update.name = name.trim();
+    }
+    if (description !== undefined) update.description = description;
+    if (productId !== undefined) {
+      const parsed = parseOptionalPositiveInt(productId);
+      if (parsed === undefined) {
+        res.status(400).json({ error: "validation_error", message: "productId must be a non-negative integer or null" });
+        return;
+      }
+      update.productId = parsed;
+    }
+    if (productName !== undefined) update.productName = productName;
+    if (imageUrl !== undefined) {
+      if (!isValidImageUrl(imageUrl)) {
+        res.status(400).json({ error: "validation_error", message: "imageUrl must be a valid URL or local path" });
+        return;
+      }
+      update.imageUrl = imageUrl;
+    }
+    if (thumbUrl !== undefined) {
+      if (thumbUrl !== null && !isValidImageUrl(thumbUrl)) {
+        res.status(400).json({ error: "validation_error", message: "thumbUrl must be a valid URL or local path" });
+        return;
+      }
+      update.thumbUrl = thumbUrl;
+    }
+    if (tags !== undefined) update.tags = Array.isArray(tags) ? tags : [];
+    if (masterFileUrl !== undefined) {
+      if (!isValidMasterUrl(masterFileUrl)) {
+        res.status(400).json({ error: "validation_error", message: "masterFileUrl must be a private /objects path" });
+        return;
+      }
+      update.masterFileUrl = masterFileUrl;
+    }
+    if (masterFileName !== undefined) update.masterFileName = masterFileName;
+    if (masterFileMime !== undefined) {
+      if (masterFileMime !== null && !MASTER_MIMES.has(String(masterFileMime))) {
+        res.status(400).json({ error: "validation_error", message: "masterFileMime must be a PSD or PSB MIME type" });
+        return;
+      }
+      update.masterFileMime = masterFileMime;
+    }
+    if (masterFileSize !== undefined) {
+      const parsed = parseOptionalPositiveInt(masterFileSize);
+      if (!isValidOptionalInt(parsed)) {
+        res.status(400).json({ error: "validation_error", message: "masterFileSize must be a non-negative integer" });
+        return;
+      }
+      update.masterFileSize = parsed ?? null;
+    }
+    if (masterFileSha256 !== undefined) update.masterFileSha256 = masterFileSha256;
+    if (sourceKitKey !== undefined) update.sourceKitKey = sourceKitKey;
+    if (face !== undefined) update.face = face;
+    if (color !== undefined) update.color = color;
+    if (manifestJson !== undefined) update.manifestJson = manifestJson;
+    if (ingestionStatus !== undefined) {
+      if (!INGESTION_STATUSES.has(String(ingestionStatus))) {
+        res.status(400).json({ error: "validation_error", message: "invalid ingestionStatus" });
+        return;
+      }
+    }
+    const mergedMasterFileUrl = masterFileUrl !== undefined ? masterFileUrl : existing.masterFileUrl;
+    const mergedManifestJson = manifestJson !== undefined ? manifestJson : existing.manifestJson;
+    const mergedMetadata = {
+      masterFileName: masterFileName !== undefined ? masterFileName : existing.masterFileName,
+      masterFileMime: masterFileMime !== undefined ? masterFileMime : existing.masterFileMime,
+      masterFileSize: masterFileSize !== undefined ? update.masterFileSize : existing.masterFileSize,
+      masterFileSha256: masterFileSha256 !== undefined ? masterFileSha256 : existing.masterFileSha256,
+      sourceKitKey: sourceKitKey !== undefined ? sourceKitKey : existing.sourceKitKey,
+      face: face !== undefined ? face : existing.face,
+      color: color !== undefined ? color : existing.color,
+    };
+    const ingestion = await resolveIngestionState({
+      masterFileUrl: mergedMasterFileUrl,
+      manifestJson: mergedManifestJson,
+      requestedStatus: ingestionStatus !== undefined ? ingestionStatus : existing.ingestionStatus,
+      metadata: mergedMetadata,
+    });
+    if (ingestion.parsedMaster) {
+      update.masterFileName = ingestion.parsedMaster.fileName;
+      update.masterFileMime = ingestion.parsedMaster.mime;
+      update.masterFileSize = ingestion.parsedMaster.size;
+      update.masterFileSha256 = ingestion.parsedMaster.sha256;
+    }
+    update.manifestJson = ingestion.manifestJson ?? mergedManifestJson;
+    update.ingestionStatus = ingestion.status;
+    update.ingestionError = ingestion.error ?? (ingestionStatus === "failed" ? ingestionError ?? "Marked failed by administrator." : null);
+    if (isActive !== undefined) update.isActive = isActive;
+    if (sortOrder !== undefined) {
+      const parsed = parseOptionalPositiveInt(sortOrder);
+      if (parsed === undefined || parsed === null) {
+        res.status(400).json({ error: "validation_error", message: "sortOrder must be a non-negative integer" });
+        return;
+      }
+      update.sortOrder = parsed;
+    }
+
+    const [row] = await db.update(mockupsTable).set(update).where(eq(mockupsTable.id, id)).returning();
     res.json(row);
   } catch (err) {
     req.log.error({ err }, "Failed to update mockup");

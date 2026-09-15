@@ -1,0 +1,7 @@
+{
+  "name": "@trynext/image-size-safe",
+  "version": "1.0.0",
+  "description": "Bounded image dimension parser for Metro asset metadata",
+  "main": "index.js",
+  "license": "MIT"
+}

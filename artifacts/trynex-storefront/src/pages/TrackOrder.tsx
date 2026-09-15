@@ -33,13 +33,21 @@ const PAYMENT_STATUSES: Record<string, { label: string; color: string; bg: strin
     label: 'Payment Confirmed', color: '#22c55e', bg: 'rgba(34,197,94,0.06)', border: 'rgba(34,197,94,0.15)',
     icon: CheckCircle2, desc: 'Payment received and confirmed!'
   },
+  paid: {
+    label: 'Payment Confirmed', color: '#22c55e', bg: 'rgba(34,197,94,0.06)', border: 'rgba(34,197,94,0.15)',
+    icon: CheckCircle2, desc: 'Payment received and confirmed!'
+  },
   wrong: {
     label: 'Payment Issue', color: '#ef4444', bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.15)',
     icon: AlertTriangle, desc: 'Issue with payment — contact us on WhatsApp'
   },
   cod: {
-    label: 'Cash on Delivery', color: '#16a34a', bg: 'rgba(74,222,128,0.08)', border: 'rgba(74,222,128,0.2)',
-    icon: CheckCircle2, desc: 'Pay when you receive your order'
+    label: 'Legacy COD', color: '#9ca3af', bg: 'rgba(156,163,175,0.08)', border: 'rgba(156,163,175,0.2)',
+    icon: CheckCircle2, desc: 'Legacy Cash on Delivery order'
+  },
+  partial: {
+    label: '25% Advance Paid', color: '#f59e0b', bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.15)',
+    icon: CheckCircle2, desc: 'Deposit received. Remaining 75% on delivery.'
   },
 };
 
@@ -243,12 +251,12 @@ export default function TrackOrder() {
   const paymentInfo = displayOrder ? PAYMENT_STATUSES[(displayOrder.paymentStatus as string)] || PAYMENT_STATUSES.pending : null;
   const PayIcon = paymentInfo?.icon;
 
-  const TRYNEX_NUMBER = settings.whatsappNumber
+  const TRYNEXT_NUMBER = settings.whatsappNumber
     ? (settings.whatsappNumber.startsWith('+') ? settings.whatsappNumber : `+88${settings.whatsappNumber.replace(/[^0-9]/g, '')}`)
     : (settings.phone || "");
 
   const paymentMethodLabel: Record<string, string> = {
-    cod: 'Cash on Delivery', bkash: 'bKash', nagad: 'Nagad', rocket: 'Rocket'
+    cod: 'Legacy COD', bkash: 'bKash', nagad: 'Nagad', rocket: 'Rocket'
   };
 
   const timeline = (displayOrder?.timeline as any[]) || [];
@@ -284,9 +292,9 @@ export default function TrackOrder() {
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title="Track Your Order"
-        description="Track your TryNex Lifestyle order in real-time. Enter your order number to see live delivery status updates."
+        description="Track your Trynext Lifestyle order in real-time. Enter your order number to see live delivery status updates."
         canonical="/track"
-        keywords="track order trynex, order tracking bangladesh"
+        keywords="track order trynext, order tracking bangladesh"
       />
       <Navbar />
 
@@ -304,7 +312,7 @@ export default function TrackOrder() {
             </div>
             <p className="text-xs font-black uppercase tracking-widest text-primary mb-3">Live Tracking</p>
             <h1 className="text-5xl font-black font-display tracking-tighter mb-4">Track Your Order</h1>
-            <p className="text-gray-400 text-base">Real-time updates on your TryNex order status.</p>
+            <p className="text-gray-400 text-base">Real-time updates on your Trynext order status.</p>
           </motion.div>
 
           <motion.div
@@ -394,7 +402,7 @@ export default function TrackOrder() {
               >
                 <XCircle className="w-6 h-6 mx-auto mb-2 opacity-70" />
                 Order not found. Please check your Order Number and Email, then try again.
-                {TRYNEX_NUMBER && <p className="text-xs text-gray-400 mt-2">Need help? WhatsApp: {TRYNEX_NUMBER}</p>}
+                {TRYNEXT_NUMBER && <p className="text-xs text-gray-400 mt-2">Need help? WhatsApp: {TRYNEXT_NUMBER}</p>}
               </motion.div>
             )}
           </AnimatePresence>
@@ -460,7 +468,7 @@ export default function TrackOrder() {
                               }}
                             />
                           )}
-                          <div className="relative flex justify-between">
+                          <div className="relative flex justify-between flex-wrap gap-y-4 sm:flex-nowrap">
                             {ORDER_STEPS.map((step, i) => {
                               const isActive = stepIdx >= i;
                               const isCurrent = stepIdx === i;
@@ -473,7 +481,7 @@ export default function TrackOrder() {
                                 'Delivered': 'Done',
                               };
                               return (
-                                <div key={step.key} className="flex flex-col items-center gap-1 sm:gap-2 z-10" title={step.label}>
+                                <div key={step.key} className="flex flex-col items-center gap-1 sm:gap-2 z-10 w-1/5 sm:w-auto" title={step.label}>
                                   <motion.div
                                     animate={isCurrent ? { scale: [1, 1.12, 1] } : {}}
                                     transition={{ repeat: Infinity, duration: 2 }}
@@ -487,7 +495,7 @@ export default function TrackOrder() {
                                   >
                                     <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
                                   </motion.div>
-                                  <span className={cn("text-[8px] sm:text-[10px] font-black text-center leading-tight max-w-[40px] sm:max-w-none", isActive ? "text-gray-700" : "text-gray-300")}>
+                                  <span className={cn("text-[8px] sm:text-[10px] font-black text-center leading-tight sm:max-w-none w-full", isActive ? "text-gray-700" : "text-gray-300")}>
                                     <span className="hidden sm:inline">{step.label}</span>
                                     <span className="sm:hidden">{shortLabels[step.label] ?? step.label}</span>
                                   </span>
@@ -725,7 +733,7 @@ export default function TrackOrder() {
                     >
                       <span className="flex items-center gap-2">
                         <MessageSquare className="w-4 h-4 text-orange-500" />
-                        Messages from TryNex
+                        Messages from Trynext
                         {orderMessages.length > 0 && (
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-orange-100 text-orange-600">
                             {orderMessages.length}
@@ -759,7 +767,7 @@ export default function TrackOrder() {
                                     }}
                                   >
                                     {isAdmin && (
-                                      <p className="text-[10px] font-bold mb-0.5 text-orange-600">{msg.sender_name || "TryNex Team"}</p>
+                                      <p className="text-[10px] font-bold mb-0.5 text-orange-600">{msg.sender_name || "Trynext Team"}</p>
                                     )}
                                     <p className="leading-snug">{msg.message}</p>
                                     <p className="text-[10px] opacity-60 mt-0.5">
@@ -777,7 +785,7 @@ export default function TrackOrder() {
                             value={newMessage}
                             onChange={e => setNewMessage(e.target.value)}
                             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMsg(); } }}
-                            placeholder="Send a message to TryNex…"
+                            placeholder="Send a message to Trynext…"
                             rows={2}
                             maxLength={2000}
                             className="flex-1 resize-none text-sm px-3 py-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-400"
@@ -798,18 +806,18 @@ export default function TrackOrder() {
                   </div>
                 )}
 
-                {TRYNEX_NUMBER && (
+                {TRYNEXT_NUMBER && (
                   <div className="p-5 rounded-2xl text-center"
                     style={{ background: 'rgba(255,107,43,0.05)', border: '1px solid rgba(255,107,43,0.1)' }}>
                     <p className="text-sm text-gray-500">
                       Questions? WhatsApp us at{' '}
                       <a
-                        href={`https://wa.me/${TRYNEX_NUMBER.replace(/[^0-9]/g, '')}`}
+                        href={`https://wa.me/${TRYNEXT_NUMBER.replace(/[^0-9]/g, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-black text-orange-600 hover:underline"
                       >
-                        {TRYNEX_NUMBER}
+                        {TRYNEXT_NUMBER}
                       </a>
                     </p>
                   </div>

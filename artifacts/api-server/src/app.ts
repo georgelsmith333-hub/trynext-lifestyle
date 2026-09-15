@@ -1,16 +1,21 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import compression from "compression";
 import helmet from "helmet";
 import pinoHttp from "pino-http";
 import rateLimit from "express-rate-limit";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { validateAdminSession } from "./lib/adminSessions";
+import { shouldRejectMutation, mutationsAllowedForRole } from "./lib/runtimePolicy";
 
 const app: Express = express();
 
 app.set("trust proxy", 1);
+
+// Compression (gzip/brotli) — reduces bandwidth for JSON responses.
+app.use(compression({ threshold: 1024 }));
 
 // Security headers — protects against clickjacking, MIME sniffing, XSS,
 // referrer leaks, etc. CSP is disabled at the API layer because this
@@ -60,23 +65,34 @@ app.use(
 // In production (`NODE_ENV === "production"`) we additionally require
 // `ALLOWED_ORIGINS` to be configured so a misconfigured deploy can't
 // silently fall back to a permissive policy.
+const DEFAULT_PROD_ORIGINS = [
+  "https://trynext.pages.dev",
+];
+
 const DEFAULT_DEV_ORIGINS = [
-  "https://trynexshop.com",
-  "https://www.trynexshop.com",
+  "https://trynext.pages.dev",
   "http://localhost:5173",
   "http://localhost:8080",
   "http://localhost:8081",
+  "http://localhost",
+  "http://localhost:80",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:8080",
   "http://127.0.0.1:8081",
+  "http://127.0.0.1",
+  "http://127.0.0.1:80",
 ];
 
 const allowedOrigins: string[] = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
-  : DEFAULT_DEV_ORIGINS;
+  : process.env.NODE_ENV === "production"
+    ? [...DEFAULT_PROD_ORIGINS]
+    : [...DEFAULT_DEV_ORIGINS];
 
 // EXTRA_ORIGINS — optional comma-separated list of additional allowed origins.
 // Use this to add preview or staging URLs without changing ALLOWED_ORIGINS.
+// In production, explicit allowlists are still required and preview patterns are
+// only honored when they are intentionally named operator domains.
 const extraOrigins = process.env.EXTRA_ORIGINS;
 if (extraOrigins) {
   for (const o of extraOrigins.split(",").map(s => s.trim()).filter(Boolean)) {
@@ -85,10 +101,7 @@ if (extraOrigins) {
 }
 
 if (process.env.NODE_ENV === "production" && !process.env.ALLOWED_ORIGINS) {
-  logger.error(
-    "ALLOWED_ORIGINS env var is not set in production. Refusing to start with a permissive CORS fallback.",
-  );
-  throw new Error("ALLOWED_ORIGINS must be configured in production");
+  logger.warn("ALLOWED_ORIGINS is not set; using the strict built-in Trynext production CORS allow-list.");
 }
 
 app.use(
@@ -99,21 +112,27 @@ app.use(
       // have no Origin header — allow them.
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
+      // Keep the local preview origins available in development even when an
+      // operator has supplied ALLOWED_ORIGINS for a deployed environment.
+      if (process.env.NODE_ENV !== "production" && DEFAULT_DEV_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
       // Allow any *.replit.app origin (user-owned autoscale deployments).
-      if (/^https:\/\/[^/]+\.replit\.app$/.test(origin)) {
+      if (process.env.NODE_ENV !== "production" && /^https:\/\/[^/]+\.replit\.app$/.test(origin)) {
         return callback(null, true);
       }
       // Allow any *.replit.dev origin (Replit preview/dev domains, Expo mobile
       // dev builds, and all Replit-hosted dev environments like *.expo.sisko.replit.dev).
-      if (/^https:\/\/[^/]+\.replit\.dev$/.test(origin)) {
+      if (process.env.NODE_ENV !== "production" && /^https:\/\/[^/]+\.replit\.dev$/.test(origin)) {
         return callback(null, true);
       }
-      // Allow Vercel preview and production deployments for TryNex storefront.
-      if (/^https:\/\/trynex[^.]*\.vercel\.app$/.test(origin)) {
+      // Allow Vercel preview and production deployments for Trynext storefront.
+      if (process.env.NODE_ENV !== "production" && /^https:\/\/trynext[^.]*\.vercel\.app$/.test(origin)) {
         return callback(null, true);
       }
-      // Allow Cloudflare Pages preview deployments for TryNex.
-      if (/^https:\/\/[^/]*\.trynex-lifestyle-shop\.pages\.dev$/.test(origin)) {
+      // Allow the exact Cloudflare Pages production host plus any Pages preview
+      // hostname belonging to this project.
+      if (/^https:\/\/(?:[a-z0-9-]+\.)?trynext-lifestyle-shop\.pages\.dev$/i.test(origin)) {
         return callback(null, true);
       }
       return callback(new Error(`CORS: origin ${origin} not allowed`));
@@ -149,6 +168,15 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
   const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(req.method);
   if (!isMutation) { next(); return; }
 
+  // Viewer heartbeats are deliberately public and only update an in-memory,
+  // decorative counter. They must continue to work for visitors who happen to
+  // have a customer cookie, including clients running a cached older bundle.
+  const requestPath = req.originalUrl.split("?")[0];
+  const isPublicViewerHeartbeat =
+    req.method === "PUT" &&
+    /^\/(?:api\/)?products\/\d+\/viewers$/.test(requestPath);
+  if (isPublicViewerHeartbeat) { next(); return; }
+
   const hasBearerToken = /^Bearer\s+\S+/i.test(req.headers.authorization || "");
   const parsedCookies = (req as any).cookies ?? {};
   const hasCookie = !!(parsedCookies.admin_token || parsedCookies.customer_token);
@@ -159,6 +187,25 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
       res.status(403).json({ error: "csrf_blocked", message: "Cross-site request blocked (missing X-Requested-With header)" });
       return;
     }
+  }
+  next();
+});
+
+// Standby environments are deliberately read-only. This is a defense in depth
+// control: Cloudflare also routes sensitive mutations to the primary only, but a
+// standby must still reject writes if someone calls its public URL directly.
+// Promotion is explicit through TRYNEXT_RUNTIME_ROLE=promoted; the default keeps
+// the existing Render 1 behavior as the primary writer.
+const runtimeRole = process.env.TRYNEXT_RUNTIME_ROLE ?? "primary";
+const mutationsAllowed = mutationsAllowedForRole(runtimeRole);
+app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
+  if (shouldRejectMutation(runtimeRole, req.method)) {
+    res.status(503).json({
+      error: "standby_read_only",
+      message: "This standby environment does not accept production mutations.",
+      runtimeRole,
+    });
+    return;
   }
   next();
 });
@@ -267,6 +314,29 @@ app.use("/api/categories", publicReadLimiter);
 app.use("/api/blog", publicReadLimiter);
 app.use("/api/reviews", publicReadLimiter);
 app.post("/api/reviews", reviewSubmitLimiter);
+
+// AI generation: expensive inference endpoints — tight limit prevents abuse and cost spikes.
+// 10 requests / 5 min per IP is generous for a design session; a bulk abuser would hit it fast.
+const aiLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "rate_limited", message: "Too many AI generation requests. Please wait a few minutes." },
+});
+app.use("/api/ai", aiLimiter);
+app.use("/api/admin/ai", aiLimiter);
+
+// Storage / upload: prevent bulk upload abuse. 30 uploads / 10 min per IP.
+const uploadLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "rate_limited", message: "Too many uploads from this network. Please wait a few minutes." },
+});
+app.use("/api/storage", uploadLimiter);
+app.use("/api/upload", uploadLimiter);
 
 app.use("/api", (_req, res, next) => {
   const url = _req.originalUrl;

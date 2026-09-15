@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { type Product } from "@workspace/api-client-react";
 import { Heart, ShoppingCart, ArrowRight, Trash2, X, Check } from "lucide-react";
 import { ToastAction } from "@/components/ui/toast";
-import { formatPrice, getApiUrl } from "@/lib/utils";
+import { formatPrice, getApiUrl, resolveImageUrl } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 const COLOR_MAP: Record<string, string> = {
@@ -200,7 +200,7 @@ export default function Wishlist() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SEOHead title="My Wishlist" description="Your saved items at TryNex Lifestyle." noindex />
+      <SEOHead title="My Wishlist" description="Your saved items at Trynext Lifestyle." noindex />
       <Navbar />
       <main className="flex-1 pt-header pb-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -245,7 +245,7 @@ export default function Wishlist() {
             </div>
             </>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
               <AnimatePresence mode="popLayout">
                 {items.map((item) => (
                   <motion.div
@@ -258,7 +258,7 @@ export default function Wishlist() {
                   >
                     <div className="relative aspect-[4/5] overflow-hidden bg-gray-50">
                       {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" width="300" height="300" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/product-placeholder.svg"; }} />
+                        <img src={resolveImageUrl(item.imageUrl)} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" width="300" height="300" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/product-placeholder.svg"; }} />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-4xl">🛍️</div>
                       )}
@@ -278,10 +278,10 @@ export default function Wishlist() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleAddToCart(item)}
-                          className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all hover:opacity-90"
+                          className="flex-1 py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-sm text-white flex items-center justify-center gap-1.5 sm:gap-2 transition-all hover:opacity-90 min-h-[44px]"
                           style={{ background: 'linear-gradient(135deg, #E85D04, #FB8500)' }}
                         >
-                          <ShoppingCart className="w-4 h-4" /> Add to Cart
+                          <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Add
                         </button>
                         <button
                           onClick={() => {
@@ -289,9 +289,9 @@ export default function Wishlist() {
                             toast({ title: "Removed from wishlist", description: item.name });
                           }}
                           aria-label={`Remove ${item.name} from wishlist`}
-                          className="p-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all border border-gray-200 btn-press"
+                          className="p-2 sm:p-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all border border-gray-200 btn-press min-h-[44px]"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                       </div>
                     </div>

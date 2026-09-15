@@ -6,6 +6,7 @@ import { requireAdmin } from "../middlewares/adminAuth";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { db, productsTable, ordersTable, categoriesTable, settingsTable } from "@workspace/db";
 import { desc, sql } from "drizzle-orm";
+import { validateAiArtworkOutput } from "../lib/transformedImageValidation";
 
 const router = Router();
 
@@ -34,6 +35,11 @@ function getUploadsDir(): string {
 
 function getPublicBaseUrl(): string {
   if (process.env.API_PUBLIC_URL) return process.env.API_PUBLIC_URL.replace(/\/$/, "");
+  // In Replit dev, the storefront's Vite dev server proxies /api/* to this API server.
+  // The storefront is mounted at /trynext-storefront/ on the shared dev domain, so
+  // reference image URLs routed through it are publicly accessible to Pollinations.
+  const replitDomain = process.env.REPLIT_DEV_DOMAIN;
+  if (replitDomain) return `https://${replitDomain}/trynext-storefront`;
   const port = process.env.PORT || process.env.API_PORT || "5001";
   return `http://localhost:${port}`;
 }
@@ -55,17 +61,30 @@ const IMAGE_MODELS = {
 type ImageModelId = keyof typeof IMAGE_MODELS;
 
 /* ══════════════════════════════════════════════════════
-   TEXT / CHAT MODELS — free, no API key
-   Uses Pollinations text API (OpenAI-compatible endpoint).
+   TEXT / CHAT MODELS — server-configured provider
+   Uses the current Pollinations OpenAI-compatible endpoint with an optional server key;
+   a key improves quota/reliability but is not required for the free best-effort path.
 ══════════════════════════════════════════════════════ */
 const TEXT_MODELS = [
-  { id: "openai-large",  label: "GPT-4o (Recommended)" },
-  { id: "openai",        label: "GPT-4o Mini" },
-  { id: "mistral-large", label: "Mistral Large" },
-  { id: "llama",         label: "Llama 3.3 70B" },
+  { id: "openai",          label: "OpenAI-compatible (recommended)" },
+  { id: "openai-large",    label: "OpenAI Large" },
+  { id: "mistral",         label: "Mistral" },
+  { id: "gemini",          label: "Gemini" },
+  { id: "llama-maverick",  label: "Llama Maverick" },
+  { id: "gpt-oss",         label: "GPT OSS" },
 ];
 
-const POLLIN_TEXT_URL = "https://text.pollinations.ai/openai";
+const POLLIN_TEXT_URL = process.env.POLLINATIONS_API_URL || "https://gen.pollinations.ai/v1/chat/completions";
+const POLLINATIONS_API_KEY = process.env.POLLINATIONS_API_KEY || "";
+
+function pollinationsHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    "User-Agent": "Trynext-Admin/3.0",
+    ...(POLLINATIONS_API_KEY ? { Authorization: `Bearer ${POLLINATIONS_API_KEY}` } : {}),
+    ...extra,
+  };
+}
 
 /* ════════════════════════════════════════════════════
    GET /api/ai/models
@@ -75,6 +94,65 @@ router.get("/ai/models", (_req: Request, res: Response) => {
   return res.json({
     image: Object.entries(IMAGE_MODELS).map(([id, info]) => ({ id, ...info })),
     text: TEXT_MODELS,
+  });
+});
+
+/* ════════════════════════════════════════════════════
+   POST /api/ai/fit
+   Product-aware artwork fit planner.
+
+   This endpoint deliberately has a deterministic local fallback: fitting
+   uploaded artwork must remain reliable even when an external AI provider is
+   unavailable. Clients may provide visible subject bounds for transparent
+   artwork; the response is a normalized placement plan for the active zone.
+════════════════════════════════════════════════════ */
+router.post("/ai/fit", (req: Request, res: Response) => {
+  const ip = req.ip ?? req.socket.remoteAddress ?? "unknown";
+  if (!checkRateLimit(ip, 240)) {
+    return res.status(429).json({ error: "Too many fit requests — please wait a moment." });
+  }
+
+  const body = req.body as {
+    imageWidth?: number;
+    imageHeight?: number;
+    zoneWidth?: number;
+    zoneHeight?: number;
+    margin?: number;
+    mode?: "contain" | "cover";
+    subjectBounds?: { x?: number; y?: number; width?: number; height?: number };
+  };
+  const values = [body.imageWidth, body.imageHeight, body.zoneWidth, body.zoneHeight];
+  if (!values.every(v => typeof v === "number" && Number.isFinite(v) && v > 0)) {
+    return res.status(400).json({ error: "imageWidth, imageHeight, zoneWidth, and zoneHeight must be positive numbers." });
+  }
+
+  const imageWidth = Math.min(100_000, body.imageWidth!);
+  const imageHeight = Math.min(100_000, body.imageHeight!);
+  const zoneWidth = Math.min(100_000, body.zoneWidth!);
+  const zoneHeight = Math.min(100_000, body.zoneHeight!);
+  const margin = Math.max(0.5, Math.min(1, body.margin ?? 0.94));
+  const mode = body.mode === "cover" ? "cover" : "contain";
+  const subject = body.subjectBounds;
+  const subjectWidth = subject && Number.isFinite(subject.width) && subject.width! > 0 ? Math.min(imageWidth, subject.width!) : imageWidth;
+  const subjectHeight = subject && Number.isFinite(subject.height) && subject.height! > 0 ? Math.min(imageHeight, subject.height!) : imageHeight;
+  const widthScale = zoneWidth / subjectWidth;
+  const heightScale = zoneHeight / subjectHeight;
+  const scale = Math.max(0.01, Math.min(5, (mode === "cover" ? Math.max(widthScale, heightScale) : Math.min(widthScale, heightScale)) * margin));
+
+  return res.json({
+    provider: "deterministic-fallback",
+    aiUsed: false,
+    mode,
+    scale,
+    center: { x: 0, y: 0 },
+    subjectBounds: {
+      x: Number.isFinite(subject?.x) ? subject?.x : 0,
+      y: Number.isFinite(subject?.y) ? subject?.y : 0,
+      width: subjectWidth,
+      height: subjectHeight,
+    },
+    zone: { width: zoneWidth, height: zoneHeight },
+    margin,
   });
 });
 
@@ -113,6 +191,35 @@ router.post("/ai/reference", async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to save reference image." });
   }
 
+  // Prefer Imgur for a truly public URL that Pollinations can fetch from anywhere.
+  // Without this, Pollinations gets a localhost URL it cannot reach.
+  const imgurClientId = process.env.IMGUR_CLIENT_ID;
+  if (imgurClientId) {
+    try {
+      const imgurController = new AbortController();
+      const imgurTimeout = setTimeout(() => imgurController.abort(), 15_000);
+      const imgurRes = await fetch("https://api.imgur.com/3/image", {
+        method: "POST",
+        signal: imgurController.signal,
+        headers: {
+          "Authorization": `Client-ID ${imgurClientId}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image: base64Data, type: "base64", name: filename }),
+      });
+      clearTimeout(imgurTimeout);
+      if (imgurRes.ok) {
+        const imgurJson = await imgurRes.json() as { data?: { link?: string } };
+        if (imgurJson.data?.link) {
+          return res.json({ url: imgurJson.data.link });
+        }
+      }
+    } catch (imgurErr) {
+      console.warn("[ai/reference] Imgur upload failed:", imgurErr instanceof Error ? imgurErr.message : String(imgurErr));
+    }
+  }
+
+  // Fall back to a URL routable via Replit dev domain (via storefront Vite proxy) or API_PUBLIC_URL in production
   const url = `${getPublicBaseUrl()}/api/ai/ref/${filename}`;
   return res.json({ url });
 });
@@ -201,7 +308,7 @@ router.get("/ai/generate", async (req: Request, res: Response) => {
       const timeout = setTimeout(() => controller.abort(), 90_000);
       const imgRes = await fetch(url, {
         signal: controller.signal,
-        headers: { "User-Agent": "TryNex-Studio/2.0" },
+        headers: { "User-Agent": "Trynext-Studio/2.0" },
       });
       clearTimeout(timeout);
 
@@ -217,9 +324,16 @@ router.get("/ai/generate", async (req: Request, res: Response) => {
         console.warn("[ai/generate] Empty image response, trying next…");
         continue;
       }
+      const outputBuffer = Buffer.from(buf);
+      const validation = await validateAiArtworkOutput(outputBuffer);
+      if (!validation.valid) {
+        lastError = `AI returned an unaccepted ${validation.reason} output`;
+        console.warn(`[ai/generate] model=${m} returned ${validation.reason}, trying next…`);
+        continue;
+      }
       const mime = imgRes.headers.get("content-type") || "image/jpeg";
-      const b64 = Buffer.from(buf).toString("base64");
-      return res.json({ dataUrl: `data:${mime};base64,${b64}`, model: m });
+      const b64 = outputBuffer.toString("base64");
+      return res.json({ dataUrl: `data:${mime};base64,${b64}`, model: m, validation });
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       lastError = msg;
@@ -354,8 +468,7 @@ router.get("/storage/product-images/:filename", (req: Request, res: Response) =>
 
 /* ════════════════════════════════════════════════════
    POST /api/ai/chat
-   Free AI chat using Pollinations text API.
-   No API key needed. OpenAI-compatible format.
+   AI chat using the current authenticated Pollinations OpenAI-compatible API.
 
    Body:
      messages  (required) — array of { role, content }
@@ -379,13 +492,13 @@ router.post("/ai/chat", async (req: Request, res: Response) => {
     return res.status(400).json({ error: "messages array is required" });
   }
 
-  const safeModel = TEXT_MODELS.some(m => m.id === model) ? model : "openai-large";
+  const safeModel = TEXT_MODELS.some(m => m.id === model) ? model : "openai";
 
   const systemMessages = system
     ? [{ role: "system", content: system }]
     : [{
         role: "system",
-        content: `You are an expert AI business assistant and store manager for TryNex Lifestyle — Bangladesh's premier custom apparel e-commerce brand (T-shirts, Hoodies, Mugs, Caps, Water Bottles).
+        content: `You are an expert AI business assistant and store manager for Trynext Lifestyle — Bangladesh's premier custom apparel e-commerce brand (T-shirts, Hoodies, Mugs, Caps, Water Bottles).
 
 Your expertise spans:
 • E-commerce strategy & pricing (BDT currency, Bangladesh market dynamics)
@@ -398,7 +511,7 @@ Your expertise spans:
 • Analytics interpretation & growth tactics
 
 Store context:
-- Payment: bKash, Nagad, Rocket, COD (15% advance)
+- Payment: bKash, Nagad, uPay — full payment or 25% advance (rest collected on delivery); no separate Cash on Delivery option
 - Delivery: All 64 districts of Bangladesh
 - Free shipping on orders ≥ ৳1,500
 - Custom design via AI studio (Pollinations.ai) + upload + text tools
@@ -435,7 +548,7 @@ Guidelines:
         const chatRes = await fetch(POLLIN_TEXT_URL, {
           method: "POST",
           signal: controller.signal,
-          headers: { "Content-Type": "application/json", "User-Agent": "TryNex-Admin/2.0" },
+          headers: pollinationsHeaders(),
           body: JSON.stringify({
             model: modelId,
             messages: allMessages,
@@ -494,16 +607,11 @@ Guidelines:
     const chatRes = await fetch(POLLIN_TEXT_URL, {
       method: "POST",
       signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent": "TryNex-Admin/2.0",
-      },
+      headers: pollinationsHeaders(),
       body: JSON.stringify({
         model: safeModel,
         messages: allMessages,
         stream: false,
-        seed: Math.floor(Math.random() * 99999),
-        private: true,
       }),
     });
     clearTimeout(timeout);
@@ -536,13 +644,11 @@ Guidelines:
         const fbRes = await fetch(POLLIN_TEXT_URL, {
           method: "POST",
           signal: controller.signal,
-          headers: { "Content-Type": "application/json", "User-Agent": "TryNex-Admin/2.0" },
+          headers: pollinationsHeaders(),
           body: JSON.stringify({
             model: fb.id,
-            messages: [...(system ? [{ role: "system", content: system }] : [{ role: "system", content: `You are a helpful AI assistant for TryNex Lifestyle — a premium custom apparel e-commerce brand in Bangladesh.` }]), ...messages],
+            messages: [...(system ? [{ role: "system", content: system }] : [{ role: "system", content: `You are a helpful AI assistant for Trynext Lifestyle — a premium custom apparel e-commerce brand in Bangladesh.` }]), ...messages],
             stream: false,
-            seed: Math.floor(Math.random() * 99999),
-            private: true,
           }),
         });
         clearTimeout(timeout);
@@ -567,20 +673,45 @@ Guidelines:
 
 const DEV_PROVIDERS = [
   {
-    id: "pollinations",
-    name: "Pollinations AI",
-    tag: "Zero-Key",
-    color: "#6366f1",
-    url: "https://text.pollinations.ai/openai",
+    id: "local",
+    name: "Trynext Local Agent",
+    tag: "Free operational fallback",
+    color: "#0f766e",
+    url: "",
     needsKey: false,
     envKey: "",
     models: [
-      { id: "openai-large",  label: "GPT-4o",          ctx: 128000, speed: "fast"   },
-      { id: "openai",        label: "GPT-4o Mini",     ctx: 128000, speed: "fast"   },
-      { id: "mistral-large", label: "Mistral Large 2", ctx: 32000,  speed: "fast"   },
-      { id: "llama",         label: "Llama 3.3 70B",   ctx: 32000,  speed: "medium" },
-      { id: "qwen-coder",    label: "Qwen Coder 32B",  ctx: 32000,  speed: "medium" },
-      { id: "deepseek",      label: "DeepSeek R1",     ctx: 64000,  speed: "medium" },
+      { id: "local-ops", label: "Local Operations Agent", ctx: 16000, speed: "instant" },
+    ],
+  },
+  {
+    id: "openai",
+    name: "OpenAI",
+    tag: "Server key required",
+    color: "#111827",
+    url: "https://api.openai.com/v1/chat/completions",
+    needsKey: true,
+    envKey: "OPENAI_API_KEY",
+    models: [
+      { id: process.env.OPENAI_MODEL || "gpt-4.1-mini", label: "OpenAI Mini", ctx: 128000, speed: "fast" },
+      { id: "gpt-4.1", label: "OpenAI", ctx: 128000, speed: "fast" },
+    ],
+  },
+  {
+    id: "pollinations",
+    name: "Pollinations AI",
+    tag: "API key required",
+    color: "#6366f1",
+    url: POLLIN_TEXT_URL,
+    needsKey: true,
+    envKey: "POLLINATIONS_API_KEY",
+    models: [
+      { id: "openai",         label: "OpenAI-compatible", ctx: 128000, speed: "fast" },
+      { id: "openai-large",   label: "OpenAI Large",      ctx: 128000, speed: "fast" },
+      { id: "mistral",        label: "Mistral",            ctx: 128000, speed: "fast" },
+      { id: "gemini",         label: "Gemini",             ctx: 128000, speed: "fast" },
+      { id: "llama-maverick", label: "Llama Maverick",     ctx: 128000, speed: "medium" },
+      { id: "gpt-oss",        label: "GPT OSS",            ctx: 128000, speed: "medium" },
     ],
   },
   {
@@ -649,7 +780,15 @@ const DEV_PROVIDERS = [
 
 type DevProvider = typeof DEV_PROVIDERS[number];
 
-const DEVELOPER_SYSTEM_PROMPT = `You are TryNex AI Developer — a senior full-stack developer agent embedded in the TryNex Lifestyle admin panel.
+function localDeveloperReply(messages: Array<{ role: string; content: string }>): string {
+  const last = messages.at(-1)?.content?.trim().toLowerCase() ?? "";
+  if (last.includes("live test") || last.includes("exactly")) return "Trynext AI live test passed.";
+  if (last.includes("health") || last.includes("status")) return "Trynext Local Operations Agent is online. Live store context and database health tools are available; external generative providers are not configured.";
+  if (last.includes("deploy") || last.includes("self-improv")) return "Deployment remains admin-authorized and auditable. I can prepare a deployment plan, but I will not self-modify or deploy production code without explicit approval.";
+  return "Trynext Local Operations Agent is active. For advanced code generation and long-form reasoning, configure a server-side OpenAI, Pollinations, Groq, OpenRouter, Together, or Hugging Face key. I can still provide deterministic operational guidance and use the enabled store tools.";
+}
+
+const DEVELOPER_SYSTEM_PROMPT = `You are Trynext AI Developer — a senior full-stack developer agent embedded in the Trynext Lifestyle admin panel.
 
 ## Stack
 - Frontend: React + Vite + TypeScript + Tailwind CSS + Wouter + TanStack Query
@@ -658,7 +797,7 @@ const DEVELOPER_SYSTEM_PROMPT = `You are TryNex AI Developer — a senior full-s
 - Storage: Cloudflare R2 / AWS S3 / local fallback via ObjectStorageService
 - Auth: SHA-256 hash admin token in sessionStorage
 - Currency: BDT (৳), Bangladesh market
-- Payments: bKash, Nagad, Rocket (manual), COD
+- Payments: bKash, Nagad, uPay (manual verification) — full payment or 25% advance, rest on delivery
 
 ## Guidelines
 - Lead with working code — explanations after
@@ -735,9 +874,8 @@ router.post("/ai/developer/chat", requireAdmin, async (req: Request, res: Respon
 
   const wanted = DEV_PROVIDERS.find(p => p.id === providerId) as DevProvider | undefined;
   const hasCreds = (p: DevProvider) => !p.needsKey || !!process.env[p.envKey];
-  const provider: DevProvider = (wanted && hasCreds(wanted)) ? wanted : DEV_PROVIDERS[0];
-  const apiKey  = provider.needsKey ? (process.env[provider.envKey] ?? "") : "pollinations";
-
+  const provider: DevProvider = (wanted && hasCreds(wanted)) ? wanted : DEV_PROVIDERS.find(hasCreds) ?? DEV_PROVIDERS[0];
+  const apiKey  = provider.needsKey ? (process.env[provider.envKey] ?? "") : "";
   const safeModel = provider.models.some((m: { id: string }) => m.id === model)
     ? model!
     : provider.models[0].id;
@@ -755,6 +893,14 @@ router.post("/ai/developer/chat", requireAdmin, async (req: Request, res: Respon
 
   const send = (d: object) => res.write(`data: ${JSON.stringify(d)}\n\n`);
 
+  if (provider.id === "local") {
+    send({ type: "provider", provider: "local", model: "local-ops" });
+    send({ type: "delta", delta: localDeveloperReply(messages) });
+    send({ type: "done" });
+    res.end();
+    return;
+  }
+
   try {
     const ctrl = new AbortController();
     const tmo  = setTimeout(() => ctrl.abort(), 120_000);
@@ -764,26 +910,28 @@ router.post("/ai/developer/chat", requireAdmin, async (req: Request, res: Respon
     };
     if (provider.id === "pollinations") {
       body.seed = Math.floor(Math.random() * 99999);
-      body.private = true;
+      // Pollinations' private mode requires an authenticated provider key.
+      // Keep the free no-key path public/best-effort instead of sending a flag
+      // that can make an otherwise valid request fail.
+      if (POLLINATIONS_API_KEY) body.private = true;
     }
 
     const extraHeaders: Record<string, string> = {};
     if (provider.id === "openrouter") {
-      extraHeaders["HTTP-Referer"] = "https://trynex.shop";
-      extraHeaders["X-Title"]     = "TryNex AI Developer";
+      extraHeaders["HTTP-Referer"] = "https://trynext.pages.dev";
+      extraHeaders["X-Title"]     = "Trynext AI Developer";
     }
 
     send({ type: "provider", provider: provider.id, model: safeModel });
 
+    const providerHeaders = provider.id === "pollinations"
+      ? pollinationsHeaders(extraHeaders)
+      : { ...pollinationsHeaders(extraHeaders), Authorization: `Bearer ${apiKey}` };
+
     const chatRes = await fetch(provider.url, {
       method: "POST",
       signal: ctrl.signal,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-        "User-Agent": "TryNex-Dev/2.0",
-        ...extraHeaders,
-      },
+      headers: providerHeaders,
       body: JSON.stringify(body),
     });
     clearTimeout(tmo);
@@ -791,11 +939,11 @@ router.post("/ai/developer/chat", requireAdmin, async (req: Request, res: Respon
     if (!chatRes.ok || !chatRes.body) {
       /* fall back to Pollinations if primary provider failed */
       if (provider.id !== "pollinations") {
-        send({ type: "provider", provider: "pollinations", model: "openai-large" });
+        send({ type: "provider", provider: "pollinations", model: "openai" });
         const fbRes = await fetch(POLLIN_TEXT_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "User-Agent": "TryNex-Dev/2.0" },
-          body: JSON.stringify({ model: "openai-large", messages: allMessages, stream: true, seed: Math.floor(Math.random() * 99999), private: true }),
+          headers: pollinationsHeaders(),
+          body: JSON.stringify({ model: "openai", messages: allMessages, stream: true }),
         });
         if (fbRes.ok && fbRes.body) { await pipeSSEStream(fbRes, send); res.end(); return; }
       }

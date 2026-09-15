@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 import { cleanupOutdatedCaches, matchPrecache, precacheAndRoute } from "workbox-precaching";
 import { registerRoute, NavigationRoute } from "workbox-routing";
-import { NetworkFirst, CacheFirst } from "workbox-strategies";
+import { NetworkFirst, CacheFirst, StaleWhileRevalidate } from "workbox-strategies";
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { ExpirationPlugin } from "workbox-expiration";
 
@@ -30,7 +30,7 @@ self.addEventListener("activate", () => { installedHealthy = true; });
 setTimeout(() => {
   if (!installedHealthy) {
     // eslint-disable-next-line no-console
-    console.warn("[trynex-sw] never activated; self-unregistering to avoid poisoning clients");
+    console.warn("[trynext-sw] never activated; self-unregistering to avoid poisoning clients");
     void self.registration.unregister().catch(() => {});
   }
 }, 30_000);
@@ -74,11 +74,10 @@ registerRoute(
 
 registerRoute(
   /\.(?:png|jpg|jpeg|webp|svg|gif|ico)$/i,
-  new CacheFirst({
-    cacheName: "images-cache",
+  new StaleWhileRevalidate({
+    cacheName: "images-cache-v5-clean",
     plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+      new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 }),
     ],
   })
 );
@@ -91,7 +90,7 @@ registerRoute(
 // credentials handling.
 
 const navigationHandler = new NetworkFirst({
-  cacheName: "navigation-cache-v2",
+  cacheName: "navigation-cache-v5-clean",
   networkTimeoutSeconds: 5,
   plugins: [new CacheableResponsePlugin({ statuses: [200] })],
 });

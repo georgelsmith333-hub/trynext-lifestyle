@@ -2,6 +2,7 @@ import { Router, type IRouter, type Request, type Response } from "express";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
 import { requireAdmin } from "../middlewares/adminAuth";
 import { z } from "zod";
+import sharp from "sharp";
 
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
@@ -13,15 +14,30 @@ const ALLOWED_IMAGE_TYPES: Record<string, number[][]> = {
   "image/webp": [[0x52, 0x49, 0x46, 0x46]], // RIFF header; also verify offset 8 = WEBP
 };
 
-const ALLOWED_TYPES = new Set(Object.keys(ALLOWED_IMAGE_TYPES));
+// Photoshop PSD and PSB files share the `8BPS` signature. The version at
+// bytes 4–5 distinguishes PSD (1) from PSB (2). These files are stored as
+// private editable masters and are never passed through the image optimizer.
+const ALLOWED_MASTER_TYPES = new Set([
+  "image/vnd.adobe.photoshop",
+  "application/vnd.adobe.photoshop",
+  "image/x-photoshop",
+]);
+
+const ALLOWED_TYPES = new Set([...Object.keys(ALLOWED_IMAGE_TYPES), ...ALLOWED_MASTER_TYPES]);
 
 function matchesMagicBytes(buf: Buffer, signatures: number[][]): boolean {
   return signatures.some(sig => sig.every((byte, i) => buf[i] === byte));
 }
 
 // Returns a validated content-type based on actual file magic bytes,
-// or null if the content is not a recognised image.
+// including Photoshop PSD/PSB masters, or null for an unrecognised file.
 function detectImageType(buf: Buffer): string | null {
+  if (buf.length >= 6 && buf.slice(0, 4).toString("ascii") === "8BPS") {
+    const version = buf.readUInt16BE(4);
+    if (version === 1) return "image/vnd.adobe.photoshop";
+    if (version === 2) return "application/vnd.adobe.photoshop";
+  }
+
   for (const [mimeType, sigs] of Object.entries(ALLOWED_IMAGE_TYPES)) {
     if (matchesMagicBytes(buf, sigs)) {
       // Extra check for WebP: bytes 8-11 must be "WEBP"
@@ -49,7 +65,7 @@ const UploadRequestSchema = z.object({
   contentType: z.string().min(1, "contentType is required").max(127, "contentType too long")
                 .transform(v => v.toLowerCase().split(";")[0].trim())
                 .refine(v => ALLOWED_TYPES.has(v), {
-                  message: "Unsupported content type. Only JPEG, PNG, GIF, and WebP images are allowed.",
+                  message: "Unsupported content type. JPEG, PNG, GIF, WebP, PSD, and PSB files are allowed.",
                 }),
 });
 
@@ -128,6 +144,7 @@ router.put("/storage/upload-direct/:objectId", async (req: Request, res: Respons
         req.on("data", (chunk: Buffer) => {
           totalBytes += chunk.length;
           if (totalBytes > MAX_UPLOAD_BYTES) {
+            req.destroy(); // stop incoming data immediately to free memory
             reject(new Error("Upload too large"));
             return;
           }
@@ -152,7 +169,7 @@ router.put("/storage/upload-direct/:objectId", async (req: Request, res: Respons
     // Magic-byte validation
     const detectedType = detectImageType(bodyBuf);
     if (!detectedType) {
-      res.status(415).json({ error: "Unsupported file type. Only JPEG, PNG, GIF, and WebP images are accepted." });
+      res.status(415).json({ error: "Unsupported file type. JPEG, PNG, GIF, WebP, PSD, and PSB files are accepted." });
       return;
     }
 
@@ -189,6 +206,10 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
     const filePath = Array.isArray(raw) ? raw.join("/") : raw;
     await objectStorageService.streamPublicObject(filePath, res);
   } catch (error) {
+    if (error instanceof ObjectNotFoundError) {
+      res.status(404).json({ error: "File not found" });
+      return;
+    }
     req.log.error({ err: error }, "Error serving public object");
     if (!res.headersSent) res.status(500).json({ error: "Failed to serve public object" });
   }
@@ -211,6 +232,57 @@ router.get("/storage/objects/*path", async (req: Request, res: Response) => {
     }
     req.log.error({ err: error }, "Error serving object");
     if (!res.headersSent) res.status(500).json({ error: "Failed to serve object" });
+  }
+});
+
+/**
+ * POST /storage/optimize
+ * Server-side image optimization: convert uploaded images to WebP, resize if
+ * needed, and strip metadata. Returns a buffer the client can upload or the server
+ * can persist. Requires admin auth.
+ */
+const OptimizeSchema = z.object({
+  path: z.string().min(1, "path is required").max(512),
+  width: z.number().int().min(32).max(4096).optional(),
+  height: z.number().int().min(32).max(4096).optional(),
+  quality: z.number().int().min(1).max(100).default(85),
+  format: z.enum(["webp", "avif", "jpeg", "png"]).default("webp"),
+});
+
+router.post("/storage/optimize", requireAdmin, async (req: Request, res: Response) => {
+  const parsed = OptimizeSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "validation_error", message: parsed.error.errors.map(e => e.message).join("; ") });
+    return;
+  }
+  try {
+    const { path, width, height, quality, format } = parsed.data;
+    if (!path.startsWith("/objects/") && !path.startsWith("/public/")) {
+      res.status(400).json({ error: "validation_error", message: "path must start with /objects/ or /public/" });
+      return;
+    }
+    const buf = await objectStorageService.getObjectBuffer(path);
+    let pipeline = sharp(buf);
+    if (width || height) {
+      pipeline = pipeline.resize(width, height, { fit: "inside", withoutEnlargement: true });
+    }
+    switch (format) {
+      case "webp": pipeline = pipeline.webp({ quality, effort: 4 }); break;
+      case "avif": pipeline = pipeline.avif({ quality, effort: 4 }); break;
+      case "jpeg": pipeline = pipeline.jpeg({ quality, mozjpeg: true }); break;
+      case "png": pipeline = pipeline.png({ quality, effort: 7 }); break;
+    }
+    const outBuf = await pipeline.toBuffer();
+    res.setHeader("Content-Type", `image/${format}`);
+    res.setHeader("Content-Length", outBuf.length);
+    res.send(outBuf);
+  } catch (error) {
+    if (error instanceof ObjectNotFoundError) {
+      res.status(404).json({ error: "Object not found" });
+      return;
+    }
+    req.log.error({ err: error }, "Image optimization failed");
+    res.status(500).json({ error: "Image optimization failed" });
   }
 });
 

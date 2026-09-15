@@ -16,68 +16,69 @@ interface Channel {
 export function ConnectWithUs() {
   const settings = useSiteSettings();
 
-  const facebookUrl = settings.facebookUrl || "https://facebook.com/trynexlifestyle";
-  const instagramUrl = settings.instagramUrl || "https://instagram.com/trynex.lifestyle";
-  const youtubeUrl = settings.youtubeUrl || "https://youtube.com/@trynex";
-  const phoneRaw = (settings.phone || "+8801903426915").replace(/[^+0-9]/g, "");
-  const whatsappUrl = `https://wa.me/${phoneRaw.replace(/^\+/, "")}`;
-  const email = settings.email || "hello@trynexshop.com";
+  const facebookUrl = settings.facebookUrl?.trim() || "";
+  const instagramUrl = settings.instagramUrl?.trim() || "";
+  const youtubeUrl = settings.youtubeUrl?.trim() || "";
+  const phone = settings.phone?.trim() || "";
+  const whatsappRaw = settings.whatsappNumber?.trim() || phone;
+  const phoneRaw = phone.replace(/[^+0-9]/g, "");
+  const email = settings.email?.trim() || "";
 
-  const handleFromUrl = (url: string, fallback: string) =>
-    url.replace(/.*(?:facebook\.com|instagram\.com|youtube\.com\/?@?)\//i, "").replace(/\/$/, "") || fallback;
+  const handleFromUrl = (url: string) =>
+    url.replace(/.*(?:facebook\.com|instagram\.com|youtube\.com\/?@?)\//i, "").replace(/\/$/, "");
 
   const channels: Channel[] = [
-    {
+    ...(whatsappRaw ? [{
       label: "WhatsApp",
       handle: "Chat with us",
-      href: whatsappUrl,
+      href: `https://wa.me/${whatsappRaw.replace(/[^0-9]/g, "")}`,
       Icon: MessageCircle,
       gradient: "linear-gradient(135deg, #25D366, #128C7E)",
       shadow: "0 8px 24px rgba(37,211,102,0.25)",
       description: "Fastest replies — order, custom designs, or support",
       cta: "Open chat",
-    },
-    {
+    }] : []),
+    ...(facebookUrl ? [{
       label: "Facebook",
-      handle: handleFromUrl(facebookUrl, "trynexlifestyle"),
+      handle: handleFromUrl(facebookUrl),
       href: facebookUrl,
       Icon: Facebook,
       gradient: "linear-gradient(135deg, #1877F2, #0a5fcf)",
       shadow: "0 8px 24px rgba(24,119,242,0.25)",
-      description: "Daily updates, customer reviews & live drops",
+      description: "Daily updates and live drops",
       cta: "Like our page",
-    },
-    {
+    }] : []),
+    ...(instagramUrl ? [{
       label: "Instagram",
-      handle: "@" + handleFromUrl(instagramUrl, "trynex.lifestyle"),
+      handle: "@" + handleFromUrl(instagramUrl),
       href: instagramUrl,
       Icon: Instagram,
       gradient: "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)",
       shadow: "0 8px 24px rgba(225,48,108,0.25)",
       description: "Behind-the-scenes, new products & customer photos",
       cta: "Follow us",
-    },
-    {
+    }] : []),
+    ...(youtubeUrl ? [{
       label: "YouTube",
-      handle: handleFromUrl(youtubeUrl, "@trynex"),
+      handle: handleFromUrl(youtubeUrl),
       href: youtubeUrl,
       Icon: Youtube,
       gradient: "linear-gradient(135deg, #FF0000, #c40000)",
       shadow: "0 8px 24px rgba(255,0,0,0.22)",
       description: "How-to videos, product walkthroughs & tutorials",
       cta: "Subscribe",
-    },
-    {
+    }] : []),
+    ...(phoneRaw ? [{
       label: "Call us",
-      handle: settings.phone || "+8801903426915",
+      handle: phone,
       href: `tel:${phoneRaw}`,
       Icon: Phone,
       gradient: "linear-gradient(135deg, #E85D04, #FB8500)",
       shadow: "0 8px 24px rgba(232,93,4,0.28)",
       description: "10am – 10pm, 7 days a week",
       cta: "Call now",
-    },
-    {
+    }] : []),
+    ...(email ? [{
       label: "Email",
       handle: email,
       href: `mailto:${email}`,
@@ -86,7 +87,7 @@ export function ConnectWithUs() {
       shadow: "0 8px 24px rgba(30,41,59,0.22)",
       description: "Order issues, bulk enquiries & partnerships",
       cta: "Send email",
-    },
+    }] : []),
   ];
 
   return (
@@ -98,7 +99,7 @@ export function ConnectWithUs() {
             We're here for you
           </span>
           <h2 className="text-3xl md:text-4xl font-black font-display text-gray-900 mt-4">
-            Connect with TryNex
+            Connect with Trynext
           </h2>
           <p className="text-gray-500 mt-3 max-w-xl mx-auto">
             Reach us on the platform you love — every channel below is monitored daily.
@@ -151,7 +152,7 @@ export function ConnectWithUs() {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-8">
-          Trusted by 10,000+ customers across Bangladesh
+          Follow Trynext for custom-design ideas and product updates.
         </p>
       </div>
     </section>

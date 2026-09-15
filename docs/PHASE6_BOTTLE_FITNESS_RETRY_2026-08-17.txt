@@ -1,0 +1,18 @@
+HEAD
+HTTP/2 200 
+date: Mon, 17 Aug 2026 01:46:24 GMT
+content-type: image/png
+access-control-allow-origin: *
+cache-control: public, max-age=0, must-revalidate
+etag: "f5288a72c295846addb8baa42aa0515a"
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=%2FSUytciUjNGPr%2FxqFHtJvfCqDTyJ%2B%2Bs3NiEXmwiJYb1WuZuEo9aABCMJ4F1zfMR6kexNptoKvtcX7Vq9Fv%2BJKhCamgAWg6jaMoapLF%2FcMnJELzh%2FJx7qspcSF3DcyPGwBz%2BFx7lVDB%2FSfKzSJwyrX7jg"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a2c5013d3a2f8487-HKG
+alt-svc: h3=":443"; ma=86400
+
+GET
+status=200 type=image/png bytes=2588102 total=5.271577
+/tmp/bottle_fitness_phase6.png: PNG image data, 1920 x 1920, 8-bit/color RGB, non-interlaced

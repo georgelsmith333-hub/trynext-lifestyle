@@ -304,6 +304,7 @@ export default function AdminFacebookImport() {
                     type="url"
                     value={postUrl}
                     onChange={e => setPostUrl(e.target.value)}
+                    aria-label="Facebook or Instagram post URL"
                     placeholder="https://www.facebook.com/page/posts/... or https://www.instagram.com/p/..."
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                     onKeyDown={e => e.key === "Enter" && fetchFromUrl()}
@@ -490,21 +491,24 @@ export default function AdminFacebookImport() {
             className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={e => { if (e.target === e.currentTarget) { setEditingPost(null); setImportForm(null); } }}
           >
-            <motion.div
+             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+               role="dialog"
+               aria-modal="true"
+               aria-labelledby="social-import-title"
             >
               <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-3xl z-10">
                 <div>
-                  <h2 className="font-black font-display text-gray-900">Import as Product</h2>
+                   <h2 id="social-import-title" className="font-black font-display text-gray-900">Import as Product</h2>
                   <p className="text-xs text-gray-400 mt-0.5">
                     {importForm.name.length}/130 characters
                     {importForm.name.length > 130 && <span className="text-red-500 ml-1">(too long!)</span>}
                   </p>
                 </div>
-                <button onClick={() => { setEditingPost(null); setImportForm(null); }}
+                 <button type="button" aria-label="Close import dialog" onClick={() => { setEditingPost(null); setImportForm(null); }}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl">
                   <X className="w-5 h-5" />
                 </button>
@@ -516,15 +520,17 @@ export default function AdminFacebookImport() {
                     <label className="block text-sm font-semibold text-gray-600">Select Product Image</label>
                     <div className="flex gap-2 flex-wrap">
                       {(editingPost.images || []).map((img, idx) => (
-                        <button
+                         <button
                           key={idx}
+                          type="button"
+                          aria-label={`Select product image ${idx + 1}`}
                           onClick={() => {
                             setSelectedImageIdx(idx);
                             setImportForm(f => f ? { ...f, imageUrl: img } : f);
                           }}
                           className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${selectedImageIdx === idx ? "border-orange-500 ring-2 ring-orange-200" : "border-gray-200 hover:border-gray-300"}`}
                         >
-                          <img src={img} alt="" className="w-full h-full object-cover"
+                           <img src={img} alt={`Product option ${idx + 1}`} className="w-full h-full object-cover"
                             onError={e => { (e.target as HTMLImageElement).src = "/images/product-placeholder.svg"; }} />
                         </button>
                       ))}
@@ -642,7 +648,7 @@ export default function AdminFacebookImport() {
                         {importForm.colors.map(c => (
                           <span key={c} className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-gray-100 text-gray-700">
                             {c}
-                            <button type="button" onClick={() => removeColor(c)} className="text-gray-400 hover:text-red-500">
+                             <button type="button" aria-label={`Remove ${c} color`} onClick={() => removeColor(c)} className="text-gray-400 hover:text-red-500">
                               <X className="w-3 h-3" />
                             </button>
                           </span>

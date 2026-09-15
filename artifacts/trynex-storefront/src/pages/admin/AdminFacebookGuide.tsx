@@ -4,20 +4,48 @@ import { useState } from "react";
 
 function CopyBlock({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const [copyError, setCopyError] = useState(false);
+  const handleCopy = async () => {
+    setCopyError(false);
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // A selection fallback still lets users copy in browsers without clipboard permission.
+      const selection = window.getSelection();
+      const range = document.createRange();
+      const code = document.createElement("textarea");
+      code.value = text;
+      code.setAttribute("readonly", "");
+      code.style.position = "fixed";
+      code.style.opacity = "0";
+      document.body.appendChild(code);
+      code.select();
+      const copiedWithFallback = document.execCommand("copy");
+      selection?.removeAllRanges();
+      document.body.removeChild(code);
+      if (copiedWithFallback) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        setCopyError(true);
+      }
+    }
   };
   return (
     <div className="relative bg-gray-900 rounded-lg p-4 mt-2 overflow-x-auto">
       <button
         onClick={handleCopy}
+        type="button"
+        aria-label={copied ? "Copied to clipboard" : "Copy code to clipboard"}
         className="absolute top-2 right-2 text-gray-400 hover:text-white p-1 rounded"
       >
         {copied ? <CheckCircle2 className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
       </button>
       <pre className="text-green-400 text-sm font-mono whitespace-pre-wrap">{text}</pre>
+      {copyError && <p role="status" className="mt-2 text-xs text-amber-300">Copy failed. Select the code and copy it manually.</p>}
     </div>
   );
 }
@@ -47,7 +75,7 @@ export default function AdminFacebookGuide() {
               <ol className="list-decimal pl-5 space-y-2">
                 <li>Click <strong>"Create App"</strong></li>
                 <li>Choose <strong>"Business"</strong> type</li>
-                <li>Enter app name: <strong>"TryNex Import Tool"</strong></li>
+                <li>Enter app name: <strong>"Trynext Import Tool"</strong></li>
                 <li>Select your Facebook page as the business</li>
                 <li>Once created, go to <strong>App Settings → Basic</strong></li>
                 <li>Copy the <strong>App ID</strong> and <strong>App Secret</strong></li>
@@ -128,7 +156,7 @@ export default function AdminFacebookGuide() {
               <ol className="list-decimal pl-5 space-y-2">
                 <li>In your Facebook App, go to <strong>Add Product → Facebook Login</strong></li>
                 <li>Set <strong>Valid OAuth Redirect URIs</strong> to your site URL:
-                  <CopyBlock text="https://trynexshop.com/login" />
+                  <CopyBlock text="https://trynext.pages.dev/login" />
                 </li>
                 <li>Copy your <strong>App ID</strong></li>
                 <li>Add the Facebook SDK to your site's <code className="bg-gray-100 px-1.5 rounded">index.html</code>:
@@ -155,7 +183,7 @@ export default function AdminFacebookGuide() {
                 <li>Create a new project or select existing one</li>
                 <li>Go to <strong>Credentials → Create Credentials → OAuth 2.0 Client ID</strong></li>
                 <li>Set type to <strong>Web application</strong></li>
-                <li>Add <strong>Authorized JavaScript origins</strong>: <code className="bg-gray-100 px-1.5 rounded">https://trynexshop.com</code></li>
+                <li>Add <strong>Authorized JavaScript origins</strong>: <code className="bg-gray-100 px-1.5 rounded">https://trynext.pages.dev</code></li>
                 <li>Copy the <strong>Client ID</strong></li>
                 <li>Set the env variable: <code className="bg-gray-100 px-1.5 rounded">VITE_GOOGLE_CLIENT_ID=your_client_id</code></li>
                 <li>Add Google Sign-In script to <code className="bg-gray-100 px-1.5 rounded">index.html</code>:

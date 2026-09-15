@@ -12,7 +12,7 @@ const router = Router();
  *
  * UptimeRobot sends a POST with application/x-www-form-urlencoded body.
  * Key fields:
- *   monitorFriendlyName — e.g. "TryNex API" / "TryNex Storefront"
+ *   monitorFriendlyName — e.g. "Trynext API" / "Trynext Storefront"
  *   monitorURL          — the URL being monitored
  *   alertType           — "1" = DOWN, "2" = UP
  *   alertDetails        — human-readable reason
@@ -139,7 +139,7 @@ router.get("/admin/uptimerobot/webhook-url", async (req, res) => {
       "1. Go to UptimeRobot → My Settings → Alert Contacts",
       "2. Click 'Add Alert Contact'",
       "3. Type: Webhook",
-      "4. Friendly Name: TryNex Telegram",
+      "4. Friendly Name: Trynext Telegram",
       `5. URL: ${webhookUrl}`,
       "6. Send as JSON: OFF",
       "7. Save, then assign this contact to your monitors",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import {
   useListCategories, useCreateCategory, useUpdateCategory, useDeleteCategory,
@@ -6,7 +6,7 @@ import {
 } from "@workspace/api-client-react";
 import { Loader } from "@/components/ui/Loader";
 import { getAuthHeaders } from "@/lib/utils";
-import { Plus, Trash2, Edit3, Layers, Package, X } from "lucide-react";
+import { Plus, Trash2, Edit3, Layers, Package, X, Search, RefreshCw, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,17 +39,29 @@ export default function AdminCategories() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: number; name: string } | null>(null);
 
-  const { data, isLoading } = useListCategories({ query: { queryKey: ["/api/categories"], staleTime: 0, refetchOnMount: "always" } });
+  const { data, isLoading, isFetching, isError, refetch } = useListCategories({ query: { queryKey: ["/api/categories"], staleTime: 0, refetchOnMount: "always" } });
   const reqOpts = { request: { headers: getAuthHeaders() } };
   const { mutateAsync: createCategory, isPending: isCreating } = useCreateCategory(reqOpts);
   const { mutateAsync: updateCategory, isPending: isUpdating } = useUpdateCategory(reqOpts);
-  const { mutateAsync: deleteCategory } = useDeleteCategory(reqOpts);
+  const { mutateAsync: deleteCategory, isPending: isDeleting } = useDeleteCategory(reqOpts);
+  const [search, setSearch] = useState("");
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<CategoryForm>({
     resolver: zodResolver(categorySchema),
   });
 
   const categories: Category[] = data?.categories ?? [];
+  const filteredCategories = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return categories;
+    return categories.filter((category) =>
+      category.name.toLowerCase().includes(query) ||
+      category.slug.toLowerCase().includes(query) ||
+      (category.description ?? "").toLowerCase().includes(query)
+    );
+  }, [categories, search]);
+  const linkedCount = categories.filter((category) => (category.productCount ?? 0) > 0).length;
+  const emptyCount = categories.length - linkedCount;
 
   const openAddModal = () => {
     setEditingId(null);
@@ -107,34 +119,97 @@ export default function AdminCategories() {
 
   return (
     <AdminLayout>
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
+            <p className="text-xs font-black uppercase tracking-widest text-orange-500 mb-1">Catalogue structure</p>
             <h1 className="font-display font-black text-2xl text-gray-900 flex items-center gap-2">
               <Layers className="w-6 h-6 text-orange-500" />
               Categories
             </h1>
             <p className="text-sm text-gray-500 mt-1">Manage product categories shown in the storefront filters.</p>
           </div>
-          <button
-            type="button"
-            onClick={openAddModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-white text-sm"
-            style={{ background: 'linear-gradient(135deg, #E85D04, #FB8500)', boxShadow: '0 4px 16px rgba(232,93,4,0.3)' }}
-          >
-            <Plus className="w-4 h-4" /> Add Category
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-600 hover:border-orange-300 hover:text-orange-600 disabled:opacity-50"
+              aria-label="Refresh categories"
+            >
+              <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} /> Refresh
+            </button>
+            <button
+              type="button"
+              onClick={openAddModal}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-white text-sm"
+              style={{ background: 'linear-gradient(135deg, #E85D04, #FB8500)', boxShadow: '0 4px 16px rgba(232,93,4,0.3)' }}
+            >
+              <Plus className="w-4 h-4" /> Add Category
+            </button>
+          </div>
         </div>
 
-        {categories.length === 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { label: "Total categories", value: categories.length, icon: Layers, tone: "orange" },
+            { label: "With products", value: linkedCount, icon: CheckCircle2, tone: "green" },
+            { label: "Ready for products", value: emptyCount, icon: Package, tone: "blue" },
+          ].map((stat) => (
+            <div key={stat.label} className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                stat.tone === "green" ? "bg-green-50 text-green-600" : stat.tone === "blue" ? "bg-blue-50 text-blue-600" : "bg-orange-50 text-orange-600"
+              }`}>
+                <stat.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xl font-black text-gray-900">{stat.value}</p>
+                <p className="text-xs font-bold text-gray-400">{stat.label}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {isError ? (
+          <div className="rounded-2xl border border-red-100 bg-red-50 p-8 text-center">
+            <AlertCircle className="mx-auto mb-3 h-10 w-10 text-red-400" />
+            <h2 className="font-black text-red-900">Categories could not be loaded</h2>
+            <p className="mt-1 text-sm text-red-700">Refresh the page or try again in a moment.</p>
+            <button type="button" onClick={() => refetch()} className="mt-4 rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700">
+              Try again
+            </button>
+          </div>
+        ) : categories.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
             <Layers className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-sm text-gray-500">No categories yet. Create your first one.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto pb-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-w-[640px]">
-              {categories.map(cat => (
+          <>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="relative w-full max-w-md">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" aria-hidden="true" />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search categories..."
+                  aria-label="Search categories"
+                  className={`${inputClass} pl-10`}
+                />
+              </div>
+              <p className="text-xs font-semibold text-gray-400">
+                Showing {filteredCategories.length} of {categories.length}
+              </p>
+            </div>
+            {filteredCategories.length === 0 ? (
+              <div className="rounded-2xl border border-gray-100 bg-white py-16 text-center">
+                <Search className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                <p className="text-sm font-semibold text-gray-500">No categories match “{search}”.</p>
+                <button type="button" onClick={() => setSearch("")} className="mt-3 text-xs font-bold text-orange-600 hover:text-orange-700">Clear search</button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+              {filteredCategories.map(cat => (
                 <div key={cat.id} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-4">
                   {cat.imageUrl ? (
@@ -167,6 +242,7 @@ export default function AdminCategories() {
                     <button
                       type="button"
                       onClick={() => setDeleteConfirm({ id: cat.id, name: cat.name })}
+                      disabled={isDeleting}
                       className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-red-500 bg-red-50 hover:bg-red-100"
                       aria-label="Delete category"
                       title="Delete category"
@@ -186,8 +262,9 @@ export default function AdminCategories() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
+              </div>
+            )}
+          </>
       )}
     </div>
 
@@ -202,12 +279,15 @@ export default function AdminCategories() {
               initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
               onClick={e => e.stopPropagation()}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="category-dialog-title"
             >
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display font-black text-xl text-gray-900">
+                <h2 id="category-dialog-title" className="font-display font-black text-xl text-gray-900">
                   {editingId ? "Edit Category" : "Add Category"}
                 </h2>
-                <button type="button" onClick={() => setModalOpen(false)} className="p-1.5 text-gray-400 hover:text-gray-600">
+                 <button type="button" onClick={() => setModalOpen(false)} aria-label="Close category dialog" className="p-1.5 text-gray-400 hover:text-gray-600">
                   <X className="w-4 h-4" />
                 </button>
               </div>

@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "mug:pink:front",
+  "category": "mug",
+  "colorSlug": "pink",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/mug-pink-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/mug/pink/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psb/mug-pink-front.psb",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    143,
+    192,
+    881,
+    829
+  ],
+  "sha256": "65709f3bf602204b654351fac2c8fd6f0a0dd2be5bcc0126948c819fbd0ece24",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

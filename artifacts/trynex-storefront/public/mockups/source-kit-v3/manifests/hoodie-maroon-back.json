@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "hoodie:maroon:back",
+  "category": "hoodie",
+  "colorSlug": "maroon",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/hoodie-maroon-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/hoodie/maroon/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/hoodie-maroon-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    72,
+    62,
+    952,
+    962
+  ],
+  "sha256": "6ab82cb4c753abccd48ea3798fc8af8df936df8857ccfcf49b5c84d5b053c0e5",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

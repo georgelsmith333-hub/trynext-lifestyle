@@ -7,6 +7,7 @@ import { CartItemThumbnail } from "@/components/CartItemThumbnail";
 import { motion, AnimatePresence } from "framer-motion";
 import { memo, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { lockBodyScroll } from "@/lib/scrollLock";
 
 interface CartLineProps {
   item: CartItem;
@@ -31,7 +32,7 @@ const CartLine = memo(function CartLine({ item, onChangeQuantity, onRemove, onCl
     if (!studioMeta?.sessionId) return;
     const sessionRaw = localStorage.getItem(`studio_session_${studioMeta.sessionId}`);
     if (sessionRaw) {
-      localStorage.setItem("trynex-design-draft-v1", sessionRaw);
+      localStorage.setItem("trynext-design-draft-v1", sessionRaw);
       removeFromCart(item.id);
       onCloseDrawer();
       setLocation("/design-studio?edit=1");
@@ -75,6 +76,11 @@ const CartLine = memo(function CartLine({ item, onChangeQuantity, onRemove, onCl
             <span className="text-[10px] inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-bold bg-orange-50 text-orange-600">
               <Sparkles className="w-2.5 h-2.5" />
               Custom
+            </span>
+          )}
+          {studioMeta?.category === "mug" && studioMeta.mugMode && (
+            <span className="text-[10px] inline-flex items-center px-1.5 py-0.5 rounded font-bold bg-gray-100 text-gray-600">
+              Mug: {studioMeta.mugMode === "side1" ? "Side 1" : studioMeta.mugMode === "side2" ? "Side 2" : "Full wrap"}
             </span>
           )}
           
@@ -137,17 +143,14 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   const hasFreeShipping = subtotal >= freeShippingThreshold;
 
   useEffect(() => {
-    if (!open) {
-      document.body.style.overflow = '';
-      return;
-    }
-    document.body.style.overflow = 'hidden';
+    if (!open) return;
+    const unlock = lockBodyScroll();
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handleEsc);
     return () => {
-      document.body.style.overflow = '';
+      unlock();
       document.removeEventListener('keydown', handleEsc);
     };
   }, [open, onClose]);
@@ -275,6 +278,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                 <div
                   className="flex-1 overflow-y-auto px-5 py-3 space-y-3 overscroll-contain"
                   style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
+                  data-lenis-prevent
                 >
                   <AnimatePresence initial={false}>
                     {items.map((item) => (
@@ -292,6 +296,11 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
 
                 {/* Footer */}
                 <div className="border-t border-gray-100 px-5 py-4 space-y-3 shrink-0 pb-safe">
+                  {/* Hint about editing quantities */}
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-50 border border-orange-100">
+                    <span className="text-[10px] font-bold text-orange-600">💡 Tip:</span>
+                    <span className="text-[10px] text-orange-700">Edit quantities above, then checkout</span>
+                  </div>
                   {(() => {
                     const totalSavings = items.reduce((acc, item) => {
                       if (item.originalPrice && item.originalPrice > item.price) {
@@ -343,10 +352,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
 
                   <button
                     onClick={handleViewCart}
-                    className="w-full py-2 rounded-xl font-semibold text-sm text-gray-500 hover:text-gray-700 transition-colors text-center"
-                    style={{ minHeight: '40px' }}
+                    className="w-full py-2.5 rounded-xl font-bold text-sm text-orange-600 hover:text-orange-700 hover:bg-orange-50 transition-colors text-center border border-orange-200"
+                    style={{ minHeight: '44px' }}
                   >
-                    View Full Cart
+                    View & Edit Full Cart
                   </button>
                 </div>
               </>

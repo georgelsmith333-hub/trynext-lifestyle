@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "mug:orange:back",
+  "category": "mug",
+  "colorSlug": "orange",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/mug-orange-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/mug/orange/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psb/mug-orange-back.psb",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    143,
+    192,
+    881,
+    829
+  ],
+  "sha256": "b18e3f2d92089cbcf4b3974c8bec0629484ba7634ad8bcafa73f942999de55f5",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

@@ -4,7 +4,7 @@ import * as crypto from "crypto";
 import { logger } from "./logger";
 
 function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password + "trynex_salt_2024").digest("hex");
+  return crypto.createHash("sha256").update(password + "trynext_salt_2024").digest("hex");
 }
 
 // Re-export the migration runner under its historical name so callers
@@ -15,7 +15,7 @@ export { runMigrations } from "./migrationRunner";
 // Runs every startup so a wiped/blank value gets re-seeded automatically.
 async function seedCoreBrandSettings(): Promise<void> {
   const defaults: Record<string, string> = {
-    siteName: "TryNex Lifestyle",
+    siteName: "Trynext Lifestyle",
     tagline: "You imagine, we craft",
     exitIntentPromoEnabled: "true",
     exitIntentPromoCode: "WELCOME",
@@ -95,14 +95,14 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
         excerpt: "Struggling to find the perfect birthday gift? Discover how a personalised ceramic mug can become a heartfelt keepsake that lasts a lifetime.",
         imageUrl: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=1200&q=80",
         author: "Nadia Rahman",
-        authorBio: "Gift specialist and lifestyle writer at TryNex Lifestyle.",
+        authorBio: "Gift specialist and lifestyle writer at Trynext Lifestyle.",
         category: "Gift Ideas",
         tags: ["birthday", "custom mugs", "gift ideas", "personalized"],
         published: true,
         featured: true,
         readingTimeOverride: 6,
         content: `<h2>Why a Custom Mug Is the Ultimate Birthday Gift</h2>
-<p>Every morning, the birthday person reaches for their mug and is reminded of you. A personalised ceramic mug is not just a vessel for tea or coffee — it is a daily dose of warmth and memory. At TryNex Lifestyle, we print high-resolution designs on 330 ml food-safe ceramic mugs that are microwave and dishwasher safe.</p>
+<p>Every morning, the birthday person reaches for their mug and is reminded of you. A personalised ceramic mug is not just a vessel for tea or coffee — it is a daily dose of warmth and memory. At Trynext Lifestyle, we print high-resolution designs on 330 ml food-safe ceramic mugs that are microwave and dishwasher safe.</p>
 <h2>10 Birthday Mug Ideas That Will Wow Them</h2>
 <h3>1. A Photo Collage Mug</h3>
 <p>Compile your favourite shared photos into a beautiful grid. Choose a 6-photo or 9-photo layout and add a birthday message beneath each image for maximum sentimentality.</p>
@@ -124,12 +124,12 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <p>For an extra wow factor, choose our colour-changing mug variant. It appears solid black until hot liquid is poured in — then the design blooms to life. Perfect for morning surprises.</p>
 <h3>10. Couple Mug Set</h3>
 <p>If the birthday person is in a relationship, gift a coordinated couple mug set with matching designs that only make full sense when placed side by side. A gift for both while honouring one birthday.</p>
-<h2>How to Order Custom Mugs from TryNex Lifestyle</h2>
+<h2>How to Order Custom Mugs from Trynext Lifestyle</h2>
 <p>Browse our mug collection, upload your design or photo in the 3D Design Studio, preview your mug in real time, and place your order. We deliver across all 64 districts of Bangladesh with free shipping on orders above ৳1500. Same-week delivery available in Dhaka.</p>
 <h2>Frequently Asked Questions</h2>
 <h3>How long does custom mug printing take?</h3>
 <p>Standard orders are printed within 2–3 business days. Rush orders within Dhaka can be completed in 24 hours.</p>
-<h3>Are TryNex mugs microwave safe?</h3>
+<h3>Are Trynext mugs microwave safe?</h3>
 <p>Yes. All our ceramic mugs are food-safe, microwave-safe, and dishwasher-safe. The print is sealed with a food-grade coating.</p>
 <h3>What file format should I upload?</h3>
 <p>PNG or JPG at a minimum of 300 DPI is ideal. SVG and PDF files are also accepted. Our studio team reviews every order before printing.</p>`,
@@ -173,7 +173,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <li>Local artisan food items (honey, hilsa pickles, or premium tea from Sylhet)</li>
 <li>A handwritten note on branded card</li>
 </ul>
-<h2>How TryNex Lifestyle Handles Bulk Corporate Orders</h2>
+<h2>How Trynext Lifestyle Handles Bulk Corporate Orders</h2>
 <p>We manage bulk orders of 10 to 10,000 units with consistent print quality, custom packaging, and district-wise delivery. Our dedicated corporate team provides a proofing service — you approve a physical sample before we run the full batch. WhatsApp us at 01903426915 or email hello@trynexlifestyle.com to get a custom quote.</p>`,
       },
       {
@@ -205,7 +205,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <h3>Custom Hoodie</h3>
 <p>A premium fleece hoodie with a personalised design on the chest and their name on the sleeve — cosy, luxurious, and utterly unique.</p>
 <h3>Family Hamper Bundle</h3>
-<p>Curate a hamper with a custom mug, matching t-shirts for parents and children, and a personalised family portrait print. TryNex bundles start at ৳1,799.</p>
+<p>Curate a hamper with a custom mug, matching t-shirts for parents and children, and a personalised family portrait print. Trynext bundles start at ৳1,799.</p>
 <h2>Ordering Tips for Eid</h2>
 <p>Order at least 7–10 days before Eid for standard delivery. Dhaka rush orders can be accommodated within 48 hours. All orders above ৳1,500 qualify for free home delivery across Bangladesh.</p>`,
       },
@@ -226,14 +226,14 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <h2>1. They Create Instant Wedding Photography Magic</h2>
 <p>Imagine 50 family members in matching "Rahman Family Wedding 2025" t-shirts before the ceremony. The group photos become the most shared images on social media. Custom t-shirts create a visual identity for your wedding weekend that professional photographers love.</p>
 <h2>2. They Are Budget-Friendly at Scale</h2>
-<p>At TryNex Lifestyle, bulk t-shirt orders of 20+ pieces receive per-unit discounts starting at 15%. For a wedding of 100 guests, the per-unit cost can drop to ৳350–৳450 — less than most sweet boxes or traditional favours.</p>
+<p>At Trynext Lifestyle, bulk t-shirt orders of 20+ pieces receive per-unit discounts starting at 15%. For a wedding of 100 guests, the per-unit cost can drop to ৳350–৳450 — less than most sweet boxes or traditional favours.</p>
 <h2>3. They Double as Groomsmen and Bridesmaids Gifts</h2>
 <p>Print your wedding party's names, roles, and a heartfelt message on the back. "Best Man: Khaled" or "Bridesmaid: Fariha" printed in elegant typography becomes a keepsake each person will treasure.</p>
 <h2>4. They Work for Every Wedding Theme</h2>
 <p>Whether you are planning a traditional Bengali wedding with kantha-motif prints or a modern destination wedding with minimalist typography, custom t-shirt designs adapt to any aesthetic. Our design team can translate your wedding invitation artwork directly onto fabric.</p>
 <h2>5. The Memories Last Decades</h2>
 <p>Guests will pull that t-shirt from the wardrobe five years later and relive the wedding weekend. Unlike disposable favours, a quality cotton t-shirt tells a story that only gets better with age.</p>
-<h2>How to Order Wedding T-Shirts from TryNex</h2>
+<h2>How to Order Wedding T-Shirts from Trynext</h2>
 <p>Share your wedding date, guest count, design concept, and size distribution. Our team will create a digital proof within 24 hours. Minimum order: 10 pieces. Turnaround: 5–7 business days for orders up to 200 pieces.</p>`,
       },
       {
@@ -254,7 +254,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <p>Fabric weight is measured in grams per square metre (GSM). Lower GSM means lighter, sheerer, and more breathable — but also less durable. Higher GSM means heavier, more opaque, and better print retention.</p>
 <ul>
 <li><strong>120–150 GSM:</strong> Lightweight summer tees. Good for hot Bangladeshi weather, less ideal for heavy-duty printing.</li>
-<li><strong>160–180 GSM:</strong> The sweet spot. Comfortable year-round, excellent print quality, durable after repeated washing. TryNex's standard tees fall in this range.</li>
+<li><strong>160–180 GSM:</strong> The sweet spot. Comfortable year-round, excellent print quality, durable after repeated washing. Trynext's standard tees fall in this range.</li>
 <li><strong>200+ GSM:</strong> Premium structured tees. Best for brands positioning themselves as premium.</li>
 </ul>
 <h2>Cotton vs Cotton-Polyester Blends</h2>
@@ -267,8 +267,8 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <h3>Sublimation</h3>
 <p>Best for: Polyester or polyester-blend fabrics. Produces photographic-quality all-over prints. Not suitable for 100% cotton.</p>
 <h2>Fit and Sizing for Bangladesh</h2>
-<p>International sizing charts often run larger than what Bangladeshi body proportions require. TryNex uses South Asian sizing — our Medium corresponds to a 38–40 inch chest, not a 40–42 inch like some international brands. We recommend ordering size samples before placing a bulk corporate order.</p>
-<h2>The TryNex Quality Promise</h2>
+<p>International sizing charts often run larger than what Bangladeshi body proportions require. Trynext uses South Asian sizing — our Medium corresponds to a 38–40 inch chest, not a 40–42 inch like some international brands. We recommend ordering size samples before placing a bulk corporate order.</p>
+<h2>The Trynext Quality Promise</h2>
 <p>Every shirt goes through a quality check before shipping: colorfastness test, seam inspection, and print clarity review. We reject and reprint any piece that does not meet our standards before it leaves our facility.</p>`,
       },
       {
@@ -314,7 +314,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
       {
         title: "Complete Guide to T-Shirt Sizes in Bangladesh",
         slug: "tshirt-size-guide-bangladesh",
-        excerpt: "International sizing charts cause confusion for Bangladeshi buyers. Here is TryNex's definitive local size guide, with measurement tips and common mistakes to avoid when ordering custom apparel.",
+        excerpt: "International sizing charts cause confusion for Bangladeshi buyers. Here is Trynext's definitive local size guide, with measurement tips and common mistakes to avoid when ordering custom apparel.",
         imageUrl: "https://images.unsplash.com/photo-1503341338985-95e740a8ee8a?w=1200&q=80",
         author: "Nadia Rahman",
         category: "Custom Apparel",
@@ -323,8 +323,8 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
         featured: false,
         readingTimeOverride: 5,
         content: `<h2>Why Size Charts Confuse Bangladeshi Buyers</h2>
-<p>Most online stores use American or European size charts where a "Medium" fits a 40–42 inch chest. In Bangladesh, the average adult male chest is 36–38 inches. This mismatch leads to enormous amounts of returned merchandise and disappointed customers. TryNex uses a locally calibrated size chart.</p>
-<h2>TryNex Men's T-Shirt Size Guide</h2>
+<p>Most online stores use American or European size charts where a "Medium" fits a 40–42 inch chest. In Bangladesh, the average adult male chest is 36–38 inches. This mismatch leads to enormous amounts of returned merchandise and disappointed customers. Trynext uses a locally calibrated size chart.</p>
+<h2>Trynext Men's T-Shirt Size Guide</h2>
 <p>All measurements are in inches. Measure the fullest part of your chest with a tape measure.</p>
 <ul>
 <li><strong>XS:</strong> Chest 34–35 | Length 26</li>
@@ -335,7 +335,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <li><strong>XXL:</strong> Chest 44–45 | Length 31</li>
 <li><strong>3XL:</strong> Chest 46–48 | Length 32</li>
 </ul>
-<h2>TryNex Women's T-Shirt Size Guide</h2>
+<h2>Trynext Women's T-Shirt Size Guide</h2>
 <ul>
 <li><strong>XS:</strong> Chest 30–31 | Length 24</li>
 <li><strong>S:</strong> Chest 32–33 | Length 25</li>
@@ -404,14 +404,14 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <p>In Bangladesh's competitive retail landscape, a clearly uniformed staff in a garment shop or restaurant communicates ownership, accountability, and pride. Customers associate it with quality.</p>
 <h2>Designing a Uniform That Reinforces Your Brand</h2>
 <h3>Colour Consistency</h3>
-<p>Use your exact brand colours — specified by Pantone code, CMYK value, or hex code — on every uniform item. Inconsistent colours across different garment batches erode brand perception. At TryNex, we match your colours within a ±2% Delta E tolerance.</p>
+<p>Use your exact brand colours — specified by Pantone code, CMYK value, or hex code — on every uniform item. Inconsistent colours across different garment batches erode brand perception. At Trynext, we match your colours within a ±2% Delta E tolerance.</p>
 <h3>Logo Placement</h3>
 <p>The industry standard for business shirts and tees is: primary logo on the left chest (heart side), text name or tagline on the back shoulder or along the collar. For polo shirts, an embroidered logo on the chest gives a premium feel.</p>
 <h3>Typography and Hierarchy</h3>
 <p>Use no more than two typefaces on a uniform. Your company name should be the largest element, followed by the tagline or department identifier. Avoid decorative fonts — they reduce legibility at a distance.</p>
 <h2>Scaling Uniformed Teams in Bangladesh</h2>
 <p>Startups often make the mistake of not standardising uniforms until they hire their 20th employee, by which point inconsistent purchases have created a visual mess. Our recommendation: design a uniform system from employee 5 onwards. The cost per unit at scale (50+ pieces) drops to a point where branded uniforms are more affordable than casual wear policies.</p>
-<h2>TryNex Corporate Uniform Service</h2>
+<h2>Trynext Corporate Uniform Service</h2>
 <p>We offer a dedicated corporate account service for businesses ordering 20+ pieces per season. Benefits include: dedicated account manager, free design consultation, priority production queue, and district-wise delivery nationwide. Contact our corporate team via WhatsApp or email for a no-obligation quote.</p>`,
       },
       {
@@ -435,10 +435,10 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <h3>Caps</h3>
 <p>Branded caps travel further than any other item. They go to markets, restaurants, and family visits — all genuine out-of-home advertising at ৳699 per unit.</p>
 <h2>Minimum Order Quantities for Small Businesses</h2>
-<p>TryNex has no minimum order. You can order a single custom mug or t-shirt. For logo-printed items, however, we recommend a minimum batch of 10 pieces to benefit from our standard per-unit pricing. At 20+ pieces, per-unit costs drop 10–15%.</p>
+<p>Trynext has no minimum order. You can order a single custom mug or t-shirt. For logo-printed items, however, we recommend a minimum batch of 10 pieces to benefit from our standard per-unit pricing. At 20+ pieces, per-unit costs drop 10–15%.</p>
 <h2>File Requirements for Logo Printing</h2>
 <p>Your logo should ideally be provided as a vector file (.ai, .eps, .svg) for the sharpest results. If you only have a JPG or PNG, ensure it is at least 300 DPI at the intended print size. Our design team reviews every file before printing and will contact you if quality is insufficient.</p>
-<h2>Getting Started with TryNex</h2>
+<h2>Getting Started with Trynext</h2>
 <p>Upload your logo in our 3D Design Studio, choose your product, customise the placement, and preview your order in real time before placing it. Orders above ৳1,500 ship free nationwide. Same-day processing in Dhaka available for orders placed before 10 AM.</p>`,
       },
       {
@@ -485,7 +485,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
         content: `<h2>The Real Cost of Unrecognised Employees</h2>
 <p>Research across South Asian markets shows that employees who feel unrecognised are 63% more likely to look for a new job within 12 months. In Bangladesh's competitive job market — especially for skilled workers in tech, finance, and RMG management — losing a trained employee costs 50–200% of their annual salary in recruitment and retraining. A ৳1,500 appreciation gift that prevents one resignation pays for itself many times over.</p>
 <h2>Why Custom Apparel Works Better than Gift Cards</h2>
-<p>A gift card feels like cash — impersonal and transactional. A custom hoodie with the employee's name embroidered and a message like "3 Years of Excellence | TryNex Team" creates a trophy effect. It is visible, sharable, and says: <em>we thought specifically about you, not just your wallet.</em></p>
+<p>A gift card feels like cash — impersonal and transactional. A custom hoodie with the employee's name embroidered and a message like "3 Years of Excellence | Trynext Team" creates a trophy effect. It is visible, sharable, and says: <em>we thought specifically about you, not just your wallet.</em></p>
 <h2>Best Occasions for Employee Apparel Gifts</h2>
 <ul>
 <li><strong>Work anniversaries (1, 3, 5, 10 years)</strong> — Milestone-specific designs with the employee's name and years of service.</li>
@@ -495,7 +495,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 </ul>
 <h2>Designing the Perfect Appreciation Apparel</h2>
 <p>The most effective appreciation gifts are highly personalised. Include the employee's name, the specific milestone being celebrated, and the company logo. Add a handwritten note. This combination — personal detail + brand affiliation + human touch — is unbeatable for creating genuine emotional impact.</p>
-<h2>TryNex Corporate Appreciation Programme</h2>
+<h2>Trynext Corporate Appreciation Programme</h2>
 <p>We offer an annual appreciation programme for companies: register your employee data, and we will automatically produce and ship personalised anniversary gifts on each employee's milestone date. No administration burden on HR, consistent quality for every recipient. Contact us to enrol.</p>`,
       },
       {
@@ -527,7 +527,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <p>A white logo on a navy shirt is a different technical challenge than a white logo on a white shirt. For light designs on dark fabrics, an underbase layer of white ink is printed first to make colours pop. This adds cost but is essential for vibrancy. Check your contrast ratio before finalising your colour combination.</p>
 <h2>Rule 5: Provide Vector Files</h2>
 <p>Vector files (.ai, .eps, .svg) can be scaled to any size without loss of quality. Raster files (JPG, PNG) have a fixed pixel count — enlarging them introduces blur and pixelation. Always provide vector source files for logo printing. If you do not have vectors, our design team can recreate your logo in vector format for a small fee.</p>
-<h2>Getting a Design Proof from TryNex</h2>
+<h2>Getting a Design Proof from Trynext</h2>
 <p>Upload your logo or design idea in our studio. Our technician reviews every file before production and provides a digital proof for approval. We will flag any technical issues — insufficient resolution, problematic gradients, or non-printable colours — before a single shirt is touched.</p>`,
       },
       {
@@ -590,7 +590,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <li>Icons and pictograms</li>
 </ul>
 <h2>When Raster Is Acceptable for Printing</h2>
-<p>Photographic designs (a person's face, a scenic landscape, detailed illustrations) must use raster files because photographs cannot be represented as vector paths. For these, ensure your PNG or JPG is at least 300 DPI at print size. TryNex accepts files up to 50 MB.</p>
+<p>Photographic designs (a person's face, a scenic landscape, detailed illustrations) must use raster files because photographs cannot be represented as vector paths. For these, ensure your PNG or JPG is at least 300 DPI at print size. Trynext accepts files up to 50 MB.</p>
 <h2>How to Check If Your File Is Vector</h2>
 <p>Open the file in any image viewer and zoom in to 400%. If the edges of text and shapes remain perfectly crisp, it is vector. If you see a staircase pattern of coloured squares, it is raster. When in doubt, email the file to our team at hello@trynexlifestyle.com and we will assess it for free.</p>`,
       },
@@ -682,12 +682,12 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <p>The fashion industry produces an estimated 100 billion garments per year globally. Approximately 30–40% of those garments are never sold — they are either destroyed, landfilled, or incinerated. The carbon footprint, water usage, and chemical runoff of producing clothes that nobody wears is one of the defining environmental scandals of our era.</p>
 <h2>How Custom Apparel Is Different</h2>
 <h3>Made to Order = Zero Overproduction</h3>
-<p>Every TryNex Lifestyle product is printed after you place your order. We do not maintain a warehouse of pre-printed inventory. This means zero overstock, zero unsold products, and zero wasted resources on items that do not reach a person who wants them.</p>
+<p>Every Trynext Lifestyle product is printed after you place your order. We do not maintain a warehouse of pre-printed inventory. This means zero overstock, zero unsold products, and zero wasted resources on items that do not reach a person who wants them.</p>
 <h3>Made to Be Kept</h3>
 <p>A custom t-shirt with your name, your family's photo, or your company's logo is not throwaway fashion. It is a possession with sentimental value that motivates care and long-term ownership. The average lifespan of a personalised garment is 3–5x longer than a generic fast fashion item.</p>
 <h3>Local Production = Lower Transport Emissions</h3>
 <p>We manufacture, print, and ship from Dhaka, Bangladesh. If you are a Bangladeshi customer, your garment travels a fraction of the distance that an imported garment covers. This dramatically reduces the transport-related carbon footprint of your purchase.</p>
-<h2>Our Sustainability Commitments at TryNex</h2>
+<h2>Our Sustainability Commitments at Trynext</h2>
 <ul>
 <li><strong>Water-based inks:</strong> For DTG printing, we use water-based inks with no heavy metals or phthalates.</li>
 <li><strong>GOTS-certified cotton options:</strong> Available on request for customers who want certified organic fabric.</li>
@@ -695,7 +695,7 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <li><strong>Local suppliers:</strong> We prioritise fabric sourcing from Bangladeshi mills to reduce supply chain distance.</li>
 </ul>
 <h2>Choosing Sustainably</h2>
-<p>The most sustainable garment is one you love, wear often, and keep for years. Custom personalised apparel is, by definition, the fashion item most likely to meet that standard. By choosing TryNex for your custom apparel, you are participating in a fundamentally more responsible model of fashion consumption.</p>`,
+<p>The most sustainable garment is one you love, wear often, and keep for years. Custom personalised apparel is, by definition, the fashion item most likely to meet that standard. By choosing Trynext for your custom apparel, you are participating in a fundamentally more responsible model of fashion consumption.</p>`,
       },
       {
         title: "Bangladesh Fashion Trends 2025: What's Hot in Custom Wear",
@@ -720,26 +720,26 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <p>Botanical illustrations, the national flower (Shapla), and wildlife-inspired prints are trending strongly among eco-conscious buyers. These connect national identity with aesthetic sensibility — a distinctly Bangladeshi take on the global nature-motif trend.</p>
 <h2>Trend 5: Matching Set Culture</h2>
 <p>Couples, friend groups, and families are buying matching custom sets — not just for events, but as everyday wear. Custom couple hoodies, family reunion tees, and best-friend cap sets are our fastest-growing product category in 2025.</p>
-<h2>Creating On-Trend Custom Designs with TryNex</h2>
+<h2>Creating On-Trend Custom Designs with Trynext</h2>
 <p>Use our 3D Design Studio to experiment with placement, typography, and colour combinations that align with these trends. Upload custom artwork or use our template library. All designs render in real time on photorealistic 3D garment models. No design experience required — our team assists with every step.</p>`,
       },
       {
-        title: "From Idea to Wearable: Behind the Scenes at TryNex Lifestyle",
-        slug: "behind-the-scenes-trynex-lifestyle",
-        excerpt: "What actually happens between the moment you click 'Order' and the moment your custom t-shirt arrives at your door? TryNex takes you inside the production process that turns digital designs into premium wearable art.",
+        title: "From Idea to Wearable: Behind the Scenes at Trynext Lifestyle",
+        slug: "behind-the-scenes-trynext-lifestyle",
+        excerpt: "What actually happens between the moment you click 'Order' and the moment your custom t-shirt arrives at your door? Trynext takes you inside the production process that turns digital designs into premium wearable art.",
         imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80",
         author: "Rafiqul Islam",
         category: "Lifestyle",
-        tags: ["behind the scenes", "production", "custom printing", "trynex", "how it works"],
+        tags: ["behind the scenes", "production", "custom printing", "trynext", "how it works"],
         published: true,
         featured: false,
         readingTimeOverride: 7,
         content: `<h2>Step 1: Your Design in the 3D Studio</h2>
-<p>It starts the moment you open TryNex's 3D Design Studio. You choose your product, select your garment colour, and begin placing your design. The studio renders your creation onto a photorealistic 3D model in real time — you can orbit the garment, zoom in on the print detail, and preview the front and back simultaneously. When you are satisfied, you click Order.</p>
+<p>It starts the moment you open Trynext's 3D Design Studio. You choose your product, select your garment colour, and begin placing your design. The studio renders your creation onto a photorealistic 3D model in real time — you can orbit the garment, zoom in on the print detail, and preview the front and back simultaneously. When you are satisfied, you click Order.</p>
 <h2>Step 2: Order Processing and File Review</h2>
 <p>Your order arrives in our production queue within seconds. A human operator reviews your design file before anything is printed. We check: resolution, colour accuracy, bleed margins, and any text that might be truncated by garment seams. If anything needs adjustment, we contact you within 2 hours.</p>
 <h2>Step 3: Fabric Preparation</h2>
-<p>The correct fabric is pulled from stock, pre-washed (to prevent post-print shrinkage), and inspected for defects. A rejected blank is never used. This step — which many print shops skip — is why TryNex prints hold their shape and size through repeated washing.</p>
+<p>The correct fabric is pulled from stock, pre-washed (to prevent post-print shrinkage), and inspected for defects. A rejected blank is never used. This step — which many print shops skip — is why Trynext prints hold their shape and size through repeated washing.</p>
 <h2>Step 4: Printing</h2>
 <p>Depending on your design, your order goes through one of three processes:</p>
 <ul>
@@ -750,9 +750,9 @@ async function seedBlogPostsIfEmpty(): Promise<void> {
 <h2>Step 5: Quality Control</h2>
 <p>Every finished item passes through a three-point quality check: (1) visual inspection of print clarity and colour accuracy, (2) size confirmation against the order specification, and (3) seam and stitch inspection. Items failing any check are reprinted before shipment.</p>
 <h2>Step 6: Packaging and Dispatch</h2>
-<p>Your order is folded carefully with print protection tissue, packed in a TryNex-branded poly mailer or box depending on order size, and handed to our courier partner. A tracking number is automatically sent to your phone via SMS. Same-day dispatch for Dhaka orders placed before 10 AM. Nationwide delivery within 2–5 business days.</p>
+<p>Your order is folded carefully with print protection tissue, packed in a Trynext-branded poly mailer or box depending on order size, and handed to our courier partner. A tracking number is automatically sent to your phone via SMS. Same-day dispatch for Dhaka orders placed before 10 AM. Nationwide delivery within 2–5 business days.</p>
 <h2>The People Behind the Products</h2>
-<p>TryNex Lifestyle is a team of passionate Bangladeshis — designers, printers, quality inspectors, and logistics coordinators — who take genuine pride in every item that leaves our facility. When you wear a TryNex product, you wear the craft of people who care about the result as much as you do.</p>`,
+<p>Trynext Lifestyle is a team of passionate Bangladeshis — designers, printers, quality inspectors, and logistics coordinators — who take genuine pride in every item that leaves our facility. When you wear a Trynext product, you wear the craft of people who care about the result as much as you do.</p>`,
       },
     ];
 
@@ -810,16 +810,16 @@ export async function autoSeedIfEmpty(): Promise<void> {
     }
 
     const settingsData = [
-      { key: "siteName", value: "TryNex Lifestyle" },
+      { key: "siteName", value: "Trynext Lifestyle" },
       { key: "tagline", value: "You imagine, we craft" },
       { key: "phone", value: "01903426915" },
       { key: "email", value: "hello@trynexlifestyle.com" },
       { key: "address", value: "Mirpur, Dhaka, Bangladesh" },
-      { key: "facebookUrl", value: "https://facebook.com/trynexlifestyle" },
-      { key: "instagramUrl", value: "https://instagram.com/trynexlifestyle" },
+      { key: "facebookUrl", value: "https://facebook.com/trynextlifestyle" },
+      { key: "instagramUrl", value: "https://instagram.com/trynextlifestyle" },
       { key: "heroTitle", value: "Premium Custom Apparel" },
       { key: "heroSubtitle", value: "T-Shirts, Mugs, Caps & More – Made Just For You" },
-      { key: "announcementBar", value: "🎉 Free delivery on orders above ৳1500! | COD available | WhatsApp: 01903426915" },
+      { key: "announcementBar", value: "🎉 Free delivery on orders above ৳1500! | Pay 25% advance, rest on delivery | WhatsApp: 01903426915" },
       { key: "freeShippingThreshold", value: "1500" },
     ];
 

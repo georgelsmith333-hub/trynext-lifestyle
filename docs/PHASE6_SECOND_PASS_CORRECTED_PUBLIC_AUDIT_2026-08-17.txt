@@ -1,0 +1,41 @@
+PUBLIC ROUTES
+/                        200
+/products                200
+/categories              200
+/design-studio           200
+/cart                    200
+/checkout                200
+/track                   200
+/admin/login             200
+/hampers                 200
+/blog                    200
+
+API ROUTES
+/api/healthz                     200
+/api/health/liveness             200
+/api/health/readiness            200
+/api/categories                  200
+/api/products?limit=100          200
+/api/blog                        200
+/api/hampers                     200
+/api/testimonials                200
+/api/public-stats                200
+/api/announcement                200
+/api/sitemap.xml                 200
+/api/robots.txt                  200
+
+PROTECTED ROUTES
+/api/admin/backup/sync-status            401
+/api/promo-codes                         401
+/api/referrals                           401
+
+REPRESENTATIVE ASSETS
+/assets/products/bottle_name.png                 200 image/png 2707134
+/assets/products/bottle_space.png                200 image/png 3053945
+/assets/products/longsleeve_corporate.png        200 image/png 3304331
+/assets/products/longsleeve_floral.png           200 image/png 3243237
+/assets/products/hoodie_abstract.png             200 image/png 4033197
+curl: (28) Operation timed out after 30002 milliseconds with 140292 out of 2588102 bytes received
+/assets/products/bottle_fitness.png              200 image/png 140292ERR
+/products/main-combo.png                         200 image/png 20242
+/images/product-placeholder.svg                  200 image/svg+xml 923

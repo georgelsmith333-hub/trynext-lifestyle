@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "hoodie:navy:front",
+  "category": "hoodie",
+  "colorSlug": "navy",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/hoodie-navy-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/hoodie/navy/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/hoodie-navy-front.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    73,
+    63,
+    951,
+    949
+  ],
+  "sha256": "ead0130cc6b5ecc7ffe51940b44b2895b0b368f251efb0ade4a4ecd1d4e495ef",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

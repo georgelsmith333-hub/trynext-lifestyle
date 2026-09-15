@@ -113,7 +113,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SEOHead title="Login" description="Sign in to your TryNex Lifestyle account" noindex />
+      <SEOHead title="Login" description="Sign in to your Trynext Lifestyle account" noindex />
       <Navbar />
 
       <main className="flex-1 flex items-center justify-center px-4 pt-header pb-12 sm:pb-20">
@@ -124,7 +124,7 @@ export default function Login() {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-black font-display text-gray-900">Welcome Back</h1>
-            <p className="text-gray-500 mt-2">Sign in to your TryNex account</p>
+            <p className="text-gray-500 mt-2">Sign in to your Trynext Lifestyle account</p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8">

@@ -23,7 +23,12 @@ export default function AdminLogin() {
   const [isPending, setIsPending] = useState(false);
 
   async function apiPost(path: string, body: Record<string, unknown>) {
-    const res = await fetch(getApiUrl("/api" + path), {
+    const normalizedPath = path.startsWith("/api/")
+      ? path
+      : path.startsWith("/")
+        ? `/api${path}`
+        : `/api/${path}`;
+    const res = await fetch(getApiUrl(normalizedPath), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +44,7 @@ export default function AdminLogin() {
 
   function issueSession(data: { token?: string }) {
     if (data.token) {
-      sessionStorage.setItem("trynex_admin_token", data.token);
+      sessionStorage.setItem("trynext_admin_token", data.token);
     }
     setLocation("/admin");
   }
@@ -49,7 +54,7 @@ export default function AdminLogin() {
     setErrorMsg("");
     setIsPending(true);
     try {
-      const data = await apiPost("/admin/login", { username: "admin", password });
+      const data = await apiPost("admin/login", { username: "admin", password });
       if (data.requiresTotp) {
         setPartialToken(data.partialToken as string);
         setStep("totp");
@@ -269,7 +274,7 @@ export default function AdminLogin() {
                 className="space-y-4"
               >
                 <p className="text-sm text-gray-500 text-center mb-2">
-                  Open your authenticator app and enter the 6-digit code for <strong>TryNex Admin</strong>.
+                  Open your authenticator app and enter the 6-digit code for <strong>Trynext Admin</strong>.
                 </p>
                 <div>
                   <label className="block text-xs font-black uppercase tracking-wider text-gray-500 mb-2">Authenticator Code</label>
@@ -380,12 +385,12 @@ export default function AdminLogin() {
 
           <div className="flex items-center justify-center gap-2 mt-6 text-xs text-gray-400">
             <ShieldCheck className="w-3.5 h-3.5 text-green-500" />
-            <span>Secured · TryNex Lifestyle</span>
+            <span>Secured · Trynext Lifestyle</span>
           </div>
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-5">
-          © {new Date().getFullYear()} TryNex Lifestyle · All rights reserved
+          © {new Date().getFullYear()} Trynext Lifestyle · All rights reserved
         </p>
       </motion.div>
     </div>

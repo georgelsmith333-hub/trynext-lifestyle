@@ -74,7 +74,7 @@ export default function AdminPageBuilder() {
 
   const addSection = (type: string) => {
     const newSection: SectionConfig = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: Math.random().toString(36).slice(2, 11),
       type,
       visible: true,
       settings: {}

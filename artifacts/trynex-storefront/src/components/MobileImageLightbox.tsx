@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { X as XIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { createPortal } from "react-dom";
+import { lockBodyScroll } from "@/lib/scrollLock";
 
 
 interface Props {
@@ -75,8 +76,7 @@ export function MobileImageLightbox({ images, startIndex, alt, onClose }: Props)
   }, [index, resetTransform]);
 
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockBodyScroll();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowRight" && images.length > 1) setIndex((i) => (i + 1) % images.length);
@@ -84,7 +84,7 @@ export function MobileImageLightbox({ images, startIndex, alt, onClose }: Props)
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = prev;
+      unlock();
       window.removeEventListener("keydown", onKey);
     };
   }, [images.length, onClose]);

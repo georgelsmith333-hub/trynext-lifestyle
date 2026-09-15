@@ -1,15 +1,26 @@
 import { Router, type IRouter } from "express";
+import { z } from "zod";
 import { db, categoriesTable, productsTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/adminAuth";
 import { logActivity, getAdminId } from "../lib/activityLog";
 import { redisCacheGet, redisCacheSet, redisCacheDel } from "../lib/redis";
 
+// ── Zod validation schemas ────────────────────────────────────────────────
+const CategoryCreateSchema = z.object({
+  name: z.string().min(1, "Name is required").max(255),
+  slug: z.string().min(1, "Slug is required").max(255),
+  description: z.string().optional(),
+  imageUrl: z.string().optional(),
+});
+
+const CategoryUpdateSchema = CategoryCreateSchema.partial();
+
 const router: IRouter = Router();
 
 // ── Redis cache key / TTL ─────────────────────────────────────────────────────
 // Categories are near-static (change only via admin). 5-minute TTL is safe.
-const CATS_CACHE_KEY = "trynex:categories";
+const CATS_CACHE_KEY = "trynext:categories";
 const CATS_TTL_S = 300;
 
 router.get("/categories", async (req, res) => {
@@ -62,11 +73,16 @@ function mapCategory(c: typeof categoriesTable.$inferSelect) {
 
 router.post("/categories", requireAdmin, async (req, res) => {
   try {
-    const { name, slug, description, imageUrl } = req.body;
-    if (!name || !slug) {
-      res.status(400).json({ error: "validation_error", message: "name and slug are required" });
+    const parsed = CategoryCreateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        error: "validation_error",
+        message: "Invalid category data",
+        details: parsed.error.flatten().fieldErrors,
+      });
       return;
     }
+    const { name, slug, description, imageUrl } = parsed.data;
     const [category] = await db.insert(categoriesTable).values({ name, slug, description, imageUrl }).returning();
     logActivity({ action: "create", entity: "category", entityId: category.id, entityName: category.name, after: category as unknown as Record<string, unknown>, adminId: getAdminId(req) });
     await redisCacheDel(CATS_CACHE_KEY);
@@ -84,17 +100,26 @@ router.put("/categories/:id", requireAdmin, async (req, res) => {
       res.status(400).json({ error: "validation_error", message: "Invalid id" });
       return;
     }
-    const { name, slug, description, imageUrl } = req.body;
-    const [beforeSnapshot] = await db.select().from(categoriesTable).where(eq(categoriesTable.id, id));
-    const updateData: Record<string, unknown> = {};
-    if (name !== undefined) updateData.name = name;
-    if (slug !== undefined) updateData.slug = slug;
-    if (description !== undefined) updateData.description = description;
-    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
-    if (Object.keys(updateData).length === 0) {
+    const parsed = CategoryUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        error: "validation_error",
+        message: "Invalid category data",
+        details: parsed.error.flatten().fieldErrors,
+      });
+      return;
+    }
+    const body = parsed.data;
+    if (Object.keys(body).length === 0) {
       res.status(400).json({ error: "validation_error", message: "No fields to update" });
       return;
     }
+    const [beforeSnapshot] = await db.select().from(categoriesTable).where(eq(categoriesTable.id, id));
+    const updateData: Record<string, unknown> = {};
+    if (body.name !== undefined) updateData.name = body.name;
+    if (body.slug !== undefined) updateData.slug = body.slug;
+    if (body.description !== undefined) updateData.description = body.description;
+    if (body.imageUrl !== undefined) updateData.imageUrl = body.imageUrl;
     const [category] = await db.update(categoriesTable).set(updateData).where(eq(categoriesTable.id, id)).returning();
     if (!category) {
       res.status(404).json({ error: "not_found", message: "Category not found" });

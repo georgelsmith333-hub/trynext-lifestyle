@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+const base = process.env.TRYNEXT_BASE_URL || 'https://trynext.pages.dev';
+const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
+const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+const page = await context.newPage();
+await page.goto(`${base}/design-studio?product=hoodie`, { waitUntil: 'domcontentloaded', timeout: 45000 });
+await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+await page.reload({ waitUntil: 'domcontentloaded', timeout: 45000 });
+await page.waitForTimeout(3500);
+const images = await page.locator('svg image').evaluateAll((nodes) => nodes.map((node) => ({ href: node.getAttribute('href') || node.getAttribute('xlink:href'), width: node.width?.baseVal?.value, height: node.height?.baseVal?.value, complete: node.complete, naturalWidth: node.naturalWidth, naturalHeight: node.naturalHeight })));
+console.log(JSON.stringify({ url: page.url(), images }, null, 2));
+await browser.close();

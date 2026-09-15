@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "cap:olive:back",
+  "category": "cap",
+  "colorSlug": "olive",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/cap-olive-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/cap/olive/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/cap-olive-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    162,
+    184,
+    862,
+    839
+  ],
+  "sha256": "73925b4636a575b7f8eb5d0fe78090f624f4d3a68d01734a8f67ad11a3434be8",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

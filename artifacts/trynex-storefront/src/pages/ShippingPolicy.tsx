@@ -15,9 +15,9 @@ export default function ShippingPolicy() {
     <div className="min-h-screen flex flex-col bg-white">
       <SEOHead
         title="Shipping Policy"
-        description="TryNex Lifestyle shipping policy. Fast delivery across all 64 districts of Bangladesh. Free shipping on orders above ৳1,500."
+        description="Trynext Lifestyle shipping policy. Fast delivery across all 64 districts of Bangladesh. Free shipping on orders above ৳1,500."
         canonical="/shipping-policy"
-        keywords="trynex shipping, bangladesh delivery, free shipping bd"
+        keywords="trynext shipping, bangladesh delivery, free shipping bd"
       />
       <Navbar />
       <main className="flex-1 pt-header pb-20">
@@ -91,7 +91,7 @@ export default function ShippingPolicy() {
                   "Delivery times may vary during peak seasons, holidays, or adverse weather conditions.",
                   "Ensure your shipping address and phone number are accurate to avoid delivery delays.",
                   "Someone must be available to receive the package at the delivery address.",
-                  "For Cash on Delivery (COD) orders, the remaining balance must be paid upon delivery.",
+                  "All orders require a 25% advance payment via bKash or Nagad; the remaining balance is paid upon delivery.",
                   "If a delivery attempt fails, we will contact you to reschedule.",
                 ].map((note) => (
                   <li key={note} className="flex items-start gap-3 text-sm text-gray-600">

@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "cap:red:front",
+  "category": "cap",
+  "colorSlug": "red",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/cap-red-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/cap/red/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/cap-red-front.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    162,
+    184,
+    862,
+    839
+  ],
+  "sha256": "d59861a96690e71fa00ee0409a102a1a59c0671a969a49eea77f05ca96913105",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

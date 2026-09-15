@@ -90,8 +90,9 @@ export function AbandonedCartPopup() {
   useEffect(() => {
     if (items.length === 0 || isExcluded || dismissed) return;
 
-    const lastDismiss = sessionStorage.getItem("cart_popup_dismissed");
-    if (lastDismiss && Date.now() - parseInt(lastDismiss) < 15 * 60 * 1000) return;
+    let lastDismiss: string | null = null;
+    try { lastDismiss = localStorage.getItem("cart_popup_dismissed"); } catch {}
+    if (lastDismiss && Date.now() - parseInt(lastDismiss, 10) < 15 * 60 * 1000) return;
 
     const timer = setTimeout(() => setShow(true), 45000);
     return () => clearTimeout(timer);
@@ -119,7 +120,7 @@ export function AbandonedCartPopup() {
   const handleDismiss = () => {
     setShow(false);
     setDismissed(true);
-    sessionStorage.setItem("cart_popup_dismissed", String(Date.now()));
+    try { localStorage.setItem("cart_popup_dismissed", String(Date.now())); } catch {}
   };
 
   if (typeof document === "undefined") return null;

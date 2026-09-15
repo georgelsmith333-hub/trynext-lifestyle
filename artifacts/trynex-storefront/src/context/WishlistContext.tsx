@@ -25,7 +25,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const [items, setItems] = useState<WishlistItem[]>(() => {
     try {
-      const stored = localStorage.getItem("trynex_wishlist");
+      const stored = localStorage.getItem("trynext_wishlist");
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
@@ -33,7 +33,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    localStorage.setItem("trynex_wishlist", JSON.stringify(items));
+    localStorage.setItem("trynext_wishlist", JSON.stringify(items));
   }, [items]);
 
   const addToWishlist = (item: WishlistItem) => {

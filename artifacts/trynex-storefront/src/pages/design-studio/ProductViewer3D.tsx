@@ -1,37 +1,24 @@
 /* ═══════════════════════════════════════════════════════
    PRODUCT VIEWER 3D — realtime preview using R3F
 
-   Mug wrap texture layout (2048×768):
-     [0 – 1024]    = Left Side  (front face layers, handle-side ≈ right)
-     [1024 – 2048] = Right Side (back face layers, handle-side ≈ left)
-
-   UV offset = 0.25 (set in MugBody):
-     u_geo=0.00 (+Z front)  → u_tex=0.25 → canvas x=512  (centre left half) ✓
-     u_geo=0.50 (−Z back)   → u_tex=0.75 → canvas x=1536 (centre right half) ✓
-
-   Wrap mode: back layers compose into full 2048 canvas (no half-split).
-
-   MUG + WATER BOTTLE 3D strategy (v2):
-     We now use PhotoMockupMesh — the real product photography as a textured
-     plane — for both mug and water bottle. This gives photorealistic quality
-     (studio-lit product photo + design overlay) vs the procedural cylinder.
-     The design texture is composed by useFaceTexture at the correct print zone
-     coordinates, then overlaid transparently on the product photo plane.
+   Every category uses the reviewed photographic mockup as the visual authority.
+   PhotoMockupMesh keeps the exact product silhouette and face-specific photo in
+    the 3D preview; the PSD-derived full-canvas composite is the preview texture.
 ════════════════════════════════════════════════════════ */
 import { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import {
-  composeLayers,
+  composeMockupSurfacePreviewTexture,
   type ComposerLayer,
   type ComposerPrintZone,
+  type UnifiedMockupSurface,
 } from "./composer";
-import { BASE_BY_CATEGORY, isNearBlack, type DesignProduct } from "./mockups";
+import { resolveMockup, type DesignProduct } from "./mockups";
 import {
-  RealisticShirt,
   PhotoMockupMesh,
-  ResettableOrbitControls,
+  MugBody,
   ViewerLoadingOverlay,
   NoWebGLFallback,
   StudioLightRig,
@@ -45,6 +32,7 @@ interface FacePayload {
   layers: ComposerLayer[];
   printZone: ComposerPrintZone;
   baseHeight: number;
+  surface: UnifiedMockupSurface;
 }
 
 export interface ProductViewer3DProps {
@@ -57,11 +45,11 @@ export interface ProductViewer3DProps {
   isWrapMode?: boolean;
 }
 
-/* ── Generic face texture (garments: tshirt / longsleeve / hoodie / cap) ─── */
+/* ── Face texture for any reviewed photographic product mockup ───────────── */
 function useFaceTexture(
   face: FacePayload | undefined,
   garmentColor: string | null,
-  opts: { outW: number; outH: number; clipToPrintZone?: boolean }
+  opts: { outW: number; outH: number; clipToPrintZone?: boolean; curvature?: number }
 ): THREE.CanvasTexture | null {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const cacheRef = useRef<Map<string, HTMLImageElement>>(new Map());
@@ -81,51 +69,143 @@ function useFaceTexture(
         g: garmentColor,
         z: face.printZone,
         h: face.baseHeight,
+         r: [
+           face.surface.sourceKitKey,
+           face.surface.manifestRevision,
+           face.surface.runtimeStatus,
+           face.surface.contractErrors,
+           face.surface.runtimeRoles,
+         ],
         l: face.layers.map((l) =>
-          l.type === "image"
+            l.type === "image"
             ? [
                 l.visible, l.transform, l.naturalW, l.naturalH, l.src.slice(0, 64),
                 l.flipH, l.flipV, l.brightness, l.contrast, l.saturation,
               ]
-            : [
-                l.visible, l.transform, l.text, l.fontFamily, l.fontSize,
-                l.fontStyle, l.fontWeight, l.color,
-                l.textAlign, l.letterSpacing, l.strokeColor, l.strokeWidth,
-                l.shadowColor, l.shadowBlur, l.shadowOffsetX, l.shadowOffsetY,
-              ]
+            : l.type === "text"
+              ? [
+                  l.visible, l.transform, l.text, l.fontFamily, l.fontSize,
+                  l.fontStyle, l.fontWeight, l.color,
+                  l.textAlign, l.letterSpacing, l.strokeColor, l.strokeWidth,
+                  l.shadowColor, l.shadowBlur, l.shadowOffsetX, l.shadowOffsetY,
+                ]
+              : [
+                  l.visible, l.transform, l.shapeType, l.fill, l.strokeColor,
+                  l.strokeWidth, l.width, l.height, l.sides, l.points,
+                ]
         ),
       })
     : "";
 
   const faceRef = useRef(face);
   faceRef.current = face;
-  const clipFlag = opts.clipToPrintZone ?? true;
-
   useEffect(() => {
     const f = faceRef.current;
     if (!f) return;
     let cancelled = false;
-    composeLayers({
+    composeMockupSurfacePreviewTexture({
       canvas: canvasRef.current!,
-      baseHeight: f.baseHeight,
-      printZone: f.printZone,
+      surface: { ...f.surface, printZone: f.printZone },
+      garmentColor: garmentColor ?? "#ffffff",
       layers: f.layers,
-      garmentColor,
-      outW: opts.outW,
-      outH: opts.outH,
+      outSize: opts.outW,
       imageCache: cacheRef.current,
-      clipToPrintZone: clipFlag,
-      blendMode: "multiply",
+      curvature: opts.curvature ?? 0,
     }).then(() => {
       if (cancelled) return;
       if (textureRef.current) textureRef.current.needsUpdate = true;
       setVersion((v) => v + 1);
+    }).catch((error) => {
+      if (!cancelled) console.error("[3d] mockup surface rejected:", error);
     });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sig, garmentColor, opts.outW, opts.outH, clipFlag]);
+  }, [sig, opts.outW, opts.outH, opts.curvature]);
 
   return face ? textureRef.current : null;
+}
+
+/**
+ * Full Wrap is the one mug mode that needs a real 360° surface. The two
+ * edited mug faces are composed into the left and right halves of one
+ * equirectangular texture, then mapped onto MugBody's cylindrical body.
+ * Side 1/Side 2 continue using the reviewed photographic face mockups.
+ */
+function useMugWrapTexture(
+  front: FacePayload | undefined,
+  back: FacePayload | undefined,
+): THREE.CanvasTexture | null {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const cacheRef = useRef<Map<string, HTMLImageElement>>(new Map());
+  const textureRef = useRef<THREE.CanvasTexture | null>(null);
+  const [, setVersion] = useState(0);
+
+  if (!canvasRef.current) canvasRef.current = document.createElement("canvas");
+  if (!textureRef.current) {
+    const tex = new THREE.CanvasTexture(canvasRef.current);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 8;
+    textureRef.current = tex;
+  }
+
+  const sig = JSON.stringify({
+    front: front
+      ? [front.baseHeight, front.printZone, front.layers]
+      : null,
+    back: back
+      ? [back.baseHeight, back.printZone, back.layers]
+      : null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    const wrapCanvas = canvasRef.current!;
+    wrapCanvas.width = 2048;
+    wrapCanvas.height = 768;
+    const wrapCtx = wrapCanvas.getContext("2d");
+    if (!wrapCtx) return;
+    wrapCtx.clearRect(0, 0, wrapCanvas.width, wrapCanvas.height);
+
+    (async () => {
+      const composeFace = async (face: FacePayload | undefined) => {
+        const faceCanvas = document.createElement("canvas");
+        if (!face) return faceCanvas;
+        await composeMockupSurfacePreviewTexture({
+          canvas: faceCanvas,
+          surface: { ...face.surface, printZone: face.printZone },
+          garmentColor: "#ffffff",
+          layers: face.layers,
+          outSize: 1024,
+          imageCache: cacheRef.current,
+          curvature: 0.16,
+        });
+        return faceCanvas;
+      };
+
+      const frontCanvas = await composeFace(front);
+      const backCanvas = await composeFace(back);
+      if (cancelled) return;
+
+      // Each edited face owns one half of the cylindrical print band. This
+      // keeps side-specific edits independent while preserving a continuous
+      // body surface in the Wrap preview.
+      wrapCtx.drawImage(frontCanvas, 0, 0, 1024, 1024, 0, 0, 1024, 768);
+      wrapCtx.drawImage(backCanvas, 0, 0, 1024, 1024, 1024, 0, 1024, 768);
+      textureRef.current!.wrapS = THREE.RepeatWrapping;
+      textureRef.current!.wrapT = THREE.ClampToEdgeWrapping;
+      textureRef.current!.repeat.set(1, 1);
+      textureRef.current!.offset.set(0.25, 0);
+      textureRef.current!.flipY = true;
+      textureRef.current!.needsUpdate = true;
+      setVersion((v) => v + 1);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sig, front, back]);
+
+  return textureRef.current;
 }
 
 /* ── Camera rig: smooth orbit to the active face ─────────────────────────── */
@@ -138,11 +218,17 @@ function CameraRig({
 }) {
   const f = VIEWER_FRAMING[category];
   const b = VIEWER_FRAMING_BACK[category] || {};
-  const hasBackFace = category === "tshirt" || category === "longsleeve" || category === "hoodie" || category === "mug";
+  const hasBackFace =
+    category === "tshirt" ||
+    category === "longsleeve" ||
+    category === "hoodie" ||
+    category === "mug" ||
+    category === "cap" ||
+    category === "waterbottle";
   const isBack = hasBackFace && activeFace === "back";
   const targetY = isBack ? Math.PI : 0;
-  const radius  = isBack && b.radius   !== undefined ? b.radius   : f.radius;
-  const cameraY = isBack && b.cameraY  !== undefined ? b.cameraY  : f.cameraY;
+  const radius  = isBack && (b as any).radius   !== undefined ? (b as any).radius   : f.radius;
+  const cameraY = isBack && (b as any).cameraY  !== undefined ? (b as any).cameraY  : f.cameraY;
 
   useFrame(({ camera }) => {
     const cur  = Math.atan2(camera.position.x, camera.position.z);
@@ -165,50 +251,44 @@ export default function ProductViewer3D({
 }: ProductViewer3DProps) {
   const isMug         = product.category === "mug";
   const isWaterBottle = product.category === "waterbottle";
-  const isGarment     = !isMug && !isWaterBottle;
 
   /* ── Photo selection: pick the dark product photo for near-black colours ──
-   * Products that have a dedicated dark/black photo (mug, cap) switch to it
-   * when garmentColor is near-black so the 3D scene uses the real black photo.
-   * For all other products or non-dark colours, use the white/base photo and
-   * apply garmentColor as the Three.js material colour (multiply-tint). */
-  const nearBlack = isNearBlack(garmentColor);
-  const base = BASE_BY_CATEGORY[product.category as keyof typeof BASE_BY_CATEGORY];
-  const hasDarkPhoto = nearBlack && base && (base.darkFront || base.darkBack);
-  const resolvedFrontPhoto = hasDarkPhoto && base?.darkFront ? base.darkFront : product.frontSrc;
-  const resolvedBackPhoto  = hasDarkPhoto && base?.darkBack  ? base.darkBack  : (product.backSrc ?? product.frontSrc);
-  /* tint = undefined → no colour multiplication (dark photo already correct colour) */
-  const photoTint = hasDarkPhoto ? undefined : garmentColor;
+   * Products that have a dedicated dark/black photo (cap) switch to it when
+   * garmentColor is near-black so the 3D scene uses the real black photo.
+   * PhotoMockupMesh already uses transparent:true + alphaTest:0.01. */
+  const frontMockup = resolveMockup(product, garmentColor, "front");
+  const backMockup = resolveMockup(product, garmentColor, "back");
+  // The billboard always uses the transparent derivative. Exact source-kit
+  // colours arrive pre-rendered, while only curated transparent fallbacks tint.
+  const resolvedFrontPhoto = frontMockup.photoKind === "opaque-photo"
+    ? frontMockup.photoSrc
+    : frontMockup.cutoutSrc;
+  const resolvedBackPhoto = backMockup.photoKind === "opaque-photo"
+    ? backMockup.photoSrc
+    : backMockup.cutoutSrc;
+  const frontPhotoTint = frontMockup.requiresTint ? garmentColor : undefined;
+  const backPhotoTint = backMockup.requiresTint ? garmentColor : undefined;
 
-  /* Garments (tshirt / longsleeve / hoodie / cap): transparent per-face overlays */
+  const isCap = product.category === "cap";
+  const surfaceCurvature = isMug ? 0.16 : isWaterBottle ? 0.16 : isCap ? 0.1 : 0;
+
+  /* ── Face textures for every photographic mockup ────────────────────────
+   * Mug and bottle intentionally use the same path as garments. The previous
+   * procedural MugBody/WaterBottleBody branches made the preview disagree
+   * with the reviewed product photos used by the editor and order thumbnails. */
   const frontTex = useFaceTexture(
-    isGarment ? front : undefined,
+    front,
     null,
-    { outW: 1024, outH: 1024, clipToPrintZone: true }
+    { outW: 1024, outH: 1024, clipToPrintZone: true, curvature: surfaceCurvature }
   );
   const backTex = useFaceTexture(
-    isGarment && back ? back : undefined,
+    back,
     null,
-    { outW: 1024, outH: 1024, clipToPrintZone: true }
+    { outW: 1024, outH: 1024, clipToPrintZone: true, curvature: surfaceCurvature }
   );
-
-  /* Mug: photo-mockup approach — front and back design overlays on the product photo. */
-  const mugFrontTex = useFaceTexture(
-    isMug ? front : undefined,
-    null,
-    { outW: 1024, outH: 1024, clipToPrintZone: true }
-  );
-  const mugBackTex = useFaceTexture(
-    isMug && back ? back : undefined,
-    null,
-    { outW: 1024, outH: 1024, clipToPrintZone: true }
-  );
-
-  /* Water bottle: photo-mockup overlay */
-  const bottleFrontTex = useFaceTexture(
-    isWaterBottle ? front : undefined,
-    null,
-    { outW: 1024, outH: 1024, clipToPrintZone: true }
+  const mugWrapTex = useMugWrapTexture(
+    isMug && isWrapMode ? front : undefined,
+    isMug && isWrapMode ? back : undefined,
   );
 
   const supports3D = useMemo(() => hasWebGL2(), []);
@@ -218,28 +298,29 @@ export default function ProductViewer3D({
   useEffect(() => {
     if (supports3D || !front) return;
     const c = document.createElement("canvas");
-    composeLayers({
+      const fallbackImageCache = new Map<string, HTMLImageElement>();
+    composeMockupSurfacePreviewTexture({
       canvas: c,
-      baseHeight: front.baseHeight,
-      printZone: front.printZone,
+      surface: { ...front.surface, printZone: front.printZone },
+      garmentColor,
       layers: front.layers,
-      garmentColor: null,
-      outW: 1024,
-      outH: 1024,
-      imageCache: new Map(),
-      clipToPrintZone: true,
-      blendMode: "source-over",
-    }).then(() => setFallbackUrl(c.toDataURL("image/png")));
+      outSize: 1024,
+      imageCache: fallbackImageCache,
+    }).then(() => {
+      setFallbackUrl(c.toDataURL("image/png"));
+    }).catch((error) => {
+      console.error("[3d] fallback surface rejected:", error);
+    });
   }, [supports3D, front]);
 
-  /* No WebGL2 → flat 2D photo mockup fallback */
+  /* No WebGL2 → flat 2D photo mockup fallback. */
   if (!supports3D) {
     return (
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
         <NoWebGLFallback
-          garmentSrc={product.frontSrc}
-          designSrc={fallbackUrl}
+          compositeSrc={fallbackUrl}
           garmentColor={garmentColor}
+          requiresTint={frontMockup.photoKind === "transparent-cutout" && frontMockup.requiresTint}
         />
       </div>
     );
@@ -248,7 +329,7 @@ export default function ProductViewer3D({
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <Canvas
-        shadows
+        shadows={{ type: THREE.PCFShadowMap }}
         dpr={VIEWER_DEFAULTS.dpr}
         camera={{ position: VIEWER_DEFAULTS.cameraPosition, fov: VIEWER_DEFAULTS.fov }}
         gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
@@ -257,104 +338,127 @@ export default function ProductViewer3D({
         <Suspense fallback={null}>
           <StudioLightRig rim />
           <Environment preset="studio" />
-          <CameraRig activeFace={activeFace} category={product.category} />
+          <CameraRig activeFace={activeFace} category={product.category as any} />
 
-          {/* ── MUG — real product photo + design overlay + garment colour tint ── */}
-          {product.category === "mug" && (
-            <PhotoMockupMesh
-              frontPhotoSrc={resolvedFrontPhoto}
-              backPhotoSrc={resolvedBackPhoto}
-              frontTex={mugFrontTex}
-              backTex={mugBackTex}
-              garmentColor={photoTint}
+          {/* ── MUG — reviewed front/back photo mockup ─────────────────────
+              Do not replace this with a procedural cylinder: the customer
+              selected these exact product photos as the source of truth. */}
+          {product.category === "mug" && isWrapMode && (
+            <MugBody
+              wrapTex={mugWrapTex}
+              garmentColor={garmentColor}
+              isWrapMode
               activeFace={activeFace}
-              planeW={2.55}
-              planeH={2.55}
             />
           )}
 
-          {/* ── T-SHIRT — real photo plane + colour tint (same as hoodie/longsleeve) ── */}
+          {product.category === "mug" && !isWrapMode && (
+            <PhotoMockupMesh
+              frontPhotoSrc={resolvedFrontPhoto}
+              backPhotoSrc={resolvedBackPhoto}
+               frontCompositeTex={frontTex}
+               backCompositeTex={backTex}
+              frontTint={frontPhotoTint}
+              backTint={backPhotoTint}
+              frontFrame={frontMockup.normalizedFrame}
+              backFrame={backMockup.normalizedFrame}
+              planeW={2.6}
+              planeH={2.6}
+              activeFace={activeFace}
+            />
+          )}
+
+          {/* ── T-SHIRT ── */}
           {product.category === "tshirt" && (
             <PhotoMockupMesh
               frontPhotoSrc={resolvedFrontPhoto}
               backPhotoSrc={resolvedBackPhoto}
-              frontTex={frontTex}
-              backTex={backTex}
-              garmentColor={photoTint}
+               frontCompositeTex={frontTex}
+               backCompositeTex={backTex}
+              frontTint={frontPhotoTint}
+              backTint={backPhotoTint}
+              frontFrame={frontMockup.normalizedFrame}
+              backFrame={backMockup.normalizedFrame}
               activeFace={activeFace}
             />
           )}
 
-          {/* ── LONG SLEEVE — real photo plane + colour tint ── */}
+          {/* ── LONG SLEEVE ── */}
           {product.category === "longsleeve" && (
             <PhotoMockupMesh
               frontPhotoSrc={resolvedFrontPhoto}
               backPhotoSrc={resolvedBackPhoto}
-              frontTex={frontTex}
-              backTex={backTex}
-              garmentColor={photoTint}
+               frontCompositeTex={frontTex}
+               backCompositeTex={backTex}
+              frontTint={frontPhotoTint}
+              backTint={backPhotoTint}
+              frontFrame={frontMockup.normalizedFrame}
+              backFrame={backMockup.normalizedFrame}
               activeFace={activeFace}
             />
           )}
 
-          {/* ── HOODIE — real photo plane + colour tint ── */}
+          {/* ── HOODIE ── */}
           {product.category === "hoodie" && (
             <PhotoMockupMesh
               frontPhotoSrc={resolvedFrontPhoto}
               backPhotoSrc={resolvedBackPhoto}
-              frontTex={frontTex}
-              backTex={backTex}
-              garmentColor={photoTint}
+               frontCompositeTex={frontTex}
+               backCompositeTex={backTex}
+              frontTint={frontPhotoTint}
+              backTint={backPhotoTint}
+              frontFrame={frontMockup.normalizedFrame}
+              backFrame={backMockup.normalizedFrame}
               activeFace={activeFace}
             />
           )}
 
-          {/* ── CAP — real photo plane; dark photo for black ── */}
+          {/* ── CAP ── */}
           {product.category === "cap" && (
             <PhotoMockupMesh
               frontPhotoSrc={resolvedFrontPhoto}
-              frontTex={frontTex}
-              garmentColor={photoTint}
+              backPhotoSrc={resolvedBackPhoto}
+               frontCompositeTex={frontTex}
+               backCompositeTex={backTex}
+              frontTint={frontPhotoTint}
+              backTint={backPhotoTint}
+              frontFrame={frontMockup.normalizedFrame}
+              backFrame={backMockup.normalizedFrame}
               activeFace={activeFace}
               planeW={2.2}
               planeH={2.2}
             />
           )}
 
-          {/* ── WATER BOTTLE — real photo plane + colour tint ── */}
+          {/* ── WATER BOTTLE — reviewed front/back photo mockup ────────── */}
           {product.category === "waterbottle" && (
             <PhotoMockupMesh
               frontPhotoSrc={resolvedFrontPhoto}
-              frontTex={bottleFrontTex}
-              garmentColor={photoTint}
-              activeFace="front"
-              planeW={2.20}
-              planeH={2.80}
+              backPhotoSrc={resolvedBackPhoto}
+               frontCompositeTex={frontTex}
+               backCompositeTex={backTex}
+              frontTint={frontPhotoTint}
+              backTint={backPhotoTint}
+              frontFrame={frontMockup.normalizedFrame}
+              backFrame={backMockup.normalizedFrame}
+              planeW={3.6}
+              planeH={3.6}
+              activeFace={activeFace}
             />
           )}
 
           <ContactShadows
-            position={[0, VIEWER_FRAMING[product.category].shadowY, 0]}
-            opacity={0.55}
-            blur={2.8}
-            scale={8}
-            far={6}
+            position={[0, VIEWER_FRAMING[product.category as keyof typeof VIEWER_FRAMING].shadowY, 0]}
+            opacity={isMug || product.category === "waterbottle" ? 0.22 : 0.45}
+            blur={isMug || product.category === "waterbottle" ? 1.8 : 2.8}
+            scale={isMug || product.category === "waterbottle" ? 4 : 8}
+            far={isMug || product.category === "waterbottle" ? 2 : 6}
             color="#1a0a00"
           />
 
-          <ResettableOrbitControls
-            enablePan={false}
-            enableZoom={true}
-            enableDamping
-            dampingFactor={0.08}
-            rotateSpeed={0.7}
-            zoomSpeed={0.8}
-            minDistance={VIEWER_FRAMING[product.category].minDistance}
-            maxDistance={VIEWER_FRAMING[product.category].maxDistance}
-            minPolarAngle={isMug ? Math.PI * 0.35 : Math.PI * 0.25}
-            maxPolarAngle={isMug ? Math.PI * 0.70 : Math.PI * 0.65}
-            touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN }}
-          />
+          {/* The product is intentionally static. Face changes are explicit in
+              the Studio controls; orbit/auto-motion made the visible face and
+              the edited face diverge on touch devices. */}
         </Suspense>
       </Canvas>
       <ViewerLoadingOverlay />

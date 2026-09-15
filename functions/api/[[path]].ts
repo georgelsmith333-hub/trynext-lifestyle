@@ -1,134 +1,246 @@
-/**
- * CF Pages Function — /api/* proxy
+/*
+ * Cloudflare Pages Function — route-aware API gateway for the 4-Render
+ * multi-route topology.
  *
- * Forwards every request under /api/* to the configured API server
- * (API_URL env var in CF Pages settings).  Handles CORS and rewrites
- * Set-Cookie headers so session cookies work on the CF Pages domain.
+ * Routing:
+ *   WRITES (POST/PUT/PATCH/DELETE), ADMIN, AUTH and AI generation
+ *       → PRIMARY only (4th Render). Never replayed to a standby, even after
+ *         an ambiguous timeout, so a mutation can never be duplicated.
+ *   SAFE PUBLIC READS (anonymous GET/HEAD on the allowlist below)
+ *       → READ origins in round-robin (load splitting across Render 2/3),
+ *         with bounded failover on 502/503/504/network failure and a short
+ *         down-skip so a suspended origin is not hammered. The primary is the
+ *         LAST read candidate so it stays light.
+ *   OPTIONS → answered at the edge.
  *
- * How to configure:
- *   CF Pages → trynex-lifestyle-shop → Settings → Environment Variables
- *   API_URL = https://<your-api-host>  (no trailing slash)
- *
- * The API host can be:
- *   - The Replit dev domain while prototyping
- *   - A Render / Railway free-tier worker URL
- *   - A Cloudflare Worker URL (for full edge deployment)
+ * Origins come from functions/gateway-config.ts (authoritative, committed) or
+ * the dashboard env overrides (API_PRIMARY_ORIGIN / API_READ_ORIGINS). There is
+ * no hardcoded Render fallback: if a role has no origin the gateway fails
+ * closed with a truthful JSON error instead of pinning traffic to a dead host.
  */
 
-interface Env {
-  /** Base URL of the API server.  Set in CF Pages env vars.  No trailing slash. */
-  API_URL: string;
+import {
+  REQUEST_TIMEOUT_MS,
+  READ_TOTAL_BUDGET_MS,
+  RETRYABLE_STATUSES,
+  ORIGIN_DOWN_SKIP_MS,
+  ORIGIN_DOWN_THRESHOLD,
+  isSafePublicRead,
+  isPrimaryOnlyRead,
+  resolveOrigins,
+} from "../gateway-config";
+
+interface GatewayEnv {
+  API_URL?: string;
+  API_ORIGIN?: string;
+  TRYNEXT_API_URL?: string;
+  API_ORIGINS?: string;
+  API_PRIMARY_ORIGIN?: string;
+  API_READ_ORIGINS?: string;
 }
 
-/** CF-internal request headers we must NOT forward to the upstream API. */
-const STRIP_REQUEST_HEADERS = new Set([
-  "host",
-  "cf-connecting-ip",
-  "cf-ipcountry",
-  "cf-ray",
-  "cf-visitor",
-  "cf-request-id",
-  "cdn-loop",
-  "x-real-ip",
-]);
+const DOWN_STATE = new Map<string, { fails: number; skipUntil: number }>();
+let readCursor = 0;
 
-/** Response headers that must NOT be forwarded to the browser. */
-const STRIP_RESPONSE_HEADERS = new Set([
-  "transfer-encoding",
-  "connection",
-  "keep-alive",
-]);
+function markFailure(origin: string): void {
+  const entry = DOWN_STATE.get(origin) ?? { fails: 0, skipUntil: 0 };
+  entry.fails += 1;
+  if (entry.fails >= ORIGIN_DOWN_THRESHOLD) {
+    entry.skipUntil = Date.now() + ORIGIN_DOWN_SKIP_MS;
+  }
+  DOWN_STATE.set(origin, entry);
+}
 
-export const onRequest: PagesFunction<Env> = async (context) => {
-  const { request, env } = context;
-  const url = new URL(request.url);
+function markSuccess(origin: string): void {
+  DOWN_STATE.delete(origin);
+}
 
-  /* ── CORS preflight ──────────────────────────────────────────────────── */
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        "Access-Control-Allow-Origin": url.origin,
-        "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers":
-          "Content-Type, Authorization, X-Requested-With, Cookie",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Max-Age": "86400",
-      },
-    });
+function isSkipped(origin: string): boolean {
+  const entry = DOWN_STATE.get(origin);
+  if (!entry) return false;
+  if (Date.now() >= entry.skipUntil) {
+    DOWN_STATE.delete(origin);
+    return false;
+  }
+  return true;
+}
+
+/** Read origins in round-robin order, skipping origins briefly marked down. */
+function orderedReadOrigins(origins: string[]): string[] {
+  const healthy = origins.filter((origin) => !isSkipped(origin));
+  const pool = healthy.length > 0 ? healthy : origins;
+  if (pool.length === 0) return [];
+  const start = readCursor % pool.length;
+  readCursor += 1;
+  return [...pool.slice(start), ...pool.slice(0, start)];
+}
+
+function corsHeaders(origin: string): Headers {
+  const headers = new Headers();
+  headers.set("Access-Control-Allow-Origin", origin);
+  headers.set("Access-Control-Allow-Credentials", "true");
+  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Idempotency-Key");
+  headers.set("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS");
+  headers.set("Vary", "Origin");
+  return headers;
+}
+
+function makeTargetUrl(origin: string, path: string, search: string): URL {
+  return new URL(`/api/${path}${search}`, `${origin}/`);
+}
+
+/** Reset in-memory routing state; exported for tests only. */
+export function __resetGatewayState(): void {
+  DOWN_STATE.clear();
+  readCursor = 0;
+}
+
+export const onRequest: PagesFunction<GatewayEnv> = async (context) => {
+  const { request, env, params } = context;
+  const originalUrl = new URL(request.url);
+  const pathSegments = (params["path"] as string[] | string) ?? [];
+  const rawPath = Array.isArray(pathSegments) ? pathSegments.join("/") : pathSegments;
+  // The request pathname is authoritative for Pages root catch-all Functions;
+  // params.path may be empty or may include the /api prefix depending on the
+  // runtime route matcher. Keep params only as a compatibility fallback.
+  const pathnamePath = originalUrl.pathname
+    .replace(/^\/+/, "")
+    .replace(/^api(?:\/|$)/i, "")
+    .replace(/^\/+/, "");
+  const parameterPath = rawPath.replace(/^\/?api(?:\/|$)/i, "").replace(/^\/+/, "");
+  const path = pathnamePath || parameterPath;
+  const method = request.method.toUpperCase();
+  const apiPath = `/${path}`;
+  const safeRead = isSafePublicRead(method, apiPath, request);
+  const primaryOnlyRead = isPrimaryOnlyRead(method, apiPath);
+  const origin = originalUrl.origin;
+  const responseCors = corsHeaders(origin);
+  const edgeCache = (globalThis as { caches?: { default?: Cache } }).caches?.default;
+  const cacheable = safeRead
+    && method === "GET"
+    && !request.headers.get("cookie")
+    && !originalUrl.searchParams.has("search");
+  const cacheKeyUrl = new URL(originalUrl.toString());
+  cacheKeyUrl.searchParams.set("_trynext_origin", origin);
+  const cacheKey = new Request(cacheKeyUrl.toString(), { method: "GET" });
+
+  if (cacheable && edgeCache) {
+    const cached = await edgeCache.match(cacheKey);
+    if (cached) {
+      const cachedHeaders = new Headers(cached.headers);
+      responseCors.forEach((value, key) => cachedHeaders.set(key, value));
+      cachedHeaders.set("X-Trynext-Edge-Cache", "HIT");
+      return new Response(cached.body, { status: cached.status, statusText: cached.statusText, headers: cachedHeaders });
+    }
   }
 
-  /* ── Guard: API_URL must be configured ──────────────────────────────── */
-  const apiBase = (env.API_URL ?? "").replace(/\/+$/, "");
-  if (!apiBase) {
-    return Response.json(
-      { error: "API_URL is not configured in CF Pages environment variables." },
-      { status: 503 }
+  if (method === "OPTIONS") {
+    responseCors.set("Cache-Control", "public, max-age=600");
+    return new Response(null, { status: 204, headers: responseCors });
+  }
+
+  const roles = resolveOrigins(env as Record<string, string | undefined>);
+  const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+
+  // Writes, admin, auth, and AI generation go to the PRIMARY only.
+  const candidates = (safeRead && !primaryOnlyRead)
+    ? orderedReadOrigins(roles.reads)
+    : roles.primary.slice(0, 1);
+  const routeKind = (safeRead && !primaryOnlyRead) ? "read" : "write";
+
+  if (candidates.length === 0) {
+    const failed = new Headers(responseCors);
+    failed.set("Content-Type", "application/json");
+    failed.set("Cache-Control", "no-store");
+    return new Response(
+      JSON.stringify({
+        error: "api_unavailable",
+        message: "The API is temporarily unavailable.",
+        status: 503,
+        detail: routeKind === "write"
+          ? "No primary API origin configured"
+          : "No read API origin configured",
+      }),
+      { status: 503, headers: failed },
     );
   }
 
-  /* ── Build upstream target URL ───────────────────────────────────────── */
-  const targetUrl = `${apiBase}${url.pathname}${url.search}`;
+  let lastStatus = 503;
+  let lastError = "No API origin responded";
+  const readDeadline = routeKind === "read" ? Date.now() + READ_TOTAL_BUDGET_MS : null;
 
-  /* ── Forward request headers ─────────────────────────────────────────── */
-  const fwdHeaders = new Headers();
-  for (const [k, v] of request.headers.entries()) {
-    if (!STRIP_REQUEST_HEADERS.has(k.toLowerCase())) {
-      fwdHeaders.set(k, v);
+  for (const apiOrigin of candidates) {
+    const remainingReadBudget = readDeadline === null ? REQUEST_TIMEOUT_MS : readDeadline - Date.now();
+    if (remainingReadBudget <= 0) {
+      lastError = `Read budget exhausted after ${READ_TOTAL_BUDGET_MS}ms`;
+      break;
+    }
+    const targetUrl = makeTargetUrl(apiOrigin, path, originalUrl.search);
+    const headers = new Headers(request.headers);
+    headers.set("Host", new URL(apiOrigin).host);
+    headers.delete("origin");
+    headers.delete("referer");
+    if (safeRead && !primaryOnlyRead) headers.delete("cookie");
+
+    const requestInit: RequestInit & { duplex?: "half" } = {
+      method,
+      headers,
+      body: method === "GET" || method === "HEAD" ? undefined : request.body,
+      redirect: "follow",
+    };
+    if (requestInit.body) requestInit.duplex = "half";
+    const proxyRequest = new Request(targetUrl.toString(), requestInit);
+
+    try {
+      const response = await fetch(proxyRequest, {
+        signal: AbortSignal.timeout(Math.min(REQUEST_TIMEOUT_MS, remainingReadBudget)),
+      });
+      lastStatus = response.status;
+      if (routeKind === "read" && RETRYABLE_STATUSES.has(response.status)) {
+        lastError = `Origin ${apiOrigin} returned ${response.status}`;
+        markFailure(apiOrigin);
+        continue;
+      }
+
+      markSuccess(apiOrigin);
+      const responseHeaders = new Headers(response.headers);
+      responseCors.forEach((value, key) => responseHeaders.set(key, value));
+      responseHeaders.set("X-Trynext-Origin", new URL(apiOrigin).host);
+      responseHeaders.set("X-Trynext-Route", routeKind);
+      if (safeRead && response.ok) {
+        responseHeaders.set("Cache-Control", "public, max-age=10, s-maxage=30, stale-while-revalidate=60");
+      } else if (!safeRead || primaryOnlyRead) {
+        responseHeaders.set("Cache-Control", "private, no-store");
+      }
+
+      if (cacheable && edgeCache && response.ok) {
+        responseHeaders.set("X-Trynext-Edge-Cache", "MISS");
+      }
+      const output = new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: responseHeaders,
+      });
+      if (cacheable && edgeCache && response.ok) {
+        const waitUntil = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
+        const cacheCopy = output.clone();
+        const write = edgeCache.put(cacheKey, cacheCopy).catch(() => undefined);
+        if (waitUntil) waitUntil(write);
+        else await write;
+      }
+      return output;
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error);
+      markFailure(apiOrigin);
+      if (routeKind === "write") break;
     }
   }
-  fwdHeaders.set("X-Forwarded-Host", url.host);
-  fwdHeaders.set("X-Forwarded-Proto", url.protocol.replace(/:$/, ""));
-  const clientIp = request.headers.get("CF-Connecting-IP");
-  if (clientIp) fwdHeaders.set("X-Real-IP", clientIp);
 
-  /* ── Call upstream ───────────────────────────────────────────────────── */
-  let upstream: Response;
-  try {
-    upstream = await fetch(targetUrl, {
-      method: request.method,
-      headers: fwdHeaders,
-      body: ["GET", "HEAD"].includes(request.method) ? null : request.body,
-      redirect: "manual",
-    });
-  } catch (err) {
-    console.error("[api-proxy] upstream fetch failed:", err);
-    return Response.json(
-      { error: "API server is unreachable.", detail: String(err) },
-      { status: 502 }
-    );
-  }
-
-  /* ── Build response headers ──────────────────────────────────────────── */
-  const respHeaders = new Headers();
-  for (const [k, v] of upstream.headers.entries()) {
-    if (!STRIP_RESPONSE_HEADERS.has(k.toLowerCase()) && k.toLowerCase() !== "set-cookie") {
-      respHeaders.set(k, v);
-    }
-  }
-
-  /* ── Rewrite Set-Cookie: drop Domain=, relax SameSite ───────────────── */
-  // CF Pages serves on HTTPS so Secure is fine; strip Domain so browser
-  // sets the cookie on the CF Pages hostname (not the API server hostname).
-  const rawCookies: string[] = [];
-  // getAll() is available in Workers; fall back to single header otherwise.
-  if (typeof (upstream.headers as any).getAll === "function") {
-    rawCookies.push(...(upstream.headers as any).getAll("set-cookie"));
-  } else {
-    const single = upstream.headers.get("set-cookie");
-    if (single) rawCookies.push(single);
-  }
-  for (const cookie of rawCookies) {
-    const rewritten = cookie
-      .replace(/;\s*Domain=[^;]*/gi, "")
-      .replace(/;\s*SameSite=None/gi, "; SameSite=Lax");
-    respHeaders.append("set-cookie", rewritten);
-  }
-
-  /* ── Stream upstream body back ───────────────────────────────────────── */
-  return new Response(upstream.body, {
-    status: upstream.status,
-    statusText: upstream.statusText,
-    headers: respHeaders,
-  });
+  const failed = new Headers(responseCors);
+  failed.set("Content-Type", "application/json");
+  failed.set("Cache-Control", "no-store");
+  return new Response(
+    JSON.stringify({ error: "api_unavailable", message: "The API is temporarily unavailable.", status: lastStatus, detail: lastError }),
+    { status: 503, headers: failed },
+  );
 };

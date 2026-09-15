@@ -2,28 +2,32 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, Pen, Flame, Zap, Truck, Layers, ShieldCheck, Star, Sparkles,
+  ArrowRight, Pen, Flame, Zap, Truck, Layers, ShieldCheck, Sparkles,
 } from "lucide-react";
 import { useSiteSettings } from "@/context/SiteSettingsContext";
 
-const tshirtSrc = "/images/cat-tshirt.png";
-const mugSrc    = "/images/cat-mug.png";
-const capSrc    = "/images/cat-cap.png";
+const tshirtSrc = "/mockups/psd-master-v10/runtime-roles/tshirt/white/front-base.png";
+const mugSrc    = "/mockups/psd-master-v10/runtime-roles/mug/white/front-base.png";
+const capSrc    = "/mockups/psd-master-v10/runtime-roles/cap/white/front-base.png";
+const hoodieSrc = "/mockups/psd-master-v10/runtime-roles/hoodie/white/front-base.png";
+const longsleeveSrc = "/mockups/psd-master-v10/runtime-roles/longsleeve/white/front-base.png";
+const bottleSrc = "/mockups/psd-master-v10/runtime-roles/waterbottle/white/front-base.png";
 
 const DEFAULT_PHRASES: string[] = [
   "T-Shirts.",
   "Hoodies.",
   "Mugs.",
   "Caps.",
+  "Water Bottles.",
   "Custom Gifts.",
   "আপনার ডিজাইন.",
 ];
 
 const HERO_STATS = [
-  { value: "5,000+", label: "Happy Customers" },
-  { value: "24hr", label: "Production" },
+  { value: "6", label: "Product Families" },
+  { value: "2", label: "T-Shirt Print Sides" },
   { value: "64", label: "Districts" },
-  { value: "4.9★", label: "Rated" },
+  { value: "Custom", label: "Made for Your Idea" },
 ];
 
 function usePrefersReducedMotion() {
@@ -55,13 +59,17 @@ function useTypewriter(phrases: string[], opts?: {
   const indexRef = useRef(0);
 
   useEffect(() => {
+    if (!enabled) return;
+    indexRef.current = 0;
+    setText(safe[0]);
+    setPhase("holding");
+  }, [phrases]);
+
+  useEffect(() => {
     if (enabled) return;
     setText(safe[indexRef.current % safe.length]);
-    const id = window.setInterval(() => {
-      indexRef.current = (indexRef.current + 1) % safe.length;
-      setText(safe[indexRef.current]);
-    }, 2500);
-    return () => window.clearInterval(id);
+    setPhase("holding");
+    return undefined;
   }, [enabled, safe]);
 
   useEffect(() => {
@@ -93,42 +101,12 @@ function useTypewriter(phrases: string[], opts?: {
 
 // Multi-product grid shown in the hero right column
 const HERO_PRODUCT_GRID = [
-  {
-    src: "/images/cat-hoodie.png",
-    label: "Custom Hoodie",
-    badge: "Best Seller",
-    badgeColor: "#E85D04",
-    delay: 0.1,
-    floatY: 10,
-    rotate: "-2deg",
-  },
-  {
-    src: mugSrc,
-    label: "Custom Mug",
-    badge: "Fan Fav",
-    badgeColor: "#0EA5E9",
-    delay: 0.25,
-    floatY: 8,
-    rotate: "2deg",
-  },
-  {
-    src: tshirtSrc,
-    label: "Custom T-Shirt",
-    badge: "Top Pick",
-    badgeColor: "#10B981",
-    delay: 0.15,
-    floatY: 12,
-    rotate: "-1deg",
-  },
-  {
-    src: capSrc,
-    label: "Custom Cap",
-    badge: "Trending",
-    badgeColor: "#7C3AED",
-    delay: 0.3,
-    floatY: 9,
-    rotate: "3deg",
-  },
+  { src: hoodieSrc, label: "Custom Hoodie", badge: "Best Seller", badgeColor: "#E85D04", delay: 0.1, floatY: 10, href: "/products?category=hoodies&sort=bestsellers" },
+  { src: bottleSrc, label: "Water Bottle", badge: "New", badgeColor: "#0EA5E9", delay: 0.25, floatY: 8, href: "/products?category=water-bottles&sort=newest" },
+  { src: tshirtSrc, label: "Custom T-Shirt", badge: "Top Pick", badgeColor: "#10B981", delay: 0.15, floatY: 12, href: "/products?category=t-shirts&sort=bestsellers" },
+  { src: capSrc, label: "Custom Cap", badge: "Trending", badgeColor: "#7C3AED", delay: 0.3, floatY: 9, href: "/products?category=caps&sort=newest" },
+  { src: longsleeveSrc, label: "Long Sleeve", badge: "New", badgeColor: "#2563EB", delay: 0.2, floatY: 7, href: "/products?category=long-sleeves&sort=newest" },
+  { src: mugSrc, label: "Custom Mug", badge: "Popular", badgeColor: "#9333EA", delay: 0.35, floatY: 6, href: "/products?category=mugs&sort=bestsellers" },
 ];
 
 
@@ -226,7 +204,7 @@ export function TypewriterHero() {
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-16 grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-6 md:gap-8 lg:gap-12 items-center">
+      <div className="relative z-10 w-full container-wide grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-6 md:gap-8 lg:gap-12 items-center">
 
         {/* ── LEFT: copy ── */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left min-w-0 w-full">
@@ -247,7 +225,7 @@ export function TypewriterHero() {
               }}
             >
               <Flame className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span>Bangladesh's #1 Custom Apparel Brand</span>
+              <span>Custom apparel made for your idea</span>
               <span
                 className="px-1.5 py-0.5 rounded-full text-[9px] text-white font-black tracking-wider shrink-0"
                 style={{ background: "var(--color-primary)" }}
@@ -282,7 +260,11 @@ export function TypewriterHero() {
                 style={{
                   display: "inline-block",
                   minWidth: "0.6em",
+                  maxWidth: "100%",
                   color: "var(--color-primary)",
+                  overflowWrap: "anywhere",
+                  whiteSpace: "normal",
+                  verticalAlign: "baseline",
                 }}
               >
                 {reduced ? headlineFallback : typed}
@@ -360,19 +342,20 @@ export function TypewriterHero() {
               style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}
             >
               {HERO_PRODUCT_GRID.map((p, i) => (
-                <div
+                <Link
                   key={p.label}
+                  href={p.href}
                   className="flex-none relative rounded-2xl overflow-hidden"
                   style={{
                     width: "130px",
-                    background: "linear-gradient(145deg, #FFF8F3, #FFF2E8)",
-                    border: "1.5px solid rgba(232,93,4,0.12)",
-                    boxShadow: "0 6px 20px rgba(56,30,8,0.10), 0 1px 4px rgba(56,30,8,0.06)",
+                    background: "rgba(255,253,251,0.94)",
+                    border: "1.5px solid rgba(232,93,4,0.14)",
+                    boxShadow: "0 8px 24px rgba(90,47,20,0.10), 0 2px 6px rgba(232,93,4,0.06)",
                   }}
                 >
                   <div
                     className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-[8px] font-black text-white uppercase tracking-wider"
-                    style={{ background: p.badgeColor }}
+                     style={{ background: p.badgeColor, boxShadow: "0 2px 6px rgba(90,47,20,0.16)" }}
                   >
                     {p.badge}
                   </div>
@@ -381,14 +364,14 @@ export function TypewriterHero() {
                     alt={p.label}
                     loading={i < 2 ? "eager" : "lazy"}
                     decoding="async"
-                    className="w-full object-cover select-none pointer-events-none"
+                    className="w-full object-contain select-none pointer-events-none p-2"
                     style={{ height: "100px" }}
                     draggable={false}
                   />
                   <div className="pb-2.5 text-center">
-                    <span className="text-[10px] font-black text-gray-700">{p.label}</span>
+                     <span className="text-[10px] font-black text-gray-800">{p.label}</span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </motion.div>
@@ -404,7 +387,7 @@ export function TypewriterHero() {
               { icon: Zap, label: "24hr Production" },
               { icon: Truck, label: "64 Districts" },
               { icon: Layers, label: "320GSM Fabric" },
-              { icon: ShieldCheck, label: "COD Available" },
+              { icon: ShieldCheck, label: "25% Advance Only" },
             ].map(({ icon: Icon, label }) => (
               <span
                 key={label}
@@ -430,7 +413,7 @@ export function TypewriterHero() {
                 className="flex flex-col items-center md:items-start lg:px-5 lg:border-l lg:border-orange-200 first:lg:border-l-0 first:lg:pl-0 min-w-0"
               >
                 <span
-                  className="font-black text-base sm:text-2xl lg:text-3xl leading-none truncate w-full text-center md:text-left"
+                  className="font-black text-base sm:text-2xl lg:text-3xl leading-none text-center md:text-left whitespace-nowrap"
                   style={{ color: "var(--color-primary)" }}
                 >
                   {s.value}
@@ -447,26 +430,28 @@ export function TypewriterHero() {
         {/* ── RIGHT: Premium multi-product showcase (tablet + desktop) ── */}
         <div className="hidden md:flex flex-col gap-3 lg:gap-4 w-full max-w-lg ml-auto">
 
-          {/* Top row: 2 product cards */}
-          <div className="flex gap-3 lg:gap-4">
-            {HERO_PRODUCT_GRID.slice(0, 2).map((p, i) => (
+          {/* Top row: 3 product cards */}
+          <div className="flex gap-2 lg:gap-3">
+            {HERO_PRODUCT_GRID.slice(0, 3).map((p, i) => (
               <motion.div
                 key={p.label}
-                className="flex-1 relative rounded-2xl lg:rounded-3xl overflow-hidden"
+                className="flex-1 relative rounded-2xl lg:rounded-3xl overflow-hidden cursor-pointer"
                 style={{
-                  background: "linear-gradient(145deg, #FFF8F3, #FFF2E8)",
-                  border: "1.5px solid rgba(232,93,4,0.12)",
-                  boxShadow: "0 8px 24px rgba(56,30,8,0.10), 0 2px 6px rgba(56,30,8,0.05)",
+                  background: "rgba(255,253,251,0.94)",
+                  border: "1.5px solid rgba(232,93,4,0.14)",
+                  boxShadow: "0 16px 36px rgba(90,47,20,0.12), 0 2px 8px rgba(232,93,4,0.06)",
                   minHeight: "160px",
                 }}
                 initial={reduced ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: p.delay, ease: [0.22, 1, 0.36, 1] }}
+                onClick={() => window.location.href = p.href}
+                whileHover={{ scale: 1.02 }}
               >
                 {/* Badge */}
                 <div
                   className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-full text-[8px] lg:text-[9px] font-black text-white uppercase tracking-wider"
-                  style={{ background: p.badgeColor }}
+                  style={{ background: p.badgeColor, boxShadow: "0 2px 8px rgba(90,47,20,0.16)" }}
                 >
                   {p.badge}
                 </div>
@@ -478,9 +463,8 @@ export function TypewriterHero() {
                   fetchPriority="high"
                   decoding="async"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = tshirtSrc; }}
-                  className="w-full h-28 md:h-32 lg:h-44 object-cover select-none pointer-events-none"
+                  className="w-full h-28 md:h-32 lg:h-44 object-contain select-none pointer-events-none p-3"
                   draggable={false}
-                  style={{ transform: `rotate(${p.rotate})` }}
                   animate={reduced ? undefined : { y: [0, -(p.floatY / 2), 0] }}
                   transition={reduced ? undefined : {
                     duration: 4 + i * 0.6,
@@ -490,33 +474,35 @@ export function TypewriterHero() {
                   }}
                 />
                 {/* Label */}
-                <div className="pb-2.5 text-center">
-                  <span className="text-[10px] lg:text-xs font-black text-gray-700">{p.label}</span>
+                <div className="pb-3 text-center">
+                  <span className="text-[10px] lg:text-xs font-black text-gray-800">{p.label}</span>
                 </div>
               </motion.div>
             ))}
           </div>
 
-          {/* Bottom row: 2 more product cards */}
-          <div className="flex gap-3 lg:gap-4">
-            {HERO_PRODUCT_GRID.slice(2, 4).map((p, i) => (
+          {/* Bottom row: 3 more product cards */}
+          <div className="flex gap-2 lg:gap-3">
+            {HERO_PRODUCT_GRID.slice(3, 6).map((p, i) => (
               <motion.div
                 key={p.label}
-                className="flex-1 relative rounded-2xl lg:rounded-3xl overflow-hidden"
+                className="flex-1 relative rounded-2xl lg:rounded-3xl overflow-hidden cursor-pointer"
                 style={{
-                  background: "linear-gradient(145deg, #FFF8F3, #FFF2E8)",
-                  border: "1.5px solid rgba(232,93,4,0.12)",
-                  boxShadow: "0 8px 24px rgba(56,30,8,0.10), 0 2px 6px rgba(56,30,8,0.05)",
+                  background: "rgba(255,253,251,0.94)",
+                  border: "1.5px solid rgba(232,93,4,0.14)",
+                  boxShadow: "0 16px 36px rgba(90,47,20,0.12), 0 2px 8px rgba(232,93,4,0.06)",
                   minHeight: "160px",
                 }}
                 initial={reduced ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: p.delay, ease: [0.22, 1, 0.36, 1] }}
+                onClick={() => window.location.href = p.href}
+                whileHover={{ scale: 1.02 }}
               >
                 {/* Badge */}
                 <div
                   className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-full text-[8px] lg:text-[9px] font-black text-white uppercase tracking-wider"
-                  style={{ background: p.badgeColor }}
+                  style={{ background: p.badgeColor, boxShadow: "0 2px 8px rgba(90,47,20,0.16)" }}
                 >
                   {p.badge}
                 </div>
@@ -527,9 +513,8 @@ export function TypewriterHero() {
                   loading="lazy"
                   decoding="async"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = tshirtSrc; }}
-                  className="w-full h-28 md:h-32 lg:h-44 object-cover select-none pointer-events-none"
+                  className="w-full h-28 md:h-32 lg:h-44 object-contain select-none pointer-events-none p-3"
                   draggable={false}
-                  style={{ transform: `rotate(${p.rotate})` }}
                   animate={reduced ? undefined : { y: [0, -(p.floatY / 2), 0] }}
                   transition={reduced ? undefined : {
                     duration: 4.5 + i * 0.5,
@@ -539,8 +524,8 @@ export function TypewriterHero() {
                   }}
                 />
                 {/* Label */}
-                <div className="pb-2.5 text-center">
-                  <span className="text-[10px] lg:text-xs font-black text-gray-700">{p.label}</span>
+                <div className="pb-3 text-center">
+                  <span className="text-[10px] lg:text-xs font-black text-gray-800">{p.label}</span>
                 </div>
               </motion.div>
             ))}
@@ -557,15 +542,14 @@ export function TypewriterHero() {
               border: "1px solid rgba(232,93,4,0.12)",
             }}
           >
-            <div className="flex items-center gap-0.5">
-              {[0, 1, 2, 3, 4].map(i => (
-                <Star key={i} className="w-2.5 h-2.5 lg:w-3 lg:h-3 fill-amber-400 text-amber-400" />
-              ))}
+            <div className="flex items-center gap-1 text-[10px] lg:text-xs font-bold text-gray-700">
+              <ShieldCheck className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-green-600" />
+              Secure ordering
             </div>
-            <div className="text-[10px] lg:text-xs font-black text-gray-800">4.9/5 · 5,000+ Reviews</div>
+            <div className="text-[10px] lg:text-xs font-black text-gray-800">Custom design support</div>
             <div className="flex items-center gap-1 text-[10px] lg:text-xs font-bold text-orange-600">
               <Truck className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
-              24hr Delivery
+              Nationwide delivery
             </div>
           </motion.div>
         </div>

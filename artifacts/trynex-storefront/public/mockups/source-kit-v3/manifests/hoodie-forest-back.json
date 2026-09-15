@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "hoodie:forest:back",
+  "category": "hoodie",
+  "colorSlug": "forest",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/hoodie-forest-back.png",
+  "cutoutSrc": "/mockups/source-kit-v3/hoodie/forest/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/hoodie-forest-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    72,
+    62,
+    952,
+    962
+  ],
+  "sha256": "a347a355c31d7d5e7d58b73158d284f9d9fd224c6e9d09a115c264e232e00eff",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

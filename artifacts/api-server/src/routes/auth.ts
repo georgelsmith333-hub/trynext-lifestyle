@@ -90,11 +90,11 @@ export async function getConfiguredGoogleClientId(): Promise<string> {
 
 const router: IRouter = Router();
 
-if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
-  throw new Error("JWT_SECRET environment variable is required in production");
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required. The auth service cannot start without a configured secret.");
 }
-const JWT_SECRET = process.env.JWT_SECRET || "dev_only_secret_not_for_production";
-const CUSTOMER_SALT = process.env.CUSTOMER_SALT || "trynex_customer_2024";
+const JWT_SECRET = process.env.JWT_SECRET;
+const CUSTOMER_SALT = process.env.CUSTOMER_SALT;
 const IS_PROD = process.env.NODE_ENV === "production";
 
 function failureReason(err: unknown, fallback: string): string {
@@ -470,9 +470,9 @@ router.get("/auth/me", async (req, res) => {
   }
 });
 
-router.put("/auth/change-password", async (req, res) => {
+async function handleChangePassword(req: import("express").Request, res: import("express").Response): Promise<void> {
   try {
-    const token = req.headers.authorization?.replace("Bearer ", "") ?? req.cookies?.customer_token;
+    const token = req.headers.authorization?.replace("Bearer ", "") ?? (req.cookies as Record<string, string>)?.customer_token;
     if (!token) {
       res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
       return;
@@ -491,7 +491,7 @@ router.put("/auth/change-password", async (req, res) => {
       return;
     }
     if (!customer.passwordHash) {
-      res.status(400).json({ error: "bad_request", message: "Password change not available for social login accounts. Please use Google or Facebook to sign in." });
+      res.status(400).json({ error: "bad_request", message: "Password change not available for social login accounts." });
       return;
     }
     const isValid = await verifyPasswordAny(customer.passwordHash, currentPassword, CUSTOMER_SALT);
@@ -508,7 +508,10 @@ router.put("/auth/change-password", async (req, res) => {
     req.log.error({ err }, "Change password failed");
     res.status(500).json({ error: "internal_error", message: "Failed to change password" });
   }
-});
+}
+
+router.put("/auth/change-password", handleChangePassword);
+router.post("/auth/change-password", handleChangePassword);
 
 // ---------------------------------------------------------------------------
 // POST /api/auth/forgot-password
@@ -628,7 +631,7 @@ router.post("/auth/guest", async (req, res) => {
         const nextSeq = lastSeq + 1 + attempt;
         const padded = String(nextSeq).padStart(4, "0");
         const username = `guestaccount${padded}`;
-        const guestEmail = `${username}@trynex.guest`;
+        const guestEmail = `${username}@trynext.guest`;
         const guestPassword = username;
         const passwordHash = await hashPasswordArgon2(guestPassword);
 
@@ -707,16 +710,16 @@ router.get("/auth/health", async (_req, res) => {
   } catch {
     // ignore
   }
-  res.json({
-    ok: dbReachable,
-    googleConfigured,
-    jwtSecretPresent,
-    adminJwtSecretPresent,
-    allowedOriginsConfigured,
-    dbReachable,
-    customersTableExists,
-    guestSequenceColumnExists,
-  });
+    res.json({
+      ok: dbReachable,
+      googleConfigured,
+      jwtSecretPresent,
+      adminJwtSecretPresent,
+      allowedOriginsConfigured,
+      dbReachable,
+      customersTableExists,
+      guestSequenceColumnExists,
+    });
 });
 
 // ---------------------------------------------------------------------------

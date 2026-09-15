@@ -4,8 +4,8 @@ export function TrustBadges() {
   const badges = [
     { icon: Shield, label: "SSL Secure", sub: "256-bit encrypted" },
     { icon: RotateCcw, label: "Easy Returns", sub: "Within 7 days" },
-    { icon: Truck, label: "Cash on Delivery", sub: "Pay when you receive" },
-    { icon: BadgeCheck, label: "5,000+ Customers", sub: "Verified reviews" },
+    { icon: Truck, label: "25% Advance Only", sub: "Rest paid on delivery" },
+    { icon: BadgeCheck, label: "Custom-Made Orders", sub: "Artwork reviewed before production" },
   ];
 
   return (
@@ -34,8 +34,7 @@ export function TrustBadges() {
         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">We accept:</span>
         <span className="text-[11px] font-black px-2 py-0.5 rounded" style={{ background: "rgba(226,19,110,0.08)", color: "#e2136e" }}>bKash</span>
         <span className="text-[11px] font-black px-2 py-0.5 rounded" style={{ background: "rgba(247,148,29,0.1)", color: "#f7941d" }}>Nagad</span>
-        <span className="text-[11px] font-black px-2 py-0.5 rounded" style={{ background: "rgba(139,92,246,0.1)", color: "#7c3aed" }}>Rocket</span>
-        <span className="text-[11px] font-black px-2 py-0.5 rounded" style={{ background: "rgba(16,163,74,0.08)", color: "#16a34a" }}>COD</span>
+        <span className="text-[11px] font-black px-2 py-0.5 rounded" style={{ background: "rgba(124,58,237,0.1)", color: "#7c3aed" }}>uPay</span>
       </div>
     </div>
   );

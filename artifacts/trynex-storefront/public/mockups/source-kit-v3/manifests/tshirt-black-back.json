@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "tshirt:black:back",
+  "category": "tshirt",
+  "colorSlug": "black",
+  "face": "back",
+  "sourceFile": "normalized-cutouts/black-tshirt-back-cutout.png",
+  "cutoutSrc": "/mockups/source-kit-v3/tshirt/black/back.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/tshirt-black-back.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    62,
+    83,
+    962,
+    942
+  ],
+  "sha256": "16bd3ee1d85a3f7af46f08db8c1731557fd0a6f058b6fa6a88053371a6223945",
+  "sourceSelection": "special-clean-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

@@ -1,0 +1,4611 @@
+{
+  "stale_inventory_rows": [
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/white/front.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/white/front.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/white/back.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/white/back.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/white/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/white/left-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/white/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/white/right-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "white",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/white/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/white/neck-label.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/black/front.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/black/front.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/black/back.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/black/back.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/black/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/black/left-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/black/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/black/right-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "black",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/black/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/black/neck-label.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/navy/front.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/navy/front.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/navy/back.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/navy/back.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/navy/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/navy/left-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/navy/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/navy/right-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "navy",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/navy/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/navy/neck-label.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/maroon/front.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/maroon/front.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/maroon/back.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/maroon/back.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/maroon/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/maroon/left-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/maroon/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/maroon/right-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "maroon",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/maroon/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/maroon/neck-label.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/olive/front.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/olive/front.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/olive/back.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/olive/back.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/olive/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/olive/left-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/olive/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/olive/right-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "olive",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/olive/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/olive/neck-label.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/sky-blue/front.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/sky-blue/front.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/sky-blue/back.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/sky-blue/back.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/sky-blue/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/sky-blue/left-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/sky-blue/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/sky-blue/right-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "sky-blue",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/sky-blue/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/sky-blue/neck-label.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/grey/front.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/grey/front.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/grey/back.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/grey/back.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/grey/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/grey/left-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/grey/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/grey/right-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "grey",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/grey/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/grey/neck-label.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/red/front.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/red/front.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/red/back.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/red/back.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/red/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/red/left-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/red/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/red/right-sleeve.png"
+    },
+    {
+      "family": "tshirt",
+      "color": "red",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/tshirt/red/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/tshirt/red/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/white/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/white/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/white/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/white/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/white/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/white/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/white/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/white/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "white",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/white/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/white/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/black/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/black/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/black/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/black/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/black/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/black/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/black/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/black/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "black",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/black/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/black/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/navy/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/navy/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/navy/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/navy/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/navy/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/navy/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/navy/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/navy/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "navy",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/navy/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/navy/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/maroon/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/maroon/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/maroon/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/maroon/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/maroon/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/maroon/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/maroon/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/maroon/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "maroon",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/maroon/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/maroon/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/olive/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/olive/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/olive/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/olive/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/olive/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/olive/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/olive/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/olive/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "olive",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/olive/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/olive/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/grey/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/grey/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/grey/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/grey/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/grey/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/grey/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/grey/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/grey/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "grey",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/grey/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/grey/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/red/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/red/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/red/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/red/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/red/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/red/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/red/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/red/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "red",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/red/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/red/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/sky-blue/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/sky-blue/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/sky-blue/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/sky-blue/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/sky-blue/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/sky-blue/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/sky-blue/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/sky-blue/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "sky-blue",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/sky-blue/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/sky-blue/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/burgundy/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/burgundy/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/burgundy/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/burgundy/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/burgundy/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/burgundy/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/burgundy/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/burgundy/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "burgundy",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/burgundy/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/burgundy/neck-label.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/forest/front.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/forest/front.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/forest/back.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/forest/back.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/forest/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/forest/left-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/forest/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/forest/right-sleeve.png"
+    },
+    {
+      "family": "longsleeve",
+      "color": "forest",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/longsleeve/forest/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/longsleeve/forest/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/white/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/white/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/white/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/white/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/white/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/white/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/white/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/white/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "white",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/white/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/white/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/black/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/black/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/black/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/black/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/black/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/black/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/black/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/black/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "black",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/black/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/black/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/navy/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/navy/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/navy/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/navy/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/navy/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/navy/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/navy/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/navy/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "navy",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/navy/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/navy/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/grey/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/grey/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/grey/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/grey/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/grey/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/grey/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/grey/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/grey/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "grey",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/grey/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/grey/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/maroon/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/maroon/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/maroon/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/maroon/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/maroon/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/maroon/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/maroon/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/maroon/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "maroon",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/maroon/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/maroon/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/olive/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/olive/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/olive/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/olive/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/olive/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/olive/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/olive/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/olive/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "olive",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/olive/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/olive/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/red/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/red/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/red/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/red/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/red/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/red/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/red/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/red/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "red",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/red/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/red/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/sky-blue/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/sky-blue/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/sky-blue/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/sky-blue/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/sky-blue/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/sky-blue/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/sky-blue/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/sky-blue/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "sky-blue",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/sky-blue/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/sky-blue/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/forest/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/forest/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/forest/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/forest/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/forest/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/forest/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/forest/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/forest/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "forest",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/forest/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/forest/neck-label.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "front",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/burgundy/front.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/burgundy/front.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "back",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/burgundy/back.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/burgundy/back.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "left-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/burgundy/left-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/burgundy/left-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "right-sleeve",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/burgundy/right-sleeve.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/burgundy/right-sleeve.png"
+    },
+    {
+      "family": "hoodie",
+      "color": "burgundy",
+      "view": "neck-label",
+      "activeExpected": "/mockups/source-kit-v3/hoodie/burgundy/neck-label.png",
+      "expected_v5": "/mockups/apparel-v5/hoodie/burgundy/neck-label.png"
+    }
+  ],
+  "surface_metrics": {
+    "tshirt": {
+      "white": {
+        "front": {
+          "mean_rgb": [
+            239.09,
+            239.04,
+            239.04
+          ],
+          "std_rgb": [
+            7.4,
+            7.42,
+            7.24
+          ],
+          "luma_std": 7.39,
+          "local_texture_mean_abs": 4.02,
+          "opaque_ratio": 0.4981,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            235.91,
+            235.69,
+            235.74
+          ],
+          "std_rgb": [
+            6.46,
+            6.4,
+            6.23
+          ],
+          "luma_std": 6.39,
+          "local_texture_mean_abs": 3.93,
+          "opaque_ratio": 0.4732,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            241.88,
+            241.84,
+            241.75
+          ],
+          "std_rgb": [
+            4.9,
+            4.9,
+            4.69
+          ],
+          "luma_std": 4.86,
+          "local_texture_mean_abs": 3.29,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            241.88,
+            241.84,
+            241.75
+          ],
+          "std_rgb": [
+            4.9,
+            4.9,
+            4.69
+          ],
+          "luma_std": 4.86,
+          "local_texture_mean_abs": 3.29,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            239.92,
+            239.87,
+            239.84
+          ],
+          "std_rgb": [
+            7.07,
+            7.13,
+            6.99
+          ],
+          "luma_std": 7.08,
+          "local_texture_mean_abs": 5.1,
+          "opaque_ratio": 0.2856,
+          "alpha_bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      },
+      "black": {
+        "front": {
+          "mean_rgb": [
+            21.98,
+            25.78,
+            31.42
+          ],
+          "std_rgb": [
+            0.79,
+            0.91,
+            1.07
+          ],
+          "luma_std": 0.85,
+          "local_texture_mean_abs": 0.4,
+          "opaque_ratio": 0.4981,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            21.76,
+            25.41,
+            30.95
+          ],
+          "std_rgb": [
+            0.71,
+            0.84,
+            0.95
+          ],
+          "luma_std": 0.76,
+          "local_texture_mean_abs": 0.4,
+          "opaque_ratio": 0.4732,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            22.23,
+            26.08,
+            31.77
+          ],
+          "std_rgb": [
+            0.73,
+            0.76,
+            0.84
+          ],
+          "luma_std": 0.67,
+          "local_texture_mean_abs": 0.41,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            22.23,
+            26.08,
+            31.77
+          ],
+          "std_rgb": [
+            0.73,
+            0.76,
+            0.84
+          ],
+          "luma_std": 0.67,
+          "local_texture_mean_abs": 0.41,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            22.01,
+            25.83,
+            31.52
+          ],
+          "std_rgb": [
+            0.86,
+            0.93,
+            1.08
+          ],
+          "luma_std": 0.86,
+          "local_texture_mean_abs": 0.57,
+          "opaque_ratio": 0.2856,
+          "alpha_bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      },
+      "navy": {
+        "front": {
+          "mean_rgb": [
+            18.22,
+            44.45,
+            81.99
+          ],
+          "std_rgb": [
+            0.72,
+            1.44,
+            2.58
+          ],
+          "luma_std": 1.31,
+          "local_texture_mean_abs": 0.69,
+          "opaque_ratio": 0.4981,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            17.96,
+            43.84,
+            80.87
+          ],
+          "std_rgb": [
+            0.59,
+            1.24,
+            2.26
+          ],
+          "luma_std": 1.12,
+          "local_texture_mean_abs": 0.7,
+          "opaque_ratio": 0.4732,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            18.48,
+            44.98,
+            82.94
+          ],
+          "std_rgb": [
+            0.73,
+            1.11,
+            1.81
+          ],
+          "luma_std": 0.97,
+          "local_texture_mean_abs": 0.58,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            18.48,
+            44.98,
+            82.94
+          ],
+          "std_rgb": [
+            0.73,
+            1.11,
+            1.81
+          ],
+          "luma_std": 0.97,
+          "local_texture_mean_abs": 0.58,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            18.3,
+            44.61,
+            82.26
+          ],
+          "std_rgb": [
+            0.84,
+            1.45,
+            2.52
+          ],
+          "luma_std": 1.3,
+          "local_texture_mean_abs": 0.9,
+          "opaque_ratio": 0.2856,
+          "alpha_bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      },
+      "maroon": {
+        "front": {
+          "mean_rgb": [
+            104.47,
+            25.78,
+            49.19
+          ],
+          "std_rgb": [
+            3.29,
+            0.91,
+            1.58
+          ],
+          "luma_std": 1.66,
+          "local_texture_mean_abs": 0.88,
+          "opaque_ratio": 0.4981,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            103.02,
+            25.41,
+            48.52
+          ],
+          "std_rgb": [
+            2.83,
+            0.84,
+            1.39
+          ],
+          "luma_std": 1.45,
+          "local_texture_mean_abs": 0.9,
+          "opaque_ratio": 0.4732,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            105.73,
+            26.08,
+            49.77
+          ],
+          "std_rgb": [
+            2.3,
+            0.76,
+            1.17
+          ],
+          "luma_std": 1.17,
+          "local_texture_mean_abs": 0.77,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            105.73,
+            26.08,
+            49.77
+          ],
+          "std_rgb": [
+            2.3,
+            0.76,
+            1.17
+          ],
+          "luma_std": 1.17,
+          "local_texture_mean_abs": 0.77,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            104.84,
+            25.83,
+            49.35
+          ],
+          "std_rgb": [
+            3.2,
+            0.93,
+            1.57
+          ],
+          "luma_std": 1.61,
+          "local_texture_mean_abs": 1.15,
+          "opaque_ratio": 0.2856,
+          "alpha_bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      },
+      "olive": {
+        "front": {
+          "mean_rgb": [
+            85.74,
+            96.03,
+            46.4
+          ],
+          "std_rgb": [
+            2.73,
+            3.02,
+            1.53
+          ],
+          "luma_std": 2.75,
+          "local_texture_mean_abs": 1.48,
+          "opaque_ratio": 0.4981,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            84.54,
+            94.69,
+            45.73
+          ],
+          "std_rgb": [
+            2.36,
+            2.64,
+            1.33
+          ],
+          "luma_std": 2.38,
+          "local_texture_mean_abs": 1.44,
+          "opaque_ratio": 0.4732,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            86.78,
+            97.15,
+            46.96
+          ],
+          "std_rgb": [
+            1.94,
+            2.11,
+            1.14
+          ],
+          "luma_std": 1.9,
+          "local_texture_mean_abs": 1.26,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            86.78,
+            97.15,
+            46.96
+          ],
+          "std_rgb": [
+            1.94,
+            2.11,
+            1.14
+          ],
+          "luma_std": 1.9,
+          "local_texture_mean_abs": 1.26,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            86.04,
+            96.34,
+            46.57
+          ],
+          "std_rgb": [
+            2.66,
+            2.94,
+            1.51
+          ],
+          "luma_std": 2.66,
+          "local_texture_mean_abs": 1.9,
+          "opaque_ratio": 0.2856,
+          "alpha_bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      },
+      "sky-blue": {
+        "front": {
+          "mean_rgb": [
+            62.34,
+            135.47,
+            183.28
+          ],
+          "std_rgb": [
+            2.0,
+            4.28,
+            5.74
+          ],
+          "luma_std": 3.75,
+          "local_texture_mean_abs": 1.99,
+          "opaque_ratio": 0.4981,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            61.49,
+            133.56,
+            180.67
+          ],
+          "std_rgb": [
+            1.77,
+            3.71,
+            4.95
+          ],
+          "luma_std": 3.26,
+          "local_texture_mean_abs": 2.02,
+          "opaque_ratio": 0.4732,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            63.07,
+            137.07,
+            185.46
+          ],
+          "std_rgb": [
+            1.43,
+            2.95,
+            3.93
+          ],
+          "luma_std": 2.56,
+          "local_texture_mean_abs": 1.66,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            63.07,
+            137.07,
+            185.46
+          ],
+          "std_rgb": [
+            1.43,
+            2.95,
+            3.93
+          ],
+          "luma_std": 2.56,
+          "local_texture_mean_abs": 1.66,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            62.55,
+            135.93,
+            183.92
+          ],
+          "std_rgb": [
+            1.97,
+            4.12,
+            5.52
+          ],
+          "luma_std": 3.6,
+          "local_texture_mean_abs": 2.56,
+          "opaque_ratio": 0.2856,
+          "alpha_bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      },
+      "grey": {
+        "front": {
+          "mean_rgb": [
+            108.2,
+            113.83,
+            121.28
+          ],
+          "std_rgb": [
+            3.39,
+            3.6,
+            3.75
+          ],
+          "luma_std": 3.54,
+          "local_texture_mean_abs": 1.91,
+          "opaque_ratio": 0.4981,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            106.66,
+            112.16,
+            119.61
+          ],
+          "std_rgb": [
+            2.95,
+            3.09,
+            3.27
+          ],
+          "luma_std": 3.05,
+          "local_texture_mean_abs": 1.91,
+          "opaque_ratio": 0.4732,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            109.46,
+            115.19,
+            122.69
+          ],
+          "std_rgb": [
+            2.32,
+            2.51,
+            2.6
+          ],
+          "luma_std": 2.43,
+          "local_texture_mean_abs": 1.61,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            109.46,
+            115.19,
+            122.69
+          ],
+          "std_rgb": [
+            2.32,
+            2.51,
+            2.6
+          ],
+          "luma_std": 2.43,
+          "local_texture_mean_abs": 1.61,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            108.57,
+            114.22,
+            121.67
+          ],
+          "std_rgb": [
+            3.28,
+            3.48,
+            3.63
+          ],
+          "luma_std": 3.41,
+          "local_texture_mean_abs": 2.46,
+          "opaque_ratio": 0.2856,
+          "alpha_bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      },
+      "red": {
+        "front": {
+          "mean_rgb": [
+            164.52,
+            27.66,
+            35.11
+          ],
+          "std_rgb": [
+            5.18,
+            0.94,
+            1.16
+          ],
+          "luma_std": 2.19,
+          "local_texture_mean_abs": 1.14,
+          "opaque_ratio": 0.4981,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            162.17,
+            27.24,
+            34.67
+          ],
+          "std_rgb": [
+            4.48,
+            0.87,
+            1.03
+          ],
+          "luma_std": 1.91,
+          "local_texture_mean_abs": 1.16,
+          "opaque_ratio": 0.4732,
+          "alpha_bbox": [
+            62,
+            84,
+            962,
+            940
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            166.48,
+            27.95,
+            35.52
+          ],
+          "std_rgb": [
+            3.56,
+            0.76,
+            0.89
+          ],
+          "luma_std": 1.5,
+          "local_texture_mean_abs": 0.97,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            166.48,
+            27.95,
+            35.52
+          ],
+          "std_rgb": [
+            3.56,
+            0.76,
+            0.89
+          ],
+          "luma_std": 1.5,
+          "local_texture_mean_abs": 0.97,
+          "opaque_ratio": 0.4419,
+          "alpha_bbox": [
+            129,
+            112,
+            894,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            165.1,
+            27.71,
+            35.24
+          ],
+          "std_rgb": [
+            4.98,
+            0.95,
+            1.21
+          ],
+          "luma_std": 2.11,
+          "local_texture_mean_abs": 1.48,
+          "opaque_ratio": 0.2856,
+          "alpha_bbox": [
+            112,
+            301,
+            911,
+            723
+          ]
+        }
+      }
+    },
+    "longsleeve": {
+      "white": {
+        "front": {
+          "mean_rgb": [
+            235.91,
+            235.72,
+            235.79
+          ],
+          "std_rgb": [
+            9.72,
+            9.75,
+            9.62
+          ],
+          "luma_std": 9.72,
+          "local_texture_mean_abs": 5.25,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            240.97,
+            240.22,
+            241.05
+          ],
+          "std_rgb": [
+            8.35,
+            8.06,
+            7.2
+          ],
+          "luma_std": 8.01,
+          "local_texture_mean_abs": 4.23,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            240.5,
+            240.27,
+            240.23
+          ],
+          "std_rgb": [
+            10.55,
+            10.56,
+            10.4
+          ],
+          "luma_std": 10.53,
+          "local_texture_mean_abs": 4.84,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            240.5,
+            240.27,
+            240.23
+          ],
+          "std_rgb": [
+            10.55,
+            10.56,
+            10.4
+          ],
+          "luma_std": 10.53,
+          "local_texture_mean_abs": 4.84,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            239.0,
+            238.85,
+            238.82
+          ],
+          "std_rgb": [
+            9.08,
+            9.12,
+            8.96
+          ],
+          "luma_std": 9.08,
+          "local_texture_mean_abs": 5.17,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "black": {
+        "front": {
+          "mean_rgb": [
+            21.68,
+            25.41,
+            30.97
+          ],
+          "std_rgb": [
+            1.01,
+            1.16,
+            1.38
+          ],
+          "luma_std": 1.1,
+          "local_texture_mean_abs": 0.55,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            22.15,
+            25.98,
+            31.68
+          ],
+          "std_rgb": [
+            0.84,
+            0.98,
+            1.21
+          ],
+          "luma_std": 0.93,
+          "local_texture_mean_abs": 0.43,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            22.11,
+            25.92,
+            31.58
+          ],
+          "std_rgb": [
+            1.13,
+            1.3,
+            1.53
+          ],
+          "luma_std": 1.22,
+          "local_texture_mean_abs": 0.53,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            22.11,
+            25.92,
+            31.58
+          ],
+          "std_rgb": [
+            1.13,
+            1.3,
+            1.53
+          ],
+          "luma_std": 1.22,
+          "local_texture_mean_abs": 0.53,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            21.97,
+            25.75,
+            31.37
+          ],
+          "std_rgb": [
+            1.03,
+            1.16,
+            1.35
+          ],
+          "luma_std": 1.09,
+          "local_texture_mean_abs": 0.57,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "navy": {
+        "front": {
+          "mean_rgb": [
+            17.98,
+            43.85,
+            80.86
+          ],
+          "std_rgb": [
+            0.88,
+            1.89,
+            3.41
+          ],
+          "luma_std": 1.72,
+          "local_texture_mean_abs": 0.89,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            18.34,
+            44.7,
+            82.49
+          ],
+          "std_rgb": [
+            0.74,
+            1.51,
+            2.76
+          ],
+          "luma_std": 1.38,
+          "local_texture_mean_abs": 0.73,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            18.34,
+            44.71,
+            82.39
+          ],
+          "std_rgb": [
+            0.99,
+            2.09,
+            3.7
+          ],
+          "luma_std": 1.88,
+          "local_texture_mean_abs": 0.84,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            18.34,
+            44.71,
+            82.39
+          ],
+          "std_rgb": [
+            0.99,
+            2.09,
+            3.7
+          ],
+          "luma_std": 1.88,
+          "local_texture_mean_abs": 0.84,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            18.24,
+            44.44,
+            81.93
+          ],
+          "std_rgb": [
+            0.91,
+            1.87,
+            3.31
+          ],
+          "luma_std": 1.69,
+          "local_texture_mean_abs": 0.87,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "maroon": {
+        "front": {
+          "mean_rgb": [
+            103.04,
+            25.41,
+            48.51
+          ],
+          "std_rgb": [
+            4.32,
+            1.16,
+            2.08
+          ],
+          "luma_std": 2.17,
+          "local_texture_mean_abs": 1.16,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            105.05,
+            25.98,
+            49.49
+          ],
+          "std_rgb": [
+            3.45,
+            0.98,
+            1.68
+          ],
+          "luma_std": 1.77,
+          "local_texture_mean_abs": 0.93,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            105.03,
+            25.92,
+            49.44
+          ],
+          "std_rgb": [
+            4.72,
+            1.3,
+            2.27
+          ],
+          "luma_std": 2.37,
+          "local_texture_mean_abs": 1.09,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            105.03,
+            25.92,
+            49.44
+          ],
+          "std_rgb": [
+            4.72,
+            1.3,
+            2.27
+          ],
+          "luma_std": 2.37,
+          "local_texture_mean_abs": 1.09,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            104.44,
+            25.75,
+            49.16
+          ],
+          "std_rgb": [
+            4.21,
+            1.16,
+            2.04
+          ],
+          "luma_std": 2.11,
+          "local_texture_mean_abs": 1.16,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "olive": {
+        "front": {
+          "mean_rgb": [
+            84.55,
+            94.7,
+            45.75
+          ],
+          "std_rgb": [
+            3.58,
+            3.98,
+            2.0
+          ],
+          "luma_std": 3.61,
+          "local_texture_mean_abs": 1.92,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            86.28,
+            96.69,
+            46.66
+          ],
+          "std_rgb": [
+            2.92,
+            3.31,
+            1.59
+          ],
+          "luma_std": 2.98,
+          "local_texture_mean_abs": 1.55,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            86.21,
+            96.54,
+            46.65
+          ],
+          "std_rgb": [
+            3.89,
+            4.33,
+            2.2
+          ],
+          "luma_std": 3.93,
+          "local_texture_mean_abs": 1.82,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            86.21,
+            96.54,
+            46.65
+          ],
+          "std_rgb": [
+            3.89,
+            4.33,
+            2.2
+          ],
+          "luma_std": 3.93,
+          "local_texture_mean_abs": 1.82,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            85.71,
+            95.97,
+            46.38
+          ],
+          "std_rgb": [
+            3.49,
+            3.86,
+            1.96
+          ],
+          "luma_std": 3.51,
+          "local_texture_mean_abs": 1.93,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "grey": {
+        "front": {
+          "mean_rgb": [
+            106.7,
+            112.25,
+            119.62
+          ],
+          "std_rgb": [
+            4.47,
+            4.71,
+            4.96
+          ],
+          "luma_std": 4.65,
+          "local_texture_mean_abs": 2.49,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            108.82,
+            114.5,
+            122.06
+          ],
+          "std_rgb": [
+            3.59,
+            3.83,
+            4.08
+          ],
+          "luma_std": 3.78,
+          "local_texture_mean_abs": 2.01,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            108.77,
+            114.49,
+            121.91
+          ],
+          "std_rgb": [
+            4.88,
+            5.18,
+            5.39
+          ],
+          "luma_std": 5.1,
+          "local_texture_mean_abs": 2.34,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            108.77,
+            114.49,
+            121.91
+          ],
+          "std_rgb": [
+            4.88,
+            5.18,
+            5.39
+          ],
+          "luma_std": 5.1,
+          "local_texture_mean_abs": 2.34,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            108.13,
+            113.78,
+            121.21
+          ],
+          "std_rgb": [
+            4.34,
+            4.6,
+            4.82
+          ],
+          "luma_std": 4.53,
+          "local_texture_mean_abs": 2.51,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "red": {
+        "front": {
+          "mean_rgb": [
+            162.23,
+            27.26,
+            34.62
+          ],
+          "std_rgb": [
+            6.8,
+            1.22,
+            1.53
+          ],
+          "luma_std": 2.88,
+          "local_texture_mean_abs": 1.53,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            165.59,
+            27.88,
+            35.26
+          ],
+          "std_rgb": [
+            5.6,
+            1.05,
+            1.17
+          ],
+          "luma_std": 2.38,
+          "local_texture_mean_abs": 1.22,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            165.39,
+            27.8,
+            35.28
+          ],
+          "std_rgb": [
+            7.41,
+            1.36,
+            1.68
+          ],
+          "luma_std": 3.14,
+          "local_texture_mean_abs": 1.43,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            165.39,
+            27.8,
+            35.28
+          ],
+          "std_rgb": [
+            7.41,
+            1.36,
+            1.68
+          ],
+          "luma_std": 3.14,
+          "local_texture_mean_abs": 1.43,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            164.43,
+            27.61,
+            35.09
+          ],
+          "std_rgb": [
+            6.61,
+            1.2,
+            1.49
+          ],
+          "luma_std": 2.79,
+          "local_texture_mean_abs": 1.51,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "sky-blue": {
+        "front": {
+          "mean_rgb": [
+            61.46,
+            133.58,
+            180.74
+          ],
+          "std_rgb": [
+            2.63,
+            5.62,
+            7.55
+          ],
+          "luma_std": 4.93,
+          "local_texture_mean_abs": 2.63,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            62.8,
+            136.39,
+            184.38
+          ],
+          "std_rgb": [
+            2.19,
+            4.65,
+            6.13
+          ],
+          "luma_std": 4.07,
+          "local_texture_mean_abs": 2.11,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            62.65,
+            136.2,
+            184.24
+          ],
+          "std_rgb": [
+            2.86,
+            6.14,
+            8.23
+          ],
+          "luma_std": 5.37,
+          "local_texture_mean_abs": 2.46,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            62.65,
+            136.2,
+            184.24
+          ],
+          "std_rgb": [
+            2.86,
+            6.14,
+            8.23
+          ],
+          "luma_std": 5.37,
+          "local_texture_mean_abs": 2.46,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            62.29,
+            135.4,
+            183.19
+          ],
+          "std_rgb": [
+            2.55,
+            5.46,
+            7.33
+          ],
+          "luma_std": 4.78,
+          "local_texture_mean_abs": 2.62,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "burgundy": {
+        "front": {
+          "mean_rgb": [
+            99.35,
+            21.68,
+            42.94
+          ],
+          "std_rgb": [
+            4.2,
+            1.01,
+            1.86
+          ],
+          "luma_std": 2.01,
+          "local_texture_mean_abs": 1.07,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            101.46,
+            22.15,
+            43.77
+          ],
+          "std_rgb": [
+            3.5,
+            0.84,
+            1.47
+          ],
+          "luma_std": 1.67,
+          "local_texture_mean_abs": 0.87,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            101.31,
+            22.11,
+            43.77
+          ],
+          "std_rgb": [
+            4.58,
+            1.13,
+            2.04
+          ],
+          "luma_std": 2.2,
+          "local_texture_mean_abs": 1.0,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            101.31,
+            22.11,
+            43.77
+          ],
+          "std_rgb": [
+            4.58,
+            1.13,
+            2.04
+          ],
+          "luma_std": 2.2,
+          "local_texture_mean_abs": 1.0,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            100.7,
+            21.97,
+            43.51
+          ],
+          "std_rgb": [
+            4.08,
+            1.03,
+            1.81
+          ],
+          "luma_std": 1.97,
+          "local_texture_mean_abs": 1.09,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      },
+      "forest": {
+        "front": {
+          "mean_rgb": [
+            19.84,
+            96.61,
+            57.81
+          ],
+          "std_rgb": [
+            0.95,
+            4.08,
+            2.49
+          ],
+          "luma_std": 2.92,
+          "local_texture_mean_abs": 1.57,
+          "opaque_ratio": 0.5419,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            20.25,
+            98.65,
+            59.03
+          ],
+          "std_rgb": [
+            0.79,
+            3.38,
+            2.05
+          ],
+          "luma_std": 2.42,
+          "local_texture_mean_abs": 1.24,
+          "opaque_ratio": 0.5665,
+          "alpha_bbox": [
+            62,
+            101,
+            962,
+            922
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            20.23,
+            98.49,
+            58.96
+          ],
+          "std_rgb": [
+            1.06,
+            4.43,
+            2.73
+          ],
+          "luma_std": 3.18,
+          "local_texture_mean_abs": 1.46,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            20.23,
+            98.49,
+            58.96
+          ],
+          "std_rgb": [
+            1.06,
+            4.43,
+            2.73
+          ],
+          "luma_std": 3.18,
+          "local_texture_mean_abs": 1.46,
+          "opaque_ratio": 0.2632,
+          "alpha_bbox": [
+            249,
+            112,
+            774,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            20.12,
+            97.92,
+            58.6
+          ],
+          "std_rgb": [
+            0.97,
+            3.95,
+            2.43
+          ],
+          "luma_std": 2.84,
+          "local_texture_mean_abs": 1.56,
+          "opaque_ratio": 0.2754,
+          "alpha_bbox": [
+            112,
+            307,
+            911,
+            717
+          ]
+        }
+      }
+    },
+    "hoodie": {
+      "white": {
+        "front": {
+          "mean_rgb": [
+            232.13,
+            231.33,
+            234.35
+          ],
+          "std_rgb": [
+            13.62,
+            13.65,
+            13.25
+          ],
+          "luma_std": 13.57,
+          "local_texture_mean_abs": 5.55,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            242.37,
+            242.06,
+            241.94
+          ],
+          "std_rgb": [
+            9.67,
+            9.64,
+            9.51
+          ],
+          "luma_std": 9.63,
+          "local_texture_mean_abs": 4.53,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            235.44,
+            234.64,
+            237.41
+          ],
+          "std_rgb": [
+            11.13,
+            10.98,
+            10.13
+          ],
+          "luma_std": 10.9,
+          "local_texture_mean_abs": 3.83,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            235.44,
+            234.64,
+            237.41
+          ],
+          "std_rgb": [
+            11.13,
+            10.98,
+            10.13
+          ],
+          "luma_std": 10.9,
+          "local_texture_mean_abs": 3.83,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            216.13,
+            214.96,
+            217.52
+          ],
+          "std_rgb": [
+            25.55,
+            25.75,
+            25.82
+          ],
+          "luma_std": 25.69,
+          "local_texture_mean_abs": 3.87,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "black": {
+        "front": {
+          "mean_rgb": [
+            21.34,
+            25.0,
+            30.48
+          ],
+          "std_rgb": [
+            1.35,
+            1.59,
+            1.9
+          ],
+          "luma_std": 1.52,
+          "local_texture_mean_abs": 0.58,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            22.3,
+            26.13,
+            31.82
+          ],
+          "std_rgb": [
+            1.01,
+            1.16,
+            1.36
+          ],
+          "luma_std": 1.1,
+          "local_texture_mean_abs": 0.48,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            21.65,
+            25.36,
+            30.91
+          ],
+          "std_rgb": [
+            1.2,
+            1.36,
+            1.61
+          ],
+          "luma_std": 1.28,
+          "local_texture_mean_abs": 0.45,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            21.65,
+            25.36,
+            30.91
+          ],
+          "std_rgb": [
+            1.2,
+            1.36,
+            1.61
+          ],
+          "luma_std": 1.28,
+          "local_texture_mean_abs": 0.45,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            19.79,
+            23.18,
+            28.28
+          ],
+          "std_rgb": [
+            2.51,
+            2.92,
+            3.5
+          ],
+          "luma_std": 2.83,
+          "local_texture_mean_abs": 0.44,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "navy": {
+        "front": {
+          "mean_rgb": [
+            17.68,
+            43.11,
+            79.53
+          ],
+          "std_rgb": [
+            1.12,
+            2.56,
+            4.69
+          ],
+          "luma_std": 2.34,
+          "local_texture_mean_abs": 0.95,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            18.51,
+            45.04,
+            83.0
+          ],
+          "std_rgb": [
+            0.85,
+            1.86,
+            3.33
+          ],
+          "luma_std": 1.69,
+          "local_texture_mean_abs": 0.75,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            17.96,
+            43.73,
+            80.67
+          ],
+          "std_rgb": [
+            1.04,
+            2.11,
+            3.83
+          ],
+          "luma_std": 1.92,
+          "local_texture_mean_abs": 0.66,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            17.96,
+            43.73,
+            80.67
+          ],
+          "std_rgb": [
+            1.04,
+            2.11,
+            3.83
+          ],
+          "luma_std": 1.92,
+          "local_texture_mean_abs": 0.66,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            16.4,
+            40.07,
+            73.9
+          ],
+          "std_rgb": [
+            2.12,
+            4.86,
+            8.88
+          ],
+          "luma_std": 4.46,
+          "local_texture_mean_abs": 0.71,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "grey": {
+        "front": {
+          "mean_rgb": [
+            104.93,
+            110.39,
+            117.69
+          ],
+          "std_rgb": [
+            6.16,
+            6.48,
+            6.88
+          ],
+          "luma_std": 6.42,
+          "local_texture_mean_abs": 2.68,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            109.56,
+            115.33,
+            122.8
+          ],
+          "std_rgb": [
+            4.41,
+            4.68,
+            4.89
+          ],
+          "luma_std": 4.61,
+          "local_texture_mean_abs": 2.18,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            106.41,
+            111.97,
+            119.37
+          ],
+          "std_rgb": [
+            5.01,
+            5.29,
+            5.61
+          ],
+          "luma_std": 5.23,
+          "local_texture_mean_abs": 1.86,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            106.41,
+            111.97,
+            119.37
+          ],
+          "std_rgb": [
+            5.01,
+            5.29,
+            5.61
+          ],
+          "luma_std": 5.23,
+          "local_texture_mean_abs": 1.86,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            97.57,
+            102.69,
+            109.4
+          ],
+          "std_rgb": [
+            11.71,
+            12.35,
+            13.12
+          ],
+          "luma_std": 12.23,
+          "local_texture_mean_abs": 1.9,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "maroon": {
+        "front": {
+          "mean_rgb": [
+            101.31,
+            25.0,
+            47.71
+          ],
+          "std_rgb": [
+            5.92,
+            1.59,
+            2.85
+          ],
+          "luma_std": 3.0,
+          "local_texture_mean_abs": 1.24,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            105.81,
+            26.13,
+            49.8
+          ],
+          "std_rgb": [
+            4.26,
+            1.16,
+            2.03
+          ],
+          "luma_std": 2.15,
+          "local_texture_mean_abs": 1.0,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            102.75,
+            25.36,
+            48.39
+          ],
+          "std_rgb": [
+            4.83,
+            1.36,
+            2.35
+          ],
+          "luma_std": 2.45,
+          "local_texture_mean_abs": 0.87,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            102.75,
+            25.36,
+            48.39
+          ],
+          "std_rgb": [
+            4.83,
+            1.36,
+            2.35
+          ],
+          "luma_std": 2.45,
+          "local_texture_mean_abs": 0.87,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            94.21,
+            23.18,
+            44.3
+          ],
+          "std_rgb": [
+            11.3,
+            2.92,
+            5.37
+          ],
+          "luma_std": 5.67,
+          "local_texture_mean_abs": 0.88,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "olive": {
+        "front": {
+          "mean_rgb": [
+            83.16,
+            93.18,
+            44.98
+          ],
+          "std_rgb": [
+            4.92,
+            5.51,
+            2.7
+          ],
+          "luma_std": 5.0,
+          "local_texture_mean_abs": 2.06,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            86.85,
+            97.26,
+            47.0
+          ],
+          "std_rgb": [
+            3.52,
+            3.92,
+            1.95
+          ],
+          "luma_std": 3.56,
+          "local_texture_mean_abs": 1.68,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            84.36,
+            94.52,
+            45.61
+          ],
+          "std_rgb": [
+            4.03,
+            4.52,
+            2.22
+          ],
+          "luma_std": 4.09,
+          "local_texture_mean_abs": 1.41,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            84.36,
+            94.52,
+            45.61
+          ],
+          "std_rgb": [
+            4.03,
+            4.52,
+            2.22
+          ],
+          "luma_std": 4.09,
+          "local_texture_mean_abs": 1.41,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            77.31,
+            86.59,
+            41.79
+          ],
+          "std_rgb": [
+            9.32,
+            10.42,
+            5.07
+          ],
+          "luma_std": 9.47,
+          "local_texture_mean_abs": 1.46,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "red": {
+        "front": {
+          "mean_rgb": [
+            159.59,
+            26.84,
+            34.02
+          ],
+          "std_rgb": [
+            9.41,
+            1.68,
+            2.03
+          ],
+          "luma_std": 4.0,
+          "local_texture_mean_abs": 1.62,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            166.62,
+            28.01,
+            35.53
+          ],
+          "std_rgb": [
+            6.7,
+            1.22,
+            1.48
+          ],
+          "luma_std": 2.85,
+          "local_texture_mean_abs": 1.32,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            161.89,
+            27.21,
+            34.49
+          ],
+          "std_rgb": [
+            7.71,
+            1.43,
+            1.68
+          ],
+          "luma_std": 3.27,
+          "local_texture_mean_abs": 1.12,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            161.89,
+            27.21,
+            34.49
+          ],
+          "std_rgb": [
+            7.71,
+            1.43,
+            1.68
+          ],
+          "luma_std": 3.27,
+          "local_texture_mean_abs": 1.12,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            148.41,
+            24.89,
+            31.59
+          ],
+          "std_rgb": [
+            17.84,
+            3.09,
+            3.85
+          ],
+          "luma_std": 7.55,
+          "local_texture_mean_abs": 1.15,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "sky-blue": {
+        "front": {
+          "mean_rgb": [
+            60.47,
+            131.42,
+            177.77
+          ],
+          "std_rgb": [
+            3.63,
+            7.78,
+            10.43
+          ],
+          "luma_std": 6.83,
+          "local_texture_mean_abs": 2.83,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            63.13,
+            137.22,
+            185.6
+          ],
+          "std_rgb": [
+            2.57,
+            5.55,
+            7.43
+          ],
+          "luma_std": 4.86,
+          "local_texture_mean_abs": 2.28,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            61.34,
+            133.32,
+            180.31
+          ],
+          "std_rgb": [
+            3.0,
+            6.38,
+            8.5
+          ],
+          "luma_std": 5.58,
+          "local_texture_mean_abs": 1.95,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            61.34,
+            133.32,
+            180.31
+          ],
+          "std_rgb": [
+            3.0,
+            6.38,
+            8.5
+          ],
+          "luma_std": 5.58,
+          "local_texture_mean_abs": 1.95,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            56.17,
+            122.21,
+            165.32
+          ],
+          "std_rgb": [
+            6.81,
+            14.7,
+            19.83
+          ],
+          "luma_std": 12.91,
+          "local_texture_mean_abs": 1.97,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "forest": {
+        "front": {
+          "mean_rgb": [
+            19.52,
+            95.05,
+            56.86
+          ],
+          "std_rgb": [
+            1.24,
+            5.64,
+            3.42
+          ],
+          "luma_std": 4.05,
+          "local_texture_mean_abs": 1.68,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            20.41,
+            99.22,
+            59.4
+          ],
+          "std_rgb": [
+            0.93,
+            4.01,
+            2.45
+          ],
+          "luma_std": 2.88,
+          "local_texture_mean_abs": 1.34,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            19.82,
+            96.41,
+            57.68
+          ],
+          "std_rgb": [
+            1.13,
+            4.63,
+            2.83
+          ],
+          "luma_std": 3.32,
+          "local_texture_mean_abs": 1.17,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            19.82,
+            96.41,
+            57.68
+          ],
+          "std_rgb": [
+            1.13,
+            4.63,
+            2.83
+          ],
+          "luma_std": 3.32,
+          "local_texture_mean_abs": 1.17,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            18.1,
+            88.34,
+            52.79
+          ],
+          "std_rgb": [
+            2.32,
+            10.64,
+            6.47
+          ],
+          "luma_std": 7.64,
+          "local_texture_mean_abs": 1.18,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      },
+      "burgundy": {
+        "front": {
+          "mean_rgb": [
+            97.74,
+            21.34,
+            42.22
+          ],
+          "std_rgb": [
+            5.8,
+            1.35,
+            2.52
+          ],
+          "luma_std": 2.78,
+          "local_texture_mean_abs": 1.14,
+          "opaque_ratio": 0.4799,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "back": {
+          "mean_rgb": [
+            102.07,
+            22.3,
+            44.09
+          ],
+          "std_rgb": [
+            4.15,
+            1.01,
+            1.81
+          ],
+          "luma_std": 2.0,
+          "local_texture_mean_abs": 0.94,
+          "opaque_ratio": 0.5013,
+          "alpha_bbox": [
+            72,
+            62,
+            952,
+            962
+          ]
+        },
+        "left-sleeve": {
+          "mean_rgb": [
+            99.15,
+            21.65,
+            42.8
+          ],
+          "std_rgb": [
+            4.78,
+            1.2,
+            2.07
+          ],
+          "luma_std": 2.29,
+          "local_texture_mean_abs": 0.81,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "right-sleeve": {
+          "mean_rgb": [
+            99.15,
+            21.65,
+            42.8
+          ],
+          "std_rgb": [
+            4.78,
+            1.2,
+            2.07
+          ],
+          "luma_std": 2.29,
+          "local_texture_mean_abs": 0.81,
+          "opaque_ratio": 0.3238,
+          "alpha_bbox": [
+            169,
+            112,
+            854,
+            911
+          ]
+        },
+        "neck-label": {
+          "mean_rgb": [
+            90.88,
+            19.79,
+            39.21
+          ],
+          "std_rgb": [
+            10.96,
+            2.51,
+            4.76
+          ],
+          "luma_std": 5.25,
+          "local_texture_mean_abs": 0.81,
+          "opaque_ratio": 0.32,
+          "alpha_bbox": [
+            112,
+            229,
+            911,
+            794
+          ]
+        }
+      }
+    }
+  },
+  "family_color_view_flags": {
+    "tshirt": {
+      "white/front": [
+        "low_luminance_variation"
+      ],
+      "white/back": [
+        "low_luminance_variation"
+      ],
+      "white/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "white/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "white/neck-label": [
+        "low_luminance_variation"
+      ],
+      "black/front": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/neck-label": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/front": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/neck-label": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/front": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/neck-label": [
+        "low_luminance_variation"
+      ],
+      "olive/front": [
+        "low_luminance_variation"
+      ],
+      "olive/back": [
+        "low_luminance_variation"
+      ],
+      "olive/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "olive/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "olive/neck-label": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/front": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/back": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/neck-label": [
+        "low_luminance_variation"
+      ],
+      "grey/front": [
+        "low_luminance_variation"
+      ],
+      "grey/back": [
+        "low_luminance_variation"
+      ],
+      "grey/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "grey/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "grey/neck-label": [
+        "low_luminance_variation"
+      ],
+      "red/front": [
+        "low_luminance_variation"
+      ],
+      "red/back": [
+        "low_luminance_variation"
+      ],
+      "red/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "red/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "red/neck-label": [
+        "low_luminance_variation"
+      ]
+    },
+    "longsleeve": {
+      "white/front": [],
+      "white/back": [],
+      "white/left-sleeve": [],
+      "white/right-sleeve": [],
+      "white/neck-label": [],
+      "black/front": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/neck-label": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/front": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/neck-label": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/front": [
+        "low_luminance_variation"
+      ],
+      "maroon/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "maroon/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "maroon/neck-label": [
+        "low_luminance_variation"
+      ],
+      "olive/front": [
+        "low_luminance_variation"
+      ],
+      "olive/back": [
+        "low_luminance_variation"
+      ],
+      "olive/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "olive/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "olive/neck-label": [
+        "low_luminance_variation"
+      ],
+      "grey/front": [
+        "low_luminance_variation"
+      ],
+      "grey/back": [
+        "low_luminance_variation"
+      ],
+      "grey/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "grey/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "grey/neck-label": [
+        "low_luminance_variation"
+      ],
+      "red/front": [
+        "low_luminance_variation"
+      ],
+      "red/back": [
+        "low_luminance_variation"
+      ],
+      "red/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "red/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "red/neck-label": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/front": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/back": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/neck-label": [
+        "low_luminance_variation"
+      ],
+      "burgundy/front": [
+        "low_luminance_variation"
+      ],
+      "burgundy/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "burgundy/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "burgundy/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "burgundy/neck-label": [
+        "low_luminance_variation"
+      ],
+      "forest/front": [
+        "low_luminance_variation"
+      ],
+      "forest/back": [
+        "low_luminance_variation"
+      ],
+      "forest/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "forest/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "forest/neck-label": [
+        "low_luminance_variation"
+      ]
+    },
+    "hoodie": {
+      "white/front": [],
+      "white/back": [],
+      "white/left-sleeve": [],
+      "white/right-sleeve": [],
+      "white/neck-label": [],
+      "black/front": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "black/neck-label": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/front": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "navy/neck-label": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "grey/front": [
+        "low_luminance_variation"
+      ],
+      "grey/back": [
+        "low_luminance_variation"
+      ],
+      "grey/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "grey/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "grey/neck-label": [],
+      "maroon/front": [
+        "low_luminance_variation"
+      ],
+      "maroon/back": [
+        "low_luminance_variation"
+      ],
+      "maroon/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "maroon/neck-label": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "olive/front": [
+        "low_luminance_variation"
+      ],
+      "olive/back": [
+        "low_luminance_variation"
+      ],
+      "olive/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "olive/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "olive/neck-label": [],
+      "red/front": [
+        "low_luminance_variation"
+      ],
+      "red/back": [
+        "low_luminance_variation"
+      ],
+      "red/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "red/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "red/neck-label": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/front": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/back": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "sky-blue/neck-label": [],
+      "forest/front": [
+        "low_luminance_variation"
+      ],
+      "forest/back": [
+        "low_luminance_variation"
+      ],
+      "forest/left-sleeve": [
+        "low_luminance_variation"
+      ],
+      "forest/right-sleeve": [
+        "low_luminance_variation"
+      ],
+      "forest/neck-label": [
+        "low_luminance_variation"
+      ],
+      "burgundy/front": [
+        "low_luminance_variation"
+      ],
+      "burgundy/back": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "burgundy/left-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "burgundy/right-sleeve": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ],
+      "burgundy/neck-label": [
+        "very_low_local_texture",
+        "low_luminance_variation"
+      ]
+    }
+  },
+  "front_back_similarity": {
+    "tshirt": {
+      "white": {
+        "front_opaque_ratio": 0.4981,
+        "back_opaque_ratio": 0.4732,
+        "alpha_area_ratio": 0.9546,
+        "same_alpha_bbox": true
+      },
+      "black": {
+        "front_opaque_ratio": 0.4981,
+        "back_opaque_ratio": 0.4732,
+        "alpha_area_ratio": 0.9546,
+        "same_alpha_bbox": true
+      },
+      "navy": {
+        "front_opaque_ratio": 0.4981,
+        "back_opaque_ratio": 0.4732,
+        "alpha_area_ratio": 0.9546,
+        "same_alpha_bbox": true
+      },
+      "maroon": {
+        "front_opaque_ratio": 0.4981,
+        "back_opaque_ratio": 0.4732,
+        "alpha_area_ratio": 0.9546,
+        "same_alpha_bbox": true
+      },
+      "olive": {
+        "front_opaque_ratio": 0.4981,
+        "back_opaque_ratio": 0.4732,
+        "alpha_area_ratio": 0.9546,
+        "same_alpha_bbox": true
+      },
+      "sky-blue": {
+        "front_opaque_ratio": 0.4981,
+        "back_opaque_ratio": 0.4732,
+        "alpha_area_ratio": 0.9546,
+        "same_alpha_bbox": true
+      },
+      "grey": {
+        "front_opaque_ratio": 0.4981,
+        "back_opaque_ratio": 0.4732,
+        "alpha_area_ratio": 0.9546,
+        "same_alpha_bbox": true
+      },
+      "red": {
+        "front_opaque_ratio": 0.4981,
+        "back_opaque_ratio": 0.4732,
+        "alpha_area_ratio": 0.9546,
+        "same_alpha_bbox": true
+      }
+    },
+    "longsleeve": {
+      "white": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "black": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "navy": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "maroon": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "olive": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "grey": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "red": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "sky-blue": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "burgundy": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      },
+      "forest": {
+        "front_opaque_ratio": 0.5419,
+        "back_opaque_ratio": 0.5665,
+        "alpha_area_ratio": 1.044,
+        "same_alpha_bbox": true
+      }
+    },
+    "hoodie": {
+      "white": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "black": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "navy": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "grey": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "maroon": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "olive": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "red": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "sky-blue": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "forest": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      },
+      "burgundy": {
+        "front_opaque_ratio": 0.4799,
+        "back_opaque_ratio": 0.5013,
+        "alpha_area_ratio": 1.0384,
+        "same_alpha_bbox": true
+      }
+    }
+  }
+}

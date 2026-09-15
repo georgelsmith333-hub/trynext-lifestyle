@@ -1,13 +1,13 @@
 /**
- * TryNex Email Service
+ * Trynext Lifestyle Email Service
  * Sends branded HTML emails to customers using any SMTP provider.
  *
  * Required env vars (set in Admin → Settings or Replit Secrets):
  *   SMTP_HOST     e.g. smtp.gmail.com
  *   SMTP_PORT     e.g. 587
- *   SMTP_USER     e.g. hello@trynexshop.com
+ *   SMTP_USER     e.g. hello@trynextshop.com
  *   SMTP_PASS     Gmail App Password or provider password
- *   SMTP_FROM     e.g. "TryNex Lifestyle <hello@trynexshop.com>"
+   *   SMTP_FROM     e.g. "Trynext Lifestyle <hello@trynextshop.com>"
  *
  * If env vars are missing the functions silently return so the order
  * flow is never blocked by a misconfigured mailer.
@@ -35,7 +35,7 @@ function createTransporter() {
 }
 
 function fromAddress(): string {
-  return process.env.SMTP_FROM ?? `TryNex Lifestyle <${process.env.SMTP_USER ?? "noreply@trynexshop.com"}>`;
+  return process.env.SMTP_FROM ?? `Trynext Lifestyle <${process.env.SMTP_USER ?? "noreply@trynextshop.com"}>`;
 }
 
 /* ── Shared brand styles ─────────────────────────────────────────────────── */
@@ -48,7 +48,7 @@ function layout(bodyContent: string): string {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>TryNex Lifestyle</title>
+   <title>Trynext Lifestyle</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:24px 0;">
@@ -59,7 +59,7 @@ function layout(bodyContent: string): string {
         <tr>
           <td style="background:linear-gradient(135deg,${BRAND_ORANGE},#FB8500);padding:28px 32px;text-align:center;">
             <div style="display:inline-block;width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:14px;line-height:52px;font-size:26px;font-weight:900;color:#fff;margin-bottom:10px;">T</div>
-            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:-.3px;">TryNex Lifestyle</div>
+            <div style="color:#fff;font-size:20px;font-weight:800;letter-spacing:-.3px;">Trynext Lifestyle</div>
             <div style="color:rgba(255,255,255,.8);font-size:12px;margin-top:2px;">You Imagine, We Craft</div>
           </td>
         </tr>
@@ -72,9 +72,9 @@ function layout(bodyContent: string): string {
         <!-- Footer -->
         <tr>
           <td style="background:${BRAND_LIGHT};padding:20px 32px;text-align:center;border-top:1px solid #FFE0CC;">
-            <p style="margin:0 0 6px;font-size:13px;color:#64748b;">Questions? WhatsApp or call us at <b>01903426915</b></p>
+            <p style="margin:0 0 6px;font-size:13px;color:#64748b;">Questions? WhatsApp or call us at <b>${process.env.SUPPORT_PHONE ?? "01903426915"}</b></p>
             <p style="margin:0;font-size:12px;color:#94a3b8;">
-              <a href="https://trynexshop.com" style="color:${BRAND_ORANGE};text-decoration:none;">trynexshop.com</a>
+              <a href="https://trynext.pages.dev" style="color:${BRAND_ORANGE};text-decoration:none;">trynext.pages.dev</a>
               &nbsp;·&nbsp; Dhaka, Bangladesh
             </p>
           </td>
@@ -127,22 +127,21 @@ export async function sendOrderConfirmationEmail(order: OrderEmailData): Promise
   const payLabel   = (order.paymentMethod ?? "cod").toUpperCase();
   const isCOD      = !order.paymentMethod || order.paymentMethod.toLowerCase() === "cod";
   const totalNum   = Number(order.total);
-  const advance    = Math.ceil(totalNum * 0.15);
+  const advance    = Math.ceil(totalNum * 0.25);
+  const isFullPayment = String(order.notes ?? "").includes("Payment plan: full payment");
+  const amountDueNow = isFullPayment ? totalNum : advance;
+  const remaining = Math.max(0, totalNum - amountDueNow);
   const itemsHtml  = order.items.map(itemRow).join("");
   const shippingN  = Number(order.shippingCost ?? 0);
   const subtotalN  = Number(order.subtotal ?? (totalNum - shippingN));
   const district   = [order.shippingCity, order.shippingDistrict].filter(Boolean).join(", ");
 
-  const paymentSection = isCOD
-    ? `<div style="background:#FFF8F3;border:1px solid #FFD0A8;border-radius:10px;padding:16px;margin-top:20px;">
-         <div style="font-size:13px;font-weight:700;color:${BRAND_ORANGE};margin-bottom:6px;">💳 Cash on Delivery</div>
-         <p style="margin:0;font-size:13px;color:#475569;">Pay <b>৳${totalNum.toLocaleString()}</b> when your order arrives. Easy!</p>
-       </div>`
-    : `<div style="background:#FFF8F3;border:1px solid #FFD0A8;border-radius:10px;padding:16px;margin-top:20px;">
-         <div style="font-size:13px;font-weight:700;color:${BRAND_ORANGE};margin-bottom:8px;">💳 Payment: ${payLabel}</div>
-         <p style="margin:0 0 6px;font-size:13px;color:#475569;">Please send <b>৳${advance.toLocaleString()}</b> advance (15%) to confirm your order.</p>
-         <p style="margin:0;font-size:13px;color:#475569;">Our team will contact you on <b>${order.customerPhone}</b> with payment details.</p>
-       </div>`;
+  const paymentSection = `<div style="background:#FFF8F3;border:1px solid #FFD0A8;border-radius:10px;padding:16px;margin-top:20px;">
+       <div style="font-size:13px;font-weight:700;color:${BRAND_ORANGE};margin-bottom:8px;">💳 Payment: ${payLabel}</div>
+       <p style="margin:0 0 6px;font-size:13px;color:#475569;">${isFullPayment ? "Full payment due now:" : "25% advance due now:"} <b>৳${amountDueNow.toLocaleString()}</b>.</p>
+       ${!isFullPayment ? `<p style="margin:0 0 6px;font-size:13px;color:#475569;">Remaining on delivery: <b>৳${remaining.toLocaleString()}</b>.</p>` : ""}
+       <p style="margin:0;font-size:13px;color:#475569;">${isCOD ? `Our team will contact you on <b>${order.customerPhone}</b> with the advance instructions.` : `Please use the selected ${payLabel} method and keep your payment reference.`}</p>
+     </div>`;
 
   const body = `
     <h2 style="margin:0 0 4px;font-size:22px;font-weight:800;color:#1e293b;">Order Confirmed! 🎉</h2>
@@ -197,7 +196,7 @@ export async function sendOrderConfirmationEmail(order: OrderEmailData): Promise
 
     <!-- Track order CTA -->
     <div style="text-align:center;margin-top:28px;">
-      <a href="https://trynexshop.com/track?order=${order.orderNumber}&phone=${encodeURIComponent(order.customerPhone)}"
+      <a href="https://trynext.pages.dev/track?order=${order.orderNumber}&phone=${encodeURIComponent(order.customerPhone)}"
          style="display:inline-block;background:linear-gradient(135deg,${BRAND_ORANGE},#FB8500);color:#fff;text-decoration:none;padding:13px 28px;border-radius:10px;font-size:14px;font-weight:700;">
         Track My Order →
       </a>
@@ -211,7 +210,7 @@ export async function sendOrderConfirmationEmail(order: OrderEmailData): Promise
     await transporter.sendMail({
       from: fromAddress(),
       to: order.customerEmail,
-      subject: `✅ Order Confirmed #${order.orderNumber} — TryNex Lifestyle`,
+      subject: `✅ Order Confirmed #${order.orderNumber} — Trynext Lifestyle`,
       html: layout(body),
     });
     logger.info({ orderNumber: order.orderNumber, to: order.customerEmail }, "[email] Order confirmation sent");
@@ -273,7 +272,7 @@ export async function sendStatusUpdateEmail(order: { orderNumber: string; custom
     </div>
 
     <div style="text-align:center;">
-      <a href="https://trynexshop.com/track?order=${order.orderNumber}&phone=${encodeURIComponent(order.customerPhone)}"
+      <a href="https://trynext.pages.dev/track?order=${order.orderNumber}&phone=${encodeURIComponent(order.customerPhone)}"
          style="display:inline-block;background:linear-gradient(135deg,${BRAND_ORANGE},#FB8500);color:#fff;text-decoration:none;padding:13px 28px;border-radius:10px;font-size:14px;font-weight:700;">
         Track My Order →
       </a>
@@ -283,7 +282,7 @@ export async function sendStatusUpdateEmail(order: { orderNumber: string; custom
     await transporter.sendMail({
       from: fromAddress(),
       to: order.customerEmail,
-      subject: `${cfg.emoji} Order #${order.orderNumber} — ${cfg.title} | TryNex`,
+      subject: `${cfg.emoji} Order #${order.orderNumber} — ${cfg.title} | Trynext Lifestyle`,
       html: layout(body),
     });
     logger.info({ orderNumber: order.orderNumber, status: newStatus, to: order.customerEmail }, "[email] Status update sent");

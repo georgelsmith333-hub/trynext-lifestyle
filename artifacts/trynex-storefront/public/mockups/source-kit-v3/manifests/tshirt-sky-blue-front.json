@@ -1,0 +1,24 @@
+{
+  "schema": "trynext-smart-mockup/v3",
+  "sourceKitKey": "tshirt:sky-blue:front",
+  "category": "tshirt",
+  "colorSlug": "sky-blue",
+  "face": "front",
+  "sourceFile": "normalized-cutouts/tshirt-sky-blue-front.png",
+  "cutoutSrc": "/mockups/source-kit-v3/tshirt/sky-blue/front.png",
+  "editableMasterPath": "attached_assets/trynext-mockup-source-kit/psd/tshirt-sky-blue-front.psd",
+  "masterStatus": "manifest-only",
+  "size": [
+    1024,
+    1024
+  ],
+  "alphaBBox": [
+    43,
+    66,
+    980,
+    957
+  ],
+  "sha256": "cff3982007e03f9d050c899248dcb97dd06be76263f1f42971d175584f834233",
+  "sourceSelection": "normalized-cutout",
+  "postProcess": "alpha-edge-cleaned; detailed-back-recolor where applicable"
+}

@@ -15,7 +15,7 @@ export default function NotFound() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <SEOHead title="Page Not Found | TryNex Lifestyle" noindex />
+      <SEOHead title="Page Not Found | Trynext Lifestyle" noindex />
       <Navbar />
       <main className="flex-1 pt-header pb-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -95,7 +95,7 @@ export default function NotFound() {
                     transition={{ delay: 0.2 + i * 0.07 }}
                   >
                     <Link
-                      href={`/product/${product.id}`}
+                      href={`/product/${product.slug || product.id}`}
                       className="group block bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 hover:shadow-lg transition-all"
                     >
                       <div className="aspect-[4/5] overflow-hidden bg-gray-50">

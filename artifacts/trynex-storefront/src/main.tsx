@@ -20,7 +20,7 @@ if (apiBase) setBaseUrl(apiBase);
 if (typeof window !== "undefined") {
   // eslint-disable-next-line no-console
   console.info(
-    `[trynex] API base = ${apiBase || "(same-origin)"} | host = ${window.location.host}`
+    `[trynext] API base = ${apiBase || "(same-origin)"} | host = ${window.location.host}`
   );
 }
 
@@ -28,13 +28,13 @@ if (typeof window !== "undefined") {
 // sessionStorage (only within the current tab; other tabs are unaffected).
 // This keeps existing admin sessions alive across the security upgrade.
 if (typeof window !== "undefined") {
-  const legacy = localStorage.getItem("trynex_admin_token");
+  const legacy = localStorage.getItem("trynext_admin_token");
   if (legacy) {
-    sessionStorage.setItem("trynex_admin_token", legacy);
-    localStorage.removeItem("trynex_admin_token");
+    sessionStorage.setItem("trynext_admin_token", legacy);
+    localStorage.removeItem("trynext_admin_token");
   }
 }
 
-setAuthTokenGetter(() => sessionStorage.getItem("trynex_admin_token"));
+setAuthTokenGetter(() => sessionStorage.getItem("trynext_admin_token"));
 
 createRoot(document.getElementById("root")!).render(<App />);

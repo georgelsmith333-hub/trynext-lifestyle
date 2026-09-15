@@ -1,0 +1,926 @@
+{
+  "schema": "trynext-smart-mockup-source-kit/v2",
+  "runtimeRule": "draw-one-transparent-cutout-base",
+  "duplicateBasePass": false,
+  "syntheticShadow": false,
+  "items": [
+    {
+      "category": "cap",
+      "colorSlug": "black",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/cap-black-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/cap/black/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        162,
+        184,
+        862,
+        839
+      ],
+      "alphaCoverage": 0.353447,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "cap",
+      "colorSlug": "forest",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/cap-forest-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/cap/forest/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        162,
+        184,
+        862,
+        839
+      ],
+      "alphaCoverage": 0.353447,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "cap",
+      "colorSlug": "grey",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/cap-grey-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/cap/grey/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        162,
+        184,
+        862,
+        839
+      ],
+      "alphaCoverage": 0.353447,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "cap",
+      "colorSlug": "maroon",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/cap-maroon-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/cap/maroon/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        162,
+        184,
+        862,
+        839
+      ],
+      "alphaCoverage": 0.353447,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "cap",
+      "colorSlug": "navy",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/cap-navy-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/cap/navy/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        162,
+        184,
+        862,
+        839
+      ],
+      "alphaCoverage": 0.353447,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "cap",
+      "colorSlug": "olive",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/cap-olive-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/cap/olive/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        162,
+        184,
+        862,
+        839
+      ],
+      "alphaCoverage": 0.353447,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "cap",
+      "colorSlug": "red",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/cap-red-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/cap/red/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        162,
+        184,
+        862,
+        839
+      ],
+      "alphaCoverage": 0.353447,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "cap",
+      "colorSlug": "white",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/cap-white-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/cap/white/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        162,
+        184,
+        862,
+        839
+      ],
+      "alphaCoverage": 0.353447,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "black",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-black-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/black/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "burgundy",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-burgundy-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/burgundy/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "forest",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-forest-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/forest/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "grey",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-grey-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/grey/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "maroon",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-maroon-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/maroon/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "navy",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-navy-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/navy/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "olive",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-olive-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/olive/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "red",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-red-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/red/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "sky-blue",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-sky-blue-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/sky-blue/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "hoodie",
+      "colorSlug": "white",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/hoodie-white-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/hoodie/white/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        54,
+        43,
+        970,
+        980
+      ],
+      "alphaCoverage": 0.532068,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "black",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-black-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/black/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "burgundy",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-burgundy-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/burgundy/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "forest",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-forest-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/forest/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "grey",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-grey-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/grey/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "maroon",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-maroon-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/maroon/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "navy",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-navy-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/navy/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "olive",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-olive-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/olive/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "red",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-red-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/red/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "sky-blue",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-sky-blue-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/sky-blue/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "longsleeve",
+      "colorSlug": "white",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/longsleeve-white-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/longsleeve/white/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        53,
+        94,
+        970,
+        930
+      ],
+      "alphaCoverage": 0.571178,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "black",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-black-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/black/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "green",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-green-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/green/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "maroon",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-maroon-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/maroon/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "navy",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-navy-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/navy/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "orange",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-orange-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/orange/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "pink",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-pink-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/pink/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "purple",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-purple-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/purple/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "red",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-red-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/red/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "sky-blue",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-sky-blue-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/sky-blue/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "mug",
+      "colorSlug": "white",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/mug-white-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/mug/white/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        143,
+        192,
+        881,
+        829
+      ],
+      "alphaCoverage": 0.335608,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "tshirt",
+      "colorSlug": "black",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/tshirt-black-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/tshirt/black/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        43,
+        66,
+        980,
+        957
+      ],
+      "alphaCoverage": 0.545826,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "tshirt",
+      "colorSlug": "grey",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/tshirt-grey-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/tshirt/grey/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        43,
+        66,
+        980,
+        957
+      ],
+      "alphaCoverage": 0.545826,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "tshirt",
+      "colorSlug": "maroon",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/tshirt-maroon-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/tshirt/maroon/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        43,
+        66,
+        980,
+        957
+      ],
+      "alphaCoverage": 0.545826,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "tshirt",
+      "colorSlug": "navy",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/tshirt-navy-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/tshirt/navy/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        43,
+        66,
+        980,
+        957
+      ],
+      "alphaCoverage": 0.545826,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "tshirt",
+      "colorSlug": "olive",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/tshirt-olive-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/tshirt/olive/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        43,
+        66,
+        980,
+        957
+      ],
+      "alphaCoverage": 0.545826,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "tshirt",
+      "colorSlug": "red",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/tshirt-red-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/tshirt/red/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        43,
+        66,
+        980,
+        957
+      ],
+      "alphaCoverage": 0.545826,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "tshirt",
+      "colorSlug": "sky-blue",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/tshirt-sky-blue-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/tshirt/sky-blue/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        43,
+        66,
+        980,
+        957
+      ],
+      "alphaCoverage": 0.545826,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "tshirt",
+      "colorSlug": "white",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/tshirt-white-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/tshirt/white/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        43,
+        66,
+        980,
+        957
+      ],
+      "alphaCoverage": 0.545826,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "waterbottle",
+      "colorSlug": "black",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/waterbottle-black-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/waterbottle/black/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        351,
+        78,
+        673,
+        944
+      ],
+      "alphaCoverage": 0.20131,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "waterbottle",
+      "colorSlug": "forest",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/waterbottle-forest-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/waterbottle/forest/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        351,
+        78,
+        673,
+        944
+      ],
+      "alphaCoverage": 0.20131,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "waterbottle",
+      "colorSlug": "navy",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/waterbottle-navy-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/waterbottle/navy/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        351,
+        78,
+        673,
+        944
+      ],
+      "alphaCoverage": 0.20131,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "waterbottle",
+      "colorSlug": "pink",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/waterbottle-pink-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/waterbottle/pink/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        351,
+        78,
+        673,
+        944
+      ],
+      "alphaCoverage": 0.20131,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "waterbottle",
+      "colorSlug": "red",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/waterbottle-red-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/waterbottle/red/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        351,
+        78,
+        673,
+        944
+      ],
+      "alphaCoverage": 0.20131,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "waterbottle",
+      "colorSlug": "sky-blue",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/waterbottle-sky-blue-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/waterbottle/sky-blue/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        351,
+        78,
+        673,
+        944
+      ],
+      "alphaCoverage": 0.20131,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "waterbottle",
+      "colorSlug": "teal",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/waterbottle-teal-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/waterbottle/teal/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        351,
+        78,
+        673,
+        944
+      ],
+      "alphaCoverage": 0.20131,
+      "status": "canonical-v2-cutout"
+    },
+    {
+      "category": "waterbottle",
+      "colorSlug": "white",
+      "face": "front",
+      "source": "artifacts/trynex-storefront/public/mockups/normalized-cutouts/waterbottle-white-front.png",
+      "cutout": "artifacts/trynex-storefront/public/mockups/source-kit-v2/waterbottle/white/front.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaBounds": [
+        351,
+        78,
+        673,
+        944
+      ],
+      "alphaCoverage": 0.20131,
+      "status": "canonical-v2-cutout"
+    }
+  ]
+}

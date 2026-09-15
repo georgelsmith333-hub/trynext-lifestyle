@@ -20,7 +20,7 @@ function checkIpRateLimit(ip: string, maxPerDay = 3): boolean {
     ipBuckets.set(ip, { count: 1, resetAt: now + window });
     return true;
   }
-  if (bucket.count >= maxPerDay) return false;
+  if (bucket.count >= maxPerDay) return false; // do NOT increment — count is already at limit
   bucket.count++;
   return true;
 }

@@ -1,34 +1,37 @@
 /* ═══════════════════════════════════════════════════════
    GARMENT MOCKUPS — photographic templates
    All products use a unified 1000×1000 coordinate space.
-   The mockup PNGs live in /public/mockups/<id>-<face>.png
+   The mockup PNGs live in /public/mockups/<id>-?face?.png
 ════════════════════════════════════════════════════════ */
-import { useMemo } from "react";
 
-const tshirtFront          = "/mockups/white-tshirt-front.png";
-const tshirtBack           = "/mockups/white-tshirt-back.png";
-const tshirtFrontDark      = "/mockups/black-tshirt-front.png";
-const tshirtBackDark       = "/mockups/black-tshirt-back.png";
-const tshirtFrontCutout    = "/mockups/white-tshirt-front-cutout.png";
-const tshirtBackCutout     = "/mockups/white-tshirt-back-cutout.png";
-const longsleeveFront      = "/mockups/white-longsleeve-front.png";
-const longsleeveBack       = "/mockups/white-longsleeve-back.png";
-const longsleeveFrontCutout = "/mockups/white-longsleeve-front-cutout.png";
-const longsleeveBackCutout  = "/mockups/white-longsleeve-back-cutout.png";
-const hoodieFront          = "/mockups/white-hoodie-front.png";
-const hoodieBack           = "/mockups/white-hoodie-back.png";
-const hoodieFrontDark      = "/mockups/black-hoodie-front.png";
-const hoodieBackDark       = "/mockups/black-hoodie-back.png";
-const hoodieFrontCutout    = "/mockups/white-hoodie-front-cutout.png";
-const hoodieBackCutout     = "/mockups/white-hoodie-back-cutout.png";
-const mugFront             = "/mockups/white-mug-front.png";
-const mugFrontDark         = "/mockups/black-mug-front.png";
-const mugFrontCutout       = "/mockups/white-mug-front-cutout.png";
-const capFront             = "/mockups/white-cap-front.png";
-const capFrontDark         = "/mockups/black-cap-front.png";
-const capFrontCutout       = "/mockups/white-cap-front-cutout.png";
-const waterBottleFront     = "/mockups/white-waterbottle-front.png";
-const waterBottleCutout    = "/mockups/white-waterbottle-front-cutout.png";
+import { createSmartMockupManifest, validateSmartMockupManifest, type SmartMockupManifest } from "./smart-mockup-manifest";
+import { getCanonicalMockupSpec, type MockupFamily } from "./canonical-mockup-spec";
+import { COMPLETE_MOCKUP_MATRIX, getCompleteMockupEntry, type CompleteMockupFamily, type CompleteMockupView } from "./complete-mockup-matrix";
+import {
+  getSmartV10ColorSlug,
+  getSmartV10RuntimeRoles,
+  SMART_V10_RELEASE_VERSION,
+  SMART_V10_RUNTIME_ROOT,
+} from "./smart-v10-runtime";
+import { ACCEPTED_SMART_V10_RELEASE, assertSmartV10Release } from "./smart-v10-release";
+import type { PsdMaterialEffectLayer } from "./composer";
+
+// ── T-Shirt: unified studio photos from normalized/ folder ──
+const tshirtFront       = "/mockups/psd-master-v10/runtime-roles/tshirt/white/front-base.png";
+const tshirtBack        = "/mockups/psd-master-v10/runtime-roles/tshirt/white/back-base.png";
+const longsleeveFront   = "/mockups/psd-master-v10/runtime-roles/longsleeve/white/front-base.png";
+const longsleeveBack    = "/mockups/psd-master-v10/runtime-roles/longsleeve/white/back-base.png";
+const hoodieFront       = "/mockups/psd-master-v10/runtime-roles/hoodie/white/front-base.png";
+const hoodieBack        = "/mockups/psd-master-v10/runtime-roles/hoodie/white/back-base.png";
+const mugFront          = "/mockups/psd-master-v10/runtime-roles/mug/white/front-base.png";
+const mugBack           = "/mockups/psd-master-v10/runtime-roles/mug/white/back-base.png";
+const capFront          = "/mockups/psd-master-v10/runtime-roles/cap/white/front-base.png";
+const capBack           = "/mockups/psd-master-v10/runtime-roles/cap/white/back-base.png";
+const waterBottleFront  = "/mockups/psd-master-v10/runtime-roles/waterbottle/white/front-base.png";
+const waterBottleBack   = "/mockups/psd-master-v10/runtime-roles/waterbottle/white/back-base.png";
+
+// All active color and view assets resolve through the accepted v10.3 role
+// matrix.
 
 /** A single available garment colour (name + hex). */
 export interface ProductColor { name: string; hex: string }
@@ -39,7 +42,8 @@ export type ProductType =
   | "hoodie"
   | "cap"
   | "longsleeve"
-  | "waterbottle";
+  | "waterbottle"
+  | "watertumbler";
 
 /** All possible design zones — front/back are garment views; sleeve/neck are flat templates. */
 export type Face =
@@ -49,7 +53,19 @@ export type Face =
   | "right-sleeve"
   | "neck-label";
 
-export interface PrintZone { x: number; y: number; w: number; h: number }
+export type PrintZoneShape = "rect" | "mug-front-body" | "mug-back-body" | "mug-wrap-body" | "cap-front" | "bottle-body";
+
+export interface PrintZone {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /**
+   * Optional silhouette-aware clipping path. The rectangle remains the
+   * placement/warning bounds; the shape is the final printable boundary.
+   */
+  shape?: PrintZoneShape;
+}
 
 export interface DesignProduct {
   id: ProductType;
@@ -67,6 +83,8 @@ export interface DesignProduct {
   printZoneBack?: PrintZone;
   baseHeight: number;
   frontSrc: string;
+  /** Optional photographic gallery preview; never used for print-zone geometry. */
+  gallerySrc?: string;
   backSrc?: string;
 }
 
@@ -82,31 +100,43 @@ export interface DesignProduct {
      TSHIRT_PZ / _BACK_PZ      — t-shirt front / back
      LONGSLEEVE_PZ / _BACK_PZ  — long-sleeve front / back
      HOODIE_PZ / _BACK_PZ      — hoodie front (above pocket) / back
-     CAP_PZ                    — cap front panel
+     CAP_PZ / CAP_BACK_PZ      — cap front / rear crown panel
    Flat-template zones (no garment image):
      SLEEVE_PZ      — left-sleeve and right-sleeve
      NECK_LABEL_PZ  — neck-label
    Drinkware zones:
-     MUG_SIDE_PZ    — single-side editing (side view)
+     MUG_SIDE_PZ    — single-side editing, front/left-handle view
+     MUG_SIDE_BACK_PZ — mirrored single-side editing, back/right-handle view
      MUG_PZ         — full 360° wrap
      WATERBOTTLE_PZ — bottle body (cylindrical section)
 ──────────────────────────────────────────────────────── */
-export const TSHIRT_PZ: PrintZone           = { x: 308, y: 225, w: 384, h: 385 };
-export const TSHIRT_BACK_PZ: PrintZone      = { x: 292, y: 192, w: 416, h: 455 };
-export const LONGSLEEVE_PZ: PrintZone       = { x: 314, y: 235, w: 372, h: 390 };
-export const LONGSLEEVE_BACK_PZ: PrintZone  = { x: 298, y: 200, w: 404, h: 448 };
-/** Hoodie front — stops at ~y=530 to clear the kangaroo pocket (pocket starts ~y=565). */
-export const HOODIE_PZ: PrintZone           = { x: 338, y: 258, w: 324, h: 272 };
-export const HOODIE_BACK_PZ: PrintZone      = { x: 298, y: 188, w: 404, h: 440 };
-/** Cap front panel — structured 5-panel cap, panel height ≈ 24% of mockup height. */
-export const CAP_PZ: PrintZone              = { x: 342, y: 305, w: 316, h: 248 };
-export const MUG_PZ: PrintZone              = { x: 150, y: 180, w: 700, h: 640 };
-/** Mug side — starts below the rim band, stops above the base band. */
-export const MUG_SIDE_PZ: PrintZone         = { x: 188, y: 252, w: 420, h: 478 };
-/** Water bottle — printable front panel on the cylindrical body.
- *  Calibrated to the real 600ml aluminium carabiner bottle (1600×1600 PNG).
- *  Content spans x:[326–660] centre≈493; shoulder ends ~y=275, base ~y=858. */
-export const WATERBOTTLE_PZ: PrintZone      = { x: 348, y: 278, w: 290, h: 575 };
+export const TSHIRT_PZ: PrintZone           = { x: 240, y: 185, w: 520, h: 580 };
+export const TSHIRT_BACK_PZ: PrintZone      = { x: 240, y: 185, w: 520, h: 580 };
+export const LONGSLEEVE_PZ: PrintZone       = { x: 336.5, y: 327.25, w: 308.75, h: 266.5 };
+export const LONGSLEEVE_BACK_PZ: PrintZone  = { x: 328.5, y: 366.25, w: 328.75, h: 86.25 };
+/** Hoodie front — lowered and sized to sit below the drawstrings and above the kangaroo pocket. */
+export const HOODIE_PZ: PrintZone           = { x: 171.75, y: 121.25, w: 677, h: 737 };
+export const HOODIE_BACK_PZ: PrintZone      = { x: 172, y: 123.75, w: 679.5, h: 733.25 };
+/** Cap front panel — structured 5-panel cap, panel is centred between brim and seam. */
+export const CAP_PZ: PrintZone              = { x: 240, y: 260, w: 540, h: 320, shape: "cap-front" };
+/** Cap rear crown zone — deliberately stops above the adjustment opening and strap. */
+export const CAP_BACK_PZ: PrintZone         = { x: 285, y: 270, w: 430, h: 230 };
+/** Full Wrap uses the continuous printable body band and is an explicit mode. */
+export const MUG_PZ: PrintZone              = { x: 165, y: 220, w: 670, h: 580, shape: "mug-wrap-body" };
+export const MUG_WRAP_BACK_PZ: PrintZone    = MUG_PZ;
+/**
+ * Side 1 / Side 2 use mirrored body-safe geometry. The reviewed mug photos
+ * place the handle on opposite sides, so each side has its own body boundary.
+ * This keeps the larger sublimation area while stopping at the actual handle
+ * wall instead of relying on a colour-dependent arbitrary inset.
+ */
+export const MUG_SIDE_PZ: PrintZone         = { x: 165, y: 220, w: 475, h: 580, shape: "mug-front-body" };
+export const MUG_SIDE_BACK_PZ: PrintZone    = { x: 384, y: 220, w: 451, h: 580, shape: "mug-back-body" };
+/** Water bottle label panel: only the straight aluminium body is printable;
+ * the lid, shoulder, carabiner and rounded base are intentionally excluded. */
+// Supplied key-ring bottle reference: body begins below the shoulder and ends above
+// the rounded foot. The loop/carabiner and shoulder are intentionally outside.
+export const WATERBOTTLE_PZ: PrintZone      = { x: 335, y: 320, w: 276, h: 590, shape: "bottle-body" };
 /** Sleeve print area — roughly square (1228×1087px real-world ratio). */
 export const SLEEVE_PZ: PrintZone           = { x: 175, y: 175, w: 650, h: 650 };
 /** Neck label — wider than tall (1299×945px real-world ratio). */
@@ -135,16 +165,24 @@ export function getApparelZones(
   category: DesignProduct["category"],
   productPZ?: PrintZone,
   productBackPZ?: PrintZone,
+  colourHex?: string,
 ): ApparelZone[] {
   const frontPZ = productPZ ?? TSHIRT_PZ;
   const backPZ  = productBackPZ ?? frontPZ;
+  const sourceColour = colourHex ? SOURCE_KIT_COLOR_SLUGS[category]?.[normalizeMockupHex(colourHex)] : undefined;
+  const sourceMatrix = sourceColour
+    ? (face: CompleteMockupView) => getCompleteMockupEntry(category as CompleteMockupFamily, sourceColour, face).geometry.printZone
+    : undefined;
   switch (category) {
     case "tshirt":
     case "longsleeve":
     case "hoodie":
       return [
-        { face: "front", label: "Front", shortLabel: "Front", pxDimensions: FRONT_BACK_DIMS, pz: frontPZ, isFlat: false },
-        { face: "back",  label: "Back",  shortLabel: "Back",  pxDimensions: FRONT_BACK_DIMS, pz: backPZ,  isFlat: false },
+        { face: "front",       label: "Front",        shortLabel: "Front",  pxDimensions: FRONT_BACK_DIMS, pz: sourceMatrix?.("front") ?? frontPZ,   isFlat: false },
+        { face: "back",        label: "Back",         shortLabel: "Back",   pxDimensions: FRONT_BACK_DIMS, pz: sourceMatrix?.("back") ?? backPZ,    isFlat: false },
+        { face: "left-sleeve", label: "Left Sleeve",  shortLabel: "L.Sleeve", pxDimensions: SLEEVE_DIMS,  pz: sourceMatrix?.("left-sleeve") ?? SLEEVE_PZ, isFlat: true  },
+        { face: "right-sleeve",label: "Right Sleeve", shortLabel: "R.Sleeve", pxDimensions: SLEEVE_DIMS,  pz: sourceMatrix?.("right-sleeve") ?? SLEEVE_PZ, isFlat: true  },
+        { face: "neck-label",  label: "Neck Label",   shortLabel: "Neck",   pxDimensions: NECK_DIMS,      pz: sourceMatrix?.("neck-label") ?? NECK_LABEL_PZ, isFlat: true },
       ];
     default:
       return [
@@ -154,8 +192,13 @@ export function getApparelZones(
 }
 
 /** Get the print zone for a given face and product (used by DesignStudio). */
-export function getZonePZ(face: Face, product: DesignProduct): PrintZone {
-  if (product.category === "mug") return MUG_SIDE_PZ;
+export function getZonePZ(face: Face, product: DesignProduct, colourHex?: string): PrintZone {
+  if (product.category === "mug") return face === "back" ? MUG_SIDE_BACK_PZ : MUG_SIDE_PZ;
+  const sourceColour = colourHex ? SOURCE_KIT_COLOR_SLUGS[product.category]?.[normalizeMockupHex(colourHex)] : undefined;
+  if (sourceColour) {
+    const sourceZone = getCompleteMockupEntry(product.category as CompleteMockupFamily, sourceColour, face).geometry.printZone;
+    if (sourceZone) return sourceZone;
+  }
   if (face === "left-sleeve" || face === "right-sleeve") return SLEEVE_PZ;
   if (face === "neck-label") return NECK_LABEL_PZ;
   if (face === "back" && product.printZoneBack) return product.printZoneBack;
@@ -179,37 +222,37 @@ export const PRODUCTS: DesignProduct[] = [
     description: "230GSM Cotton", badge: "Best Seller",
     viewBox: VIEWBOX, aspect: ASPECT, baseHeight: BASE,
     printZone: TSHIRT_PZ, printZoneBack: TSHIRT_BACK_PZ,
-    frontSrc: tshirtFront, backSrc: tshirtBack,
+    frontSrc: tshirtFront, gallerySrc: tshirtFront, backSrc: tshirtBack,
   },
   {
     id: "longsleeve", name: "Unisex Long Sleeve", icon: "👔", category: "longsleeve",
     garmentColor: "#F5F5F3",
     colors: [
-      { name: "White",    hex: "#F5F5F3" }, { name: "Black",    hex: "#1a1a1a" },
-      { name: "Navy",     hex: "#1e3a5f" }, { name: "Maroon",   hex: "#7f1d1d" },
-      { name: "Olive",    hex: "#4a5240" }, { name: "Grey",     hex: "#6b7280" },
-      { name: "Red",      hex: "#dc2626" }, { name: "Sky Blue", hex: "#0ea5e9" },
-      { name: "Burgundy", hex: "#6b1a2c" }, { name: "Forest",   hex: "#166534" },
+      { name: "White",        hex: "#F5F5F3" }, { name: "Black",        hex: "#1a1a1a" },
+      { name: "Charcoal",     hex: "#303030" }, { name: "Heather Grey", hex: "#a3a3a3" },
+      { name: "Navy",         hex: "#1e3a5f" }, { name: "Royal Blue",   hex: "#2563eb" },
+      { name: "Forest Green", hex: "#166534" }, { name: "Burgundy",     hex: "#6b1a2c" },
+      { name: "Red",          hex: "#dc2626" }, { name: "Sand",         hex: "#d2bd88" },
     ],
     description: "240GSM Cotton",
     viewBox: VIEWBOX, aspect: ASPECT, baseHeight: BASE,
     printZone: LONGSLEEVE_PZ, printZoneBack: LONGSLEEVE_BACK_PZ,
-    frontSrc: longsleeveFront, backSrc: longsleeveBack,
+    frontSrc: longsleeveFront, gallerySrc: longsleeveFront, backSrc: longsleeveBack,
   },
   {
     id: "hoodie", name: "Unisex Hoodie", icon: "🧥", category: "hoodie",
     garmentColor: "#F2EFE9",
     colors: [
-      { name: "White",    hex: "#F2EFE9" }, { name: "Black",    hex: "#1a1a1a" },
-      { name: "Navy",     hex: "#1e3a5f" }, { name: "Grey",     hex: "#6b7280" },
-      { name: "Maroon",   hex: "#7f1d1d" }, { name: "Olive",    hex: "#4a5240" },
-      { name: "Red",      hex: "#dc2626" }, { name: "Sky Blue", hex: "#0ea5e9" },
-      { name: "Forest",   hex: "#166534" }, { name: "Burgundy", hex: "#6b1a2c" },
+      { name: "White / Red Trim", hex: "#F2EFE9" }, { name: "Black",        hex: "#1a1a1a" },
+      { name: "Charcoal",        hex: "#303030" }, { name: "Heather Grey", hex: "#a3a3a3" },
+      { name: "Navy",            hex: "#1e3a5f" }, { name: "Royal Blue",   hex: "#2563eb" },
+      { name: "Forest Green",    hex: "#166534" }, { name: "Burgundy",     hex: "#6b1a2c" },
+      { name: "Red",             hex: "#dc2626" }, { name: "Sand",         hex: "#d2bd88" },
     ],
     description: "320GSM Fleece", badge: "New",
     viewBox: VIEWBOX, aspect: ASPECT, baseHeight: BASE,
     printZone: HOODIE_PZ, printZoneBack: HOODIE_BACK_PZ,
-    frontSrc: hoodieFront, backSrc: hoodieBack,
+    frontSrc: hoodieFront, gallerySrc: hoodieFront, backSrc: hoodieBack,
   },
   {
     id: "mug", name: "Coffee Mug", icon: "☕", category: "mug",
@@ -224,7 +267,7 @@ export const PRODUCTS: DesignProduct[] = [
     description: "11oz Ceramic", badge: "Popular",
     viewBox: VIEWBOX, aspect: ASPECT, baseHeight: BASE,
     printZone: MUG_SIDE_PZ,
-    frontSrc: mugFront,
+    frontSrc: mugFront, gallerySrc: mugFront, backSrc: mugBack,
   },
   {
     id: "cap", name: "Structured Cap", icon: "🧢", category: "cap",
@@ -237,23 +280,26 @@ export const PRODUCTS: DesignProduct[] = [
     ],
     description: "Cotton Twill",
     viewBox: VIEWBOX, aspect: ASPECT, baseHeight: BASE,
-    printZone: CAP_PZ,
-    frontSrc: capFront,
+    printZone: CAP_PZ, printZoneBack: CAP_BACK_PZ,
+    frontSrc: capFront, gallerySrc: capFront, backSrc: capBack,
   },
   {
     id: "waterbottle", name: "Water Bottle", icon: "🥤", category: "waterbottle",
     garmentColor: "#F4F3F1",
+    // The supplied product is a white sublimation-coated aluminium blank. A
+    // swatch would falsely imply a colored body and unsupported substrate.
     colors: [
-      { name: "White",    hex: "#F4F3F1" }, { name: "Black",    hex: "#1C1917" },
-      { name: "Navy",     hex: "#1e3a5f" }, { name: "Forest",   hex: "#166534" },
-      { name: "Sky Blue", hex: "#0ea5e9" }, { name: "Red",      hex: "#dc2626" },
-      { name: "Pink",     hex: "#f472b6" }, { name: "Teal",     hex: "#0f766e" },
+      { name: "White Sublimation Blank", hex: "#F4F3F1" },
     ],
-    description: "600ml Aluminium",
+    description: "600ml White Sublimation Aluminium",
     viewBox: VIEWBOX, aspect: ASPECT, baseHeight: BASE,
     printZone: WATERBOTTLE_PZ,
     frontSrc: WATERBOTTLE_MOCKUP_URL,
+    gallerySrc: waterBottleFront,
+    backSrc: waterBottleBack,
   },
+  // NOTE: Water Tumbler removed — it was a duplicate of Water Bottle with identical
+  // mockup, colors, and print zone. Re-add if a distinct tumbler mockup is provided.
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -269,20 +315,433 @@ export const PRODUCTS: DesignProduct[] = [
 
 export const BASE_BY_CATEGORY: Record<
   DesignProduct["category"],
-  { front: string; back?: string; darkFront?: string; darkBack?: string; frontCutout?: string; backCutout?: string } | undefined
+  { front: string; back?: string; frontCutout?: string; backCutout?: string; } | undefined
 > = {
-  tshirt:      { front: tshirtFront, back: tshirtBack, darkFront: tshirtFrontDark, darkBack: tshirtBackDark, frontCutout: tshirtFrontCutout, backCutout: tshirtBackCutout },
-  longsleeve:  { front: longsleeveFront, back: longsleeveBack, frontCutout: longsleeveFrontCutout, backCutout: longsleeveBackCutout },
-  hoodie:      { front: hoodieFront, back: hoodieBack, darkFront: hoodieFrontDark, darkBack: hoodieBackDark, frontCutout: hoodieFrontCutout, backCutout: hoodieBackCutout },
-  mug:         { front: mugFront, back: mugFront, darkFront: mugFrontDark, darkBack: mugFrontDark, frontCutout: mugFrontCutout },
-  cap:         { front: capFront, darkFront: capFrontDark, frontCutout: capFrontCutout },
-  waterbottle: { front: waterBottleFront, frontCutout: waterBottleCutout },
+  tshirt:      { front: tshirtFront, back: tshirtBack, frontCutout: tshirtFront, backCutout: tshirtBack },
+  longsleeve:  { front: longsleeveFront, back: longsleeveBack, frontCutout: longsleeveFront, backCutout: longsleeveBack },
+  hoodie:      { front: hoodieFront, back: hoodieBack, frontCutout: hoodieFront, backCutout: hoodieBack },
+  mug:         { front: mugFront, back: mugBack, frontCutout: mugFront, backCutout: mugBack },
+  cap:         { front: capFront, back: capBack, frontCutout: capFront, backCutout: capBack },
+  waterbottle: {
+    front: waterBottleFront,
+    back: waterBottleBack,
+    frontCutout: waterBottleFront,
+    backCutout: waterBottleBack,
+  },
+  // watertumbler uses category "waterbottle" — shares the same base entry
 };
 
-let _filterUid = 0;
-function nextFilterId() { _filterUid = (_filterUid + 1) % 1_000_000; return `tint-${_filterUid}`; }
+/**
+ * Runtime catalog generated from the editable source-kit manifest.
+ *
+ * Editable PSD masters stay in attached_assets as source material. The
+ * browser deliberately uses the linked PNG preview/cutout pair because PSDs
+ * are not browser-renderable. Every source-kit resolution carries the exact
+ * master path and manifest key so export/admin tooling can round-trip the
+ * same product, color, face, and print-zone contract without guessing.
+ */
+const SOURCE_KIT_COLOR_SLUGS: Record<
+  DesignProduct["category"],
+  Record<string, string>
+> = {
+  tshirt: {
+    "#f8f7f4": "white", "#1a1a1a": "black", "#1e3a5f": "navy",
+    "#7f1d1d": "maroon", "#4a5240": "olive", "#0ea5e9": "sky-blue",
+    "#6b7280": "grey", "#dc2626": "red",
+  },
+  longsleeve: {
+    "#f5f5f3": "white", "#1a1a1a": "black", "#303030": "charcoal",
+    "#a3a3a3": "heather-grey", "#1e3a5f": "navy", "#2563eb": "royal-blue",
+    "#166534": "forest-green", "#6b1a2c": "burgundy", "#dc2626": "red",
+    "#d2bd88": "sand",
+  },
+  hoodie: {
+    "#f2efe9": "white", "#1a1a1a": "black", "#303030": "charcoal",
+    "#a3a3a3": "heather-grey", "#1e3a5f": "navy", "#2563eb": "royal-blue",
+    "#166534": "forest-green", "#6b1a2c": "burgundy", "#dc2626": "red",
+    "#d2bd88": "sand",
+  },
+  mug: {
+    "#f5f5f5": "white", "#1c1917": "black", "#1e3a5f": "navy",
+    "#dc2626": "red", "#16a34a": "green", "#7c3aed": "purple",
+    "#0ea5e9": "sky-blue", "#ec4899": "pink", "#7f1d1d": "maroon",
+    "#ea580c": "orange",
+  },
+  cap: {
+    "#f5f2ec": "white", "#1a1a1a": "black", "#1e3a5f": "navy",
+    "#7f1d1d": "maroon", "#4a5240": "olive", "#dc2626": "red",
+    "#6b7280": "grey", "#166534": "forest",
+  },
+  waterbottle: {
+    // White sublimation-coated aluminium blank. Additional literal bottle colors
+    // require their own physical masters and are intentionally not synthesized.
+    "#f4f3f1": "white",
+  },
+};
 
-function isLightTint(hex: string): boolean {
+const SOURCE_KIT_PRINT_ZONES: Record<
+  DesignProduct["category"],
+  { front: PrintZone; back: PrintZone }
+> = {
+  tshirt: {
+    front: { x: 240, y: 185, w: 520, h: 580 },
+    back: { x: 240, y: 185, w: 520, h: 580 },
+  },
+  longsleeve: {
+    front: { x: 312, y: 222, w: 376, h: 404 },
+    back: { x: 292, y: 195, w: 416, h: 458 },
+  },
+  hoodie: {
+    front: { x: 240, y: 270, w: 520, h: 400 },
+    back: { x: 292, y: 184, w: 416, h: 448 },
+  },
+  mug: {
+    front: MUG_SIDE_PZ,
+    back: MUG_SIDE_BACK_PZ,
+  },
+  cap: {
+    front: { x: 240, y: 260, w: 540, h: 320 },
+    back: { x: 285, y: 270, w: 430, h: 230 },
+  },
+  waterbottle: {
+    front: { x: 335, y: 320, w: 276, h: 590, shape: "bottle-body" },
+    back: { x: 335, y: 320, w: 276, h: 590, shape: "bottle-body" },
+  },
+};
+
+const SOURCE_KIT_FRAMES: Record<
+  DesignProduct["category"],
+  { front: NormalizedMockupFrame; back: NormalizedMockupFrame }
+> = {
+  // Values measured from actual normalized photos (scripts/normalize_mockups_v3.py).
+  // Each product uses one shared frame across faces and colors so switching
+  // view or color cannot change the apparent product scale or position.
+  tshirt: {
+    front: { canvasWidth: 1024, canvasHeight: 1024, x: 43, y: 66, w: 937, h: 891 },
+    back:  { canvasWidth: 1024, canvasHeight: 1024, x: 43, y: 66, w: 937, h: 891 },
+  },
+  longsleeve: {
+    front: { canvasWidth: 1024, canvasHeight: 1024, x: 53, y: 94, w: 917, h: 836 },
+    back:  { canvasWidth: 1024, canvasHeight: 1024, x: 53, y: 94, w: 917, h: 836 },
+  },
+  hoodie: {
+    front: { canvasWidth: 1024, canvasHeight: 1024, x: 54, y: 43, w: 916, h: 937 },
+    back:  { canvasWidth: 1024, canvasHeight: 1024, x: 54, y: 43, w: 916, h: 937 },
+  },
+  mug: {
+    front: { canvasWidth: 1024, canvasHeight: 1024, x: 143, y: 192, w: 738, h: 637 },
+    back:  { canvasWidth: 1024, canvasHeight: 1024, x: 143, y: 192, w: 738, h: 637 },
+  },
+  cap: {
+    front: { canvasWidth: 1024, canvasHeight: 1024, x: 162, y: 184, w: 700, h: 655 },
+    back:  { canvasWidth: 1024, canvasHeight: 1024, x: 162, y: 184, w: 700, h: 655 },
+  },
+  waterbottle: {
+    front: { canvasWidth: 1024, canvasHeight: 1024, x: 351, y: 78, w: 322, h: 866 },
+    back:  { canvasWidth: 1024, canvasHeight: 1024, x: 351, y: 78, w: 322, h: 866 },
+  },
+};
+
+export interface MockupResolution {
+  /** Normalized selected colour used only by fallback tint consumers. */
+  colorHex: string;
+  /** Source-controlled browser runtime asset used by every surface. */
+  photoSrc: string;
+  /** Alias retained for backward-compatible compositor contracts. */
+  cutoutSrc: string;
+  /** True when the selected photo is already the exact requested product colour. */
+  isColorPhoto: boolean;
+  /** Legacy alias for requiresTint; kept for persisted/cart compatibility. */
+  cutoutNeedsTint: boolean;
+  /** The photo/cutout opacity contract. */
+  photoKind: "opaque-photo" | "transparent-cutout";
+  /** Whether the selected transparent source needs SVG/Canvas colour application. */
+  requiresTint: boolean;
+  /** Silhouette shadows are safe only for transparent sources. */
+  allowSilhouetteShadow: boolean;
+  /** Exact source-kit print zone when this color/face exists. */
+  printZone: PrintZone;
+  /** Normalized 1024px frame used by 2D and 3D consumers. */
+  normalizedFrame: NormalizedMockupFrame;
+  /** True only when a future opaque photographic override is explicitly active. */
+  isOpaquePhoto: boolean;
+  /** Repository-relative editable master generated from the same source kit. */
+  editableMasterPath?: string;
+  /** Stable source-kit document key used by export/admin tooling. */
+  sourceKitKey: string;
+  /** Explicit PSD/PSB smart-object recipe used by compositor/export tooling. */
+  smartObject: SmartMockupManifest;
+  /** One immutable runtime revision shared by preview, export, cart, and orders. */
+  manifestRevision: string;
+  /** Explicit runtime contract state; disabled surfaces cannot be purchased. */
+  runtimeStatus: "approved" | "disabled";
+  disabledReason?: string;
+  /** Contract validation errors retained for diagnostics and actionable UI. */
+  contractErrors: readonly string[];
+  /** Explicit alpha semantics consumed by the shared compositor. */
+  alphaMode: "opaque-photo" | "transparent-cutout";
+  /** Reviewed raster effects for the isolated PSD-derived T-shirt release only. */
+  psdMaterialEffects?: readonly PsdMaterialEffectLayer[];
+  source: "source-kit" | "curated";
+}
+
+export interface NormalizedMockupFrame {
+  canvasWidth: number;
+  canvasHeight: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+assertSmartV10Release(ACCEPTED_SMART_V10_RELEASE);
+
+export function getActiveMockupReleaseVersion(): typeof SMART_V10_RELEASE_VERSION {
+  return SMART_V10_RELEASE_VERSION;
+}
+
+/** Product picker thumbnails use the same accepted v10.3 surface as Studio. */
+export function getProductPickerPreviewSrc(product: DesignProduct): string {
+  const baseColor = product.colors[0]?.hex ?? product.garmentColor;
+  return resolveMockup(product, baseColor, "front").photoSrc;
+}
+
+export function getProductPickerFallbackSrc(_product: DesignProduct): string | undefined {
+  return undefined;
+}
+
+/**
+ * Return the canonical printable silhouette in the same 1000×1000
+ * coordinate system used by the editor and SVG mockups.
+ *
+ * Mug side panels are deliberately asymmetric because the source photos put
+ * the handle on opposite sides. The upper and lower curves preserve a stable
+ * ceramic-body margin instead of cutting artwork with a hard horizontal edge.
+ */
+export function printZonePath(zone: PrintZone): string {
+  const { x, y, w, h } = zone;
+  if (!zone.shape || zone.shape === "rect") {
+    return `M${x} ${y}H${x + w}V${y + h}H${x}Z`;
+  }
+
+  const topInset = Math.min(18, w * 0.04);
+  const bottomInset = Math.min(22, w * 0.05);
+  const sideRadius = Math.min(24, w * 0.06);
+  const top = y + 10;
+  const bottom = y + h - 10;
+  const left = x + topInset;
+  const right = x + w - topInset;
+  const cx = x + w / 2;
+  const isMugSide = zone.shape === "mug-front-body" || zone.shape === "mug-back-body";
+
+  if (zone.shape === "bottle-body") {
+    const shoulder = Math.min(h * 0.12, 54);
+    const base = Math.min(h * 0.08, 38);
+    const side = Math.min(w * 0.16, 28);
+    return [
+      `M${x + side} ${y + shoulder}`,
+      `Q${x + w / 2} ${y + shoulder * 0.45} ${x + w - side} ${y + shoulder}`,
+      `L${x + w - side} ${y + h - base}`,
+      `Q${x + w / 2} ${y + h + base * 0.2} ${x + side} ${y + h - base}`,
+      "Z",
+    ].join(" ");
+  }
+
+  if (zone.shape === "cap-front") {
+    const crown = Math.min(h * 0.18, 56);
+    const side = Math.min(w * 0.12, 34);
+    return [
+      `M${x + side} ${y + crown}`,
+      `Q${x + w / 2} ${y - crown * 0.15} ${x + w - side} ${y + crown}`,
+      `L${x + w - side * 0.7} ${y + h - 18}`,
+      `Q${x + w / 2} ${y + h + 12} ${x + side * 0.7} ${y + h - 18}`,
+      "Z",
+    ].join(" ");
+  }
+
+  if (isMugSide) {
+    return [
+      `M${left} ${top}`,
+      `Q${cx} ${y - 4} ${right} ${top}`,
+      `Q${x + w} ${top + 4} ${x + w} ${top + sideRadius}`,
+      `L${x + w} ${bottom - sideRadius}`,
+      `Q${x + w} ${bottom - 2} ${right} ${bottom}`,
+      `Q${cx} ${y + h + 4} ${left} ${bottom}`,
+      `Q${x} ${bottom - 2} ${x} ${bottom - sideRadius}`,
+      `L${x} ${top + sideRadius}`,
+      `Q${x} ${top + 4} ${left} ${top}`,
+      "Z",
+    ].join(" ");
+  }
+
+  // Wrap is a continuous body band. Keep the explicit wide mode, but retain
+  // rounded ceramic top/bottom margins so the texture does not reach the rim
+  // or base when it is used by the final compositor and 3D preview.
+  return [
+    `M${left} ${top}`,
+    `Q${cx} ${y - 4} ${right} ${top}`,
+    `Q${x + w} ${top + 4} ${x + w} ${top + sideRadius}`,
+    `L${x + w} ${bottom - sideRadius}`,
+    `Q${x + w} ${bottom - 2} ${right} ${bottom}`,
+    `Q${cx} ${y + h + 4} ${left} ${bottom}`,
+    `Q${x} ${bottom - 2} ${x} ${bottom - sideRadius}`,
+    `L${x} ${top + sideRadius}`,
+    `Q${x} ${top + 4} ${left} ${top}`,
+    "Z",
+  ].join(" ");
+}
+
+/**
+ * Shared point-in-zone test for print warnings and other non-SVG consumers.
+ * The tolerance is intentionally applied outside the shape so the warning
+ * remains forgiving at the edge without making the printable body larger.
+ */
+export function isPrintZonePointInside(zone: PrintZone, px: number, py: number, tolerance = 0): boolean {
+  if (
+    px < zone.x - tolerance ||
+    px > zone.x + zone.w + tolerance ||
+    py < zone.y - tolerance ||
+    py > zone.y + zone.h + tolerance
+  ) {
+    return false;
+  }
+  if (!zone.shape || zone.shape === "rect") return true;
+
+  const top = zone.y + 10;
+  const bottom = zone.y + zone.h - 10;
+  const sideRadius = Math.min(24, zone.w * 0.06);
+  const topInset = Math.min(18, zone.w * 0.04);
+  const bottomInset = Math.min(22, zone.w * 0.05);
+  const topProgress = Math.max(0, Math.min(1, (py - top) / Math.max(sideRadius, 1)));
+  const bottomProgress = Math.max(0, Math.min(1, (bottom - py) / Math.max(sideRadius, 1)));
+  const edgeInset = Math.max(
+    topInset * (1 - topProgress),
+    bottomInset * (1 - bottomProgress),
+  );
+
+  return (
+    px >= zone.x + edgeInset - tolerance &&
+    px <= zone.x + zone.w - edgeInset + tolerance
+  );
+}
+
+function normalizeMockupHex(hex: string): string {
+  return hex.trim().toLowerCase();
+}
+
+function canonicalMasterPath(category: DesignProduct["category"], colorSlug: string, face: CompleteMockupView): string {
+  // Every accepted v10.3 surface has its own layered PSD/PSB Smart Object
+  // master. Masters stay outside public/; only validated runtime role
+  // derivatives are browser-served.
+  const extension = category === "mug" || category === "waterbottle" ? "psb" : "psd";
+  const releaseFamily = category === "waterbottle" ? "waterbottle" : category;
+  return `dist-mockups/staging/smart-v10-v3/masters/${releaseFamily}/${releaseFamily}-${colorSlug}-${face}.${extension}`;
+}
+
+/**
+ * Resolves one canonical mockup key for every customer-facing surface.
+ *
+ * v10.3 role exports (public/mockups/psd-master-v10/runtime-roles/*) are the
+ * only customer-facing product sources.
+ *
+ * Rendering path summary:
+ *   Every family/color/face resolves to one v10.3 base plus its five role maps.
+ *   The base and role maps are shared by the SVG, canvas, export, cart, and 3D
+ *   surfaces; no older release is used as an implicit fallback.
+ */
+export function resolveMockup(
+  product: DesignProduct,
+  color: string,
+  face: CompleteMockupView = "front",
+): MockupResolution {
+  const category = product.category;
+  const zones = SOURCE_KIT_PRINT_ZONES[category];
+  const canonicalSpec = getCanonicalMockupSpec(category as MockupFamily);
+  const hex = normalizeMockupHex(color);
+  // An unknown or ambiguous color must not silently become a white product.
+  // That was especially dangerous for persisted carts and custom API payloads:
+  // the UI looked valid while the physical color was wrong. Resolve geometry
+  // from the white template only so the disabled result still has stable layout,
+  // but never expose the white runtime asset as a fallback.
+  const sourceKitSlug = SOURCE_KIT_COLOR_SLUGS[category]?.[hex];
+  const geometryColorSlug = sourceKitSlug ?? "white";
+  const completeView = getCompleteMockupEntry(category as CompleteMockupFamily, geometryColorSlug, face);
+  const normalizedFrame = completeView.geometry.normalizedFrame;
+
+  // The browser renders the validated v10.3 PNG roles. The corresponding
+  // layered master remains outside public/ as editable source provenance.
+  const masterPath = sourceKitSlug ? canonicalMasterPath(category, sourceKitSlug, face) : undefined;
+  const sourceKitKey = `${category}:${sourceKitSlug ?? "unresolved"}:${face}`;
+  const releaseColorSlug = sourceKitSlug
+    ? getSmartV10ColorSlug(category, sourceKitSlug)
+    : undefined;
+  const v10Roles = releaseColorSlug ? getSmartV10RuntimeRoles(category, releaseColorSlug, face) : undefined;
+  const resolvedPrintZone = completeView.geometry.printZone;
+  const resolvedNormalizedFrame = normalizedFrame;
+  const photoSrc = v10Roles?.base ?? "";
+  const cutoutSrc = photoSrc;
+  const runtimeStatus = v10Roles ? "approved" as const : "disabled" as const;
+  const disabledReason = v10Roles
+    ? undefined
+    : `No approved ${category} ${sourceKitSlug} ${face} v10.3 source-kit surface is available.`;
+  const manifestRevision = SMART_V10_RELEASE_VERSION;
+  const smartObject = createSmartMockupManifest({
+    category,
+    colorSlug: releaseColorSlug ?? sourceKitSlug ?? "unresolved",
+    face,
+    sourceKitKey,
+    manifestRevision,
+    editableMasterPath: masterPath,
+    masterStatus: "verified",
+    runtimeStatus,
+    disabledReason,
+    baseSrc: photoSrc,
+    cutoutSrc,
+    alphaMode: "transparent-cutout",
+    runtimeRoles: v10Roles,
+    normalizedFrame: resolvedNormalizedFrame,
+    printZone: resolvedPrintZone,
+  });
+  const contractErrors = validateSmartMockupManifest(smartObject, {
+    category,
+    colorSlug: releaseColorSlug ?? sourceKitSlug,
+    face,
+    sourceKitKey,
+  });
+
+  return {
+    colorHex: hex,
+    photoSrc,
+    cutoutSrc,
+    // Admin overrides and the reviewed PSD-derived T-shirt files already hold
+    // the final colorway. Treat them as exact color photos through every 2D,
+    // 3D, cart, and export consumer; adding any synthetic tint would corrupt
+    // the selected physical color.
+    isColorPhoto: Boolean(v10Roles),
+    cutoutNeedsTint: false,
+    photoKind: "transparent-cutout",
+    requiresTint: false,
+    allowSilhouetteShadow: false,
+    printZone: resolvedPrintZone,
+    normalizedFrame: resolvedNormalizedFrame,
+    isOpaquePhoto: smartObject.assets.alphaMode === "opaque-photo",
+    editableMasterPath: masterPath,
+    sourceKitKey,
+    smartObject,
+    manifestRevision,
+    runtimeStatus,
+    disabledReason,
+    contractErrors,
+    alphaMode: smartObject.assets.alphaMode,
+    psdMaterialEffects: undefined,
+    source: v10Roles ? "source-kit" : "curated",
+  };
+}
+
+
+// Exported so DesignStudio's live SVG editor can pick the same multiply/screen
+// blend mode for uploaded designs that composeGarmentMockup() already uses.
+export function isLightTint(hex: string): boolean {
   const h = hex.replace("#", "");
   if (h.length !== 6) return true;
   const r = parseInt(h.slice(0, 2), 16);
@@ -312,271 +771,174 @@ export function GarmentSVG({
   showPrintZone,
   face = "front",
   mugMode,
+  baseSrcOverride,
 }: {
   product: DesignProduct;
   color?: string;
   showPrintZone: boolean;
   face?: Face;
   mugMode?: "side1" | "side2" | "wrap";
+  /** Local review-only source override. Never supplied by the customer resolver. */
+  baseSrcOverride?: string;
 }) {
   const isMug = product.category === "mug";
-
-  const base = BASE_BY_CATEGORY[product.category];
   const tintHex = color || product.garmentColor;
-  const isDark = !!tintHex && !isLightTint(tintHex);
-  // Only swap to the real black photo for near-black colours (luminance < 12%).
-  // Navy, Maroon, Olive, Red, Grey, Sky Blue, etc. all remain on the white base
-  // and receive their correct hue via the SVG multiply-tint filter below.
-  const useBlackPhoto = !!tintHex && isNearBlack(tintHex);
+  const resolvedFace: CompleteMockupView = isMug && mugMode === "wrap"
+    ? "wrap"
+    : face;
+  const resolvedMockup = resolveMockup(product, tintHex, resolvedFace);
+  const needsTint = resolvedMockup.photoKind === "transparent-cutout" && resolvedMockup.requiresTint;
+  const displayPZ = resolvedMockup.printZone;
 
-  // Pick the best available source image:
-  // • Near-black colour AND a real black photo exists → use the black garment photo
-  // • Everything else → white/light base photo (SVG multiply-tint applies the colour)
-  const src = (() => {
-    if (base) {
-      if (useBlackPhoto) {
-        if (face === "back" && base.darkBack) return base.darkBack;
-        if (face !== "back" && base.darkFront) return base.darkFront;
-      }
-      return (face === "back" && base.back) ? base.back : base.front;
-    }
-    return (face === "back" && product.backSrc) ? product.backSrc : product.frontSrc;
-  })();
+  // The transparent source-kit cutout is the only runtime product layer. The
+  // opaque normalized photo remains available as source metadata and for admin
+  // inspection, but it must never be stacked beneath or above the cutout in the
+  // live editor because that creates the pale duplicate wedges seen in production.
+  const canonicalBaseSrc = baseSrcOverride ?? resolvedMockup.cutoutSrc;
 
-  const pz = (() => {
-    if (!isMug) {
-      return (face === "back" && product.printZoneBack) ? product.printZoneBack : product.printZone;
-    }
-    if (mugMode === "wrap") return MUG_PZ;
-    return MUG_SIDE_PZ;
-  })();
+  // Canvas background colour: clean white for all products so the mockup reads
+  // as a premium product shot on a light, neutral studio surface. Cutout garments
+  // get a soft shadow to lift them off the white; full opaque photos cover the
+  // canvas entirely so no background colour shows through.
+  const canvasBg = "#ffffff";
 
-  const useBase = !!base;
-  // A "real dark image" only exists when the colour is near-black AND the category
-  // has a dedicated black photo.  For every other dark colour we fall through to
-  // the SVG multiply-tint on the white base photo.
-  const hasRealDarkImage = useBlackPhoto && base && (face === "back" ? !!base.darkBack : !!base.darkFront);
-  // Only apply tinting when a transparent-background cutout PNG is available.
-  // Without a cutout, the SVG filter would tint the entire photo including the
-  // white background rectangle, producing a wrongly-coloured background.
-  const hasCutout = !!base && (face === "back" ? !!base.backCutout : !!base.frontCutout);
-  const applyTint = useBase && isDark && !hasRealDarkImage && hasCutout;
-  const filterId = useMemo(() => nextFilterId(), [product.id, face, tintHex]);
-
-  // When colour-tinting, switch to the transparent-background cutout PNG so the
-  // SVG filter only affects actual garment pixels — never the white rectangle
-  // that surrounds the garment in the regular photo.  Non-tinted views (white or
-  // near-black garments that use a dedicated dark photo) keep the full photo as-is.
-  //
-  // Special case — cylinders (mug / waterbottle): always prefer the cutout even for
-  // white / light colours so the product shape has a transparent background and the
-  // shadow filter follows the actual mug / bottle outline rather than shading an
-  // invisible white square.
-  const isCylUnderImageSrc = product.category === "mug" || product.category === "waterbottle";
-  const imageSrc = (() => {
-    if (!applyTint || !base) {
-      if (isCylUnderImageSrc && base && !useBlackPhoto) {
-        if (face === "back" && base.backCutout) return base.backCutout;
-        if (base.frontCutout) return base.frontCutout;
-      }
-      return src;
-    }
-    if (face === "back" && base.backCutout) return base.backCutout;
-    return base.frontCutout ?? src;
-  })();
-
-  const isMugRightSide = isMug && (face === "back" || mugMode === "side2");
-
-  // When the mug photo is horizontally flipped (right-side view), the print zone
-  // rectangle must also be mirrored so it aligns with the printable area on the
-  // flipped image. Mirror formula: new_x = viewBoxWidth - pz.x - pz.w
-  const displayPZ = isMugRightSide ? { ...pz, x: 1000 - pz.x - pz.w } : pz;
-
-  // Is this an apparel product (tshirt / hoodie / longsleeve)?
-  const isApparel = product.category === "tshirt" || product.category === "hoodie" || product.category === "longsleeve";
-  const isCylinder = product.category === "mug" || product.category === "waterbottle";
+  // Keep the base preview neutral; realistic lighting is supplied by the product
+  // source and the clipped compositor masks, not by an extra glow layer.
 
   return (
-    <>
-      {applyTint && (
-        <defs>
-          {/* Transparent-PNG tint: desaturate → flood colour → mask to
-              original alpha → multiply with grey → restore original alpha.
-              Works for all cutout PNGs (tshirt, mug, waterbottle, etc.) */}
-          <filter id={filterId} x="0" y="0" width="1" height="1" colorInterpolationFilters="sRGB">
-            <feColorMatrix in="SourceGraphic" type="saturate" values="0" result="gray" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1000 1000"
+      preserveAspectRatio="xMidYMid meet"
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      aria-hidden="true"
+    >
+      <defs>
+        {/* Smooth cross-fade when switching garment color / face.
+            Uses key prop on the image element to retrigger the animation each swap. */}
+        <style>{`
+          @keyframes garmentFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+          }
+          .garment-img { animation: garmentFadeIn 0.13s ease-in-out; }
+        `}</style>
+
+
+
+        {/* No SVG grain, vignette, full-frame shadow, or highlight overlays here.
+            The single product source plus the compositor's clipped luminosity
+            masks is the PSD-style stack; duplicate SVG treatments create glow. */}
+
+        {/* ── Colour multiply-tint filter ──────────────────────────────────────
+            Applied DIRECTLY to the <image> element (not a separate rect).
+            SVG guarantees: filter is evaluated first, mask second — no
+            isolated-compositing-context issues that break CSS mix-blend-mode.
+
+            IMPORTANT: feBlend multiply sets alpha=1 for transparent pixels
+            (because 1-(1-1)*(1-0)=1), filling the background with tintHex.
+            The final feComposite operator="in" clips the output back to the
+            alpha channel of SourceGraphic so transparent areas stay transparent. */}
+        {needsTint && tintHex && (
+          <filter id="garment-color-tint" x="0%" y="0%" width="100%" height="100%" colorInterpolationFilters="sRGB">
             <feFlood floodColor={tintHex} result="flood" />
-            <feComposite in="flood" in2="SourceAlpha" operator="in" result="tinted" />
-            <feBlend in="tinted" in2="gray" mode="multiply" result="blended" />
+            <feBlend in="flood" in2="SourceGraphic" mode="multiply" result="blended" />
             <feComposite in="blended" in2="SourceGraphic" operator="in" />
           </filter>
-        </defs>
-      )}
-
-      <defs>
-        {/* Garment drop-shadow — lifts the garment off the background so
-            white/light shirts are clearly visible on the off-white canvas.
-            Three-layer shadow: wide ambient + mid diffuse + tight contact. */}
-        <filter id={`shadow-${filterId}`} x="-12%" y="-12%" width="124%" height="124%" colorInterpolationFilters="sRGB">
-          <feDropShadow dx="0" dy="12" stdDeviation="32" floodColor="rgba(0,0,0,0.22)" />
-          <feDropShadow dx="0" dy="5"  stdDeviation="14" floodColor="rgba(0,0,0,0.18)" />
-          <feDropShadow dx="0" dy="2"  stdDeviation="5"  floodColor="rgba(0,0,0,0.14)" />
-        </filter>
-
-        {/* Radial edge vignette — subtle depth around garment edges */}
-        <radialGradient id={`vign-${filterId}`} cx="50%" cy="48%" r="56%"
-          gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="rgba(0,0,0,0)" />
-          <stop offset="60%"  stopColor="rgba(0,0,0,0.01)" />
-          <stop offset="82%"  stopColor="rgba(0,0,0,0.06)" />
-          <stop offset="100%" stopColor="rgba(0,0,0,0.18)" />
-        </radialGradient>
-        {/* Top shoulder highlight — studio key-light */}
-        <radialGradient id={`hi-${filterId}`} cx="50%" cy="15%" r="38%" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="rgba(255,255,255,0.10)" />
-          <stop offset="60%"  stopColor="rgba(255,255,255,0.03)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-        </radialGradient>
-        {/* Bottom ambient shadow */}
-        <linearGradient id={`bot-${filterId}`} gradientUnits="userSpaceOnUse"
-          x1={0} y1={760} x2={0} y2={1000}>
-          <stop offset="0%"   stopColor="rgba(0,0,0,0)" />
-          <stop offset="100%" stopColor="rgba(0,0,0,0.10)" />
-        </linearGradient>
-
-        {/* Cylinder shadows for mug/waterbottle — steep fade so the dark edge
-            reaches ZERO before the print zone starts.
-            Mug print zone left edge ≈ x=188 (18.8%). Gradient is fully transparent
-            by 17% so no shading ever reaches the design area. */}
-        <linearGradient id={`cyl-l-${filterId}`} gradientUnits="userSpaceOnUse"
-          x1={0} y1={0} x2={1000} y2={0}>
-          <stop offset="0%"   stopColor="rgba(0,0,0,0.45)" />
-          <stop offset="10%"  stopColor="rgba(0,0,0,0.18)" />
-          <stop offset="17%"  stopColor="rgba(0,0,0,0.00)" />
-          <stop offset="100%" stopColor="rgba(0,0,0,0)" />
-        </linearGradient>
-        <linearGradient id={`cyl-r-${filterId}`} gradientUnits="userSpaceOnUse"
-          x1={0} y1={0} x2={1000} y2={0}>
-          <stop offset="0%"   stopColor="rgba(0,0,0,0)" />
-          <stop offset="83%"  stopColor="rgba(0,0,0,0.00)" />
-          <stop offset="90%"  stopColor="rgba(0,0,0,0.18)" />
-          <stop offset="100%" stopColor="rgba(0,0,0,0.45)" />
-        </linearGradient>
-        <linearGradient id={`cyl-hi-${filterId}`} gradientUnits="userSpaceOnUse"
-          x1={0} y1={0} x2={1000} y2={0}>
-          <stop offset="0%"   stopColor="rgba(255,255,255,0)" />
-          <stop offset="38%"  stopColor="rgba(255,255,255,0.16)" />
-          <stop offset="50%"  stopColor="rgba(255,255,255,0.26)" />
-          <stop offset="62%"  stopColor="rgba(255,255,255,0.16)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-        </linearGradient>
-
-        {/* Apparel fabric micro-texture — subtle creasing/fold effect only
-            within the garment print area (apparel only, no cylinders) */}
-        {isApparel && (
-          <filter id={`fabric-${filterId}`} x="0" y="0" width="1" height="1" colorInterpolationFilters="sRGB">
-            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" seed="3" result="noise" />
-            <feColorMatrix in="noise" type="saturate" values="0" result="gray" />
-            <feBlend in="SourceGraphic" in2="gray" mode="multiply" result="textured" />
-            <feComposite in="textured" in2="SourceAlpha" operator="in" />
-          </filter>
         )}
+
+
+        {/* Hoodie smart-object detail mask. Artwork sits below these narrow source
+            strips so drawstrings remain visible instead of being painted over by
+            uploaded images, text, emoji, or AI art. Coordinates are calibrated to
+            the 1000×1000 normalized hoodie source-kit frame. */}
+        {product.category === "hoodie" && face === "front" && (
+          <clipPath id="hoodie-rope-preservation">
+            <path d="M462 216 C463 252 455 300 451 350 L450 445" stroke="black" strokeWidth="18" fill="none" strokeLinecap="round" />
+            <path d="M555 216 C554 252 560 300 564 350 L565 445" stroke="black" strokeWidth="18" fill="none" strokeLinecap="round" />
+          </clipPath>
+        )}
+
+        {/* Legacy silhouette guards are retained in the manifest for audit history,
+            but runtime product alpha is authoritative in v3. Applying a generic
+            path here caused Long Sleeve/Hoodie sleeve cutoffs, so no product image
+            is clipped by a coordinate-guessed silhouette. */}
+        {product.category === "tshirt" && (
+          <clipPath id="tshirt-silhouette" clipPathUnits="userSpaceOnUse">
+            <path d="M390 176 Q430 128 500 128 Q570 128 610 176 L760 260 L892 360 L830 485 L738 440 L738 930 Q500 970 262 930 L262 440 L170 485 L108 360 L240 260 Z" />
+          </clipPath>
+        )}
+        {product.category === "longsleeve" && (
+          <clipPath id="longsleeve-silhouette" clipPathUnits="userSpaceOnUse">
+            <path d="M405 132 Q500 92 595 132 L690 220 L820 300 L920 700 L852 930 L730 890 L700 530 L700 930 Q500 970 300 930 L300 530 L270 890 L148 930 L80 700 L180 300 L310 220 Z" />
+          </clipPath>
+        )}
+        {product.category === "hoodie" && (
+          <clipPath id="hoodie-silhouette" clipPathUnits="userSpaceOnUse">
+            <path d="M405 42 Q500 18 595 42 Q645 88 650 165 Q690 215 760 250 Q850 285 900 360 Q938 520 948 760 L930 915 Q918 958 860 960 L790 950 L760 680 L735 550 L735 930 Q500 972 265 930 L265 550 L240 680 L210 950 L140 960 Q82 958 70 915 L52 760 Q62 520 100 360 Q150 285 240 250 Q310 215 350 165 Q355 88 405 42 Z" />
+          </clipPath>
+        )}
+
+
       </defs>
 
-      {/* Studio neutral background — warm medium-gray so white/light garments
-          have clear contrast and the product photo pops cleanly */}
-      <rect width={1000} height={1000} fill="#c9c4bc" style={{ pointerEvents: "none" }} />
+      {/* Studio canvas background — clean white for all products so the mockup reads
+          as a premium product shot on a light, neutral studio surface. */}
+      <rect width={1000} height={1000} fill={canvasBg} style={{ pointerEvents: "none" }} />
 
-      {/* Garment photo — shadow applied to the <g> wrapper so it works with
-          both plain AND tinted images (colored shirts). The shadow follows
-          the garment alpha-channel shape for PNG cutouts. */}
-      {isMugRightSide ? (
-        <g transform="translate(1000,0) scale(-1,1)" filter={`url(#shadow-${filterId})`}>
-          <image
-            href={imageSrc}
-            x={0} y={0} width={1000} height={1000}
-            preserveAspectRatio="xMidYMid meet"
-            filter={applyTint ? `url(#${filterId})` : undefined}
-            style={{ pointerEvents: "none" }}
-          />
-        </g>
-      ) : (
-        <g filter={`url(#shadow-${filterId})`}>
-          <image
-            href={imageSrc}
-            x={0} y={0} width={1000} height={1000}
-            preserveAspectRatio="xMidYMid meet"
-            filter={applyTint ? `url(#${filterId})` : undefined}
-            style={{ pointerEvents: "none" }}
-          />
-        </g>
-      )}
 
-      {/* Depth overlays — vignette + highlight + bottom shadow */}
-      <rect x={0} y={0} width={1000} height={1000}
-        fill={`url(#vign-${filterId})`} style={{ pointerEvents: "none" }} />
-      <rect x={0} y={0} width={1000} height={1000}
-        fill={`url(#hi-${filterId})`} style={{ pointerEvents: "none" }} />
-      <rect x={0} y={0} width={1000} height={1000}
-        fill={`url(#bot-${filterId})`} style={{ pointerEvents: "none" }} />
 
-      {/* Cylindrical depth overlays — very subtle, applied to the FULL IMAGE area (not the print zone)
-          so they never shade the design. Print zone itself stays clean/unobscured. */}
-      {isCylinder && (
-        <>
-          <rect x={0} y={0} width={1000} height={1000}
-            fill={`url(#cyl-l-${filterId})`}
-            style={{ pointerEvents: "none", mixBlendMode: "multiply", opacity: 0.25 }} />
-          <rect x={0} y={0} width={1000} height={1000}
-            fill={`url(#cyl-r-${filterId})`}
-            style={{ pointerEvents: "none", mixBlendMode: "multiply", opacity: 0.25 }} />
-        </>
-      )}
+      {/* ── Real Smart Mockup Render ───────────────────────────────────────────
+          Uses a multi-layer stack for high-fidelity realism:
+          1. Base Product Photo (with tint if needed)
+          2. Shadow Map (Luminosity Mask)
+          3. Highlight Map (Luminosity Mask)
+      ───────────────────────────────────────────────────────────────────────── */}
+
+      <g style={{ pointerEvents: "none" }}>
+        {/* Layer 1: Base Product */}
+        <image
+          key={`canonical-cutout-${canonicalBaseSrc}`}
+          href={canonicalBaseSrc}
+          x={0} y={0} width={1000} height={1000}
+          preserveAspectRatio="xMidYMid meet"
+          filter={needsTint ? "url(#garment-color-tint)" : undefined}
+          className="garment-img"
+        />
+
+        {/* No second full-frame source is painted. Protected product details
+            remain in the canonical cutout and artwork is clipped separately. */}
+      </g>
 
       {showPrintZone && (() => {
-        const { x, y, w, h } = displayPZ;
-        const x2 = x + w, y2 = y + h;
-        const L = 32;
         return (
           <g style={{ pointerEvents: "none" }}>
-            {/* Corner brackets only — clean, no text, no fill */}
-            <path d={`M${x} ${y+L} L${x} ${y} L${x+L} ${y}`}
-              stroke="rgba(232,93,4,0.80)" strokeWidth={3.5} fill="none" strokeLinecap="round" strokeLinejoin="round"
-              vectorEffect="non-scaling-stroke" />
-            <path d={`M${x2-L} ${y} L${x2} ${y} L${x2} ${y+L}`}
-              stroke="rgba(232,93,4,0.80)" strokeWidth={3.5} fill="none" strokeLinecap="round" strokeLinejoin="round"
-              vectorEffect="non-scaling-stroke" />
-            <path d={`M${x} ${y2-L} L${x} ${y2} L${x+L} ${y2}`}
-              stroke="rgba(232,93,4,0.80)" strokeWidth={3.5} fill="none" strokeLinecap="round" strokeLinejoin="round"
-              vectorEffect="non-scaling-stroke" />
-            <path d={`M${x2-L} ${y2} L${x2} ${y2} L${x2} ${y2-L}`}
-              stroke="rgba(232,93,4,0.80)" strokeWidth={3.5} fill="none" strokeLinecap="round" strokeLinejoin="round"
+            <path d={printZonePath(displayPZ)}
+              stroke="rgba(232,93,4,0.80)" strokeWidth={3.5} fill="rgba(232,93,4,0.05)"
+              strokeDasharray={displayPZ.shape && displayPZ.shape !== "rect" ? "10 7" : undefined}
+              strokeLinecap="round" strokeLinejoin="round"
               vectorEffect="non-scaling-stroke" />
           </g>
         );
       })()}
-    </>
+    </svg>
   );
 }
 
 /* ═══════════════════════════════════════════════════════
    FLAT ZONE RENDERER — used for sleeve and neck-label zones.
-   Shows the real garment photo as a dimmed background for context,
-   with an artboard overlay highlighting the printable area.
-   No more pure-SVG artboard — real product photography is always shown.
+   Renders the active canonical detail asset inside the print artboard.
+   These are explicit flat print-detail templates, not alternate full-product views.
 ════════════════════════════════════════════════════════ */
 export function FlatZoneSVG({
   zone,
   showPrintZone,
-  garmentPhotoSrc,
-  garmentColor,
+  mockup,
 }: {
   zone: ApparelZone;
   showPrintZone: boolean;
-  /** Real product photo URL (frontSrc from the selected product) shown as context. */
-  garmentPhotoSrc?: string;
-  /** Selected garment hex colour — tints the background photo to match. */
-  garmentColor?: string;
+  /** Canonical resolved mockup for the selected product and colour. */
+  mockup: MockupResolution;
 }) {
   const { pz, label, pxDimensions } = zone;
   const cx = pz.x + pz.w / 2;
@@ -584,58 +946,68 @@ export function FlatZoneSVG({
   const isNeck = zone.face === "neck-label";
   const isLeftSleeve = zone.face === "left-sleeve";
 
+  const useTint = mockup.photoKind === "transparent-cutout" && mockup.requiresTint;
+  const garmentPhotoSrc = useTint ? mockup.cutoutSrc : mockup.photoSrc;
+  // Clean white studio for all zones — matches the garment view so the design
+  // tool feels like one coherent surface instead of a dark "blackboard".
+  const canvasBg = "#ffffff";
+  // Very subtle vignette on white so the artboard still has a sense of depth.
+  const vigEndColor = "rgba(0,0,0,0.06)";
+
   return (
-    <>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1000 1000"
+      preserveAspectRatio="xMidYMid meet"
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      aria-hidden="true"
+    >
       <defs>
-        <filter id="flat-blur-bg">
-          <feGaussianBlur stdDeviation="1.2" />
-          <feColorMatrix type="matrix"
-            values="0.85 0 0 0 0.06
-                    0 0.85 0 0 0.06
-                    0 0 0.85 0 0.06
-                    0 0 0 0.82 0" />
+        {/* flat-artboard-glow: white glow + drop shadow behind the print-zone artboard */}
+        <filter id="flat-artboard-glow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor="rgba(0,0,0,0.06)" />
         </filter>
-        <filter id="flat-artboard-glow">
-          <feDropShadow dx="0" dy="0" stdDeviation="18" floodColor="rgba(255,255,255,0.60)" />
-          <feDropShadow dx="0" dy="6" stdDeviation="12" floodColor="rgba(0,0,0,0.18)" />
-        </filter>
-        <filter id="flat-shadow-sm">
-          <feDropShadow dx="0" dy="3" stdDeviation="6" floodColor="rgba(0,0,0,0.12)" />
+        <filter id="flat-shadow-sm" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="rgba(0,0,0,0.07)" />
         </filter>
         <clipPath id="flat-clip-pz">
           <rect x={pz.x} y={pz.y} width={pz.w} height={pz.h} rx={10} />
         </clipPath>
+        {/* Colour multiply-tint — only defined for mid-range (non-white, non-black) colours.
+            Full opacity (floodOpacity="1") matches GarmentSVG exactly.
+            feComposite operator="in" clips alpha back to SourceGraphic so
+            transparent pixels outside the garment stay transparent (not tintHex). */}
+        {useTint && (
+          <filter id="flat-color-tint" x="0%" y="0%" width="100%" height="100%" colorInterpolationFilters="sRGB">
+            <feFlood floodColor={mockup.colorHex} floodOpacity="1" result="flood" />
+            <feBlend in="flood" in2="SourceGraphic" mode="multiply" result="blended" />
+            <feComposite in="blended" in2="SourceGraphic" operator="in" />
+          </filter>
+        )}
       </defs>
 
-      {/* Full background — real garment photo (lightly dimmed for context so
-          the user can see they're designing for a real sleeve / neck label). */}
-      <rect width={1000} height={1000} fill="#e8e5e0" />
-      {garmentPhotoSrc ? (
+      {/* Canvas background: Clean white studio for all flat zones. */}
+      <rect width={1000} height={1000} fill={canvasBg} />
+
+      {/* The active canonical detail asset is the editing surface. Transparent pixels
+          reveal the clean artboard; the asset itself carries the product silhouette
+          and color-specific material shading. */}
+      {garmentPhotoSrc && (
         <image
           href={garmentPhotoSrc}
-          x={0} y={0} width={1000} height={1000}
+          x="0" y="0" width="1000" height="1000"
           preserveAspectRatio="xMidYMid meet"
-          filter="url(#flat-blur-bg)"
+          opacity={0.96}
           style={{ pointerEvents: "none" }}
-        />
-      ) : (
-        <rect width={1000} height={1000} fill="#d4d0ca" />
-      )}
-      {/* Garment colour tint — multiply-blend so fabric details stay visible.
-          Only applied for non-white/non-light colours. */}
-      {garmentColor && !isLightTint(garmentColor) && (
-        <rect
-          width={1000} height={1000}
-          fill={garmentColor}
-          opacity={0.62}
-          style={{ mixBlendMode: "multiply" as React.CSSProperties["mixBlendMode"], pointerEvents: "none" }}
+          filter={useTint ? "url(#flat-color-tint)" : undefined}
         />
       )}
 
-      {/* Very subtle vignette — just enough to lift the artboard off the background */}
+      {/* Subtle vignette — lifts the artboard off the background.
+          Strength adjusted by canvas bg: lighter on the warm-light (near-black) bg. */}
       <radialGradient id="flat-vig" cx="50%" cy="50%" r="70%" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1000">
         <stop offset="0%" stopColor="transparent" />
-        <stop offset="100%" stopColor="rgba(0,0,0,0.22)" />
+        <stop offset="100%" stopColor={vigEndColor} />
       </radialGradient>
       <rect width={1000} height={1000} fill="url(#flat-vig)" style={{ pointerEvents: "none" }} />
 
@@ -738,7 +1110,7 @@ export function FlatZoneSVG({
           </g>
         );
       })()}
-    </>
+    </svg>
   );
 }
 

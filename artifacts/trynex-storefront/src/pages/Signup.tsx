@@ -52,7 +52,7 @@ export default function Signup() {
         setError("");
         const result = await loginWithGoogle(response.credential);
         if (result.success) {
-          toast({ title: "✓ Account created", description: "Welcome to TryNex!" });
+          toast({ title: "✓ Account created", description: "Welcome to Trynext!" });
           navigate(redirectTo);
         } else setError(result.error || "Google login failed");
         setLoading(false);
@@ -110,7 +110,7 @@ export default function Signup() {
     setLoading(true);
     const result = await register({ name, email, phone: phone || undefined, password });
     if (result.success) {
-      toast({ title: "✓ Account created", description: "Welcome to TryNex!" });
+      toast({ title: "✓ Account created", description: "Welcome to Trynext Lifestyle!" });
       navigate(redirectTo);
     } else {
       setError(result.error || "Registration failed");
@@ -132,7 +132,7 @@ export default function Signup() {
         setLoading(true);
         const result = await loginWithFacebook(response.authResponse.accessToken);
         if (result.success) {
-          toast({ title: "✓ Account created", description: "Welcome to TryNex!" });
+          toast({ title: "✓ Account created", description: "Welcome to Trynext Lifestyle!" });
           navigate(redirectTo);
         } else setError(result.error || "Facebook login failed");
         setLoading(false);
@@ -144,7 +144,7 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <SEOHead title="Create Account" description="Sign up for a TryNex Lifestyle account" noindex />
+      <SEOHead title="Create Account" description="Sign up for a Trynext Lifestyle account" noindex />
       <Navbar />
 
       <main className="flex-1 flex items-center justify-center px-4 pt-header pb-12 sm:pb-20">
@@ -155,7 +155,7 @@ export default function Signup() {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-black font-display text-gray-900">Create Account</h1>
-            <p className="text-gray-500 mt-2">Join TryNex Lifestyle today</p>
+            <p className="text-gray-500 mt-2">Join Trynext Lifestyle today</p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8">

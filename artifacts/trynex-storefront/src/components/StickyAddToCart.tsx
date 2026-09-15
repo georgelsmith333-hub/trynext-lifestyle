@@ -30,6 +30,7 @@ export function StickyAddToCart({
 }: StickyAddToCartProps) {
   const [visible, setVisible] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const stickyOffset = "calc(var(--mobile-sticky-offset, 0px) + env(safe-area-inset-bottom, 0px))";
 
   useEffect(() => {
     const el = triggerRef.current;
@@ -39,7 +40,7 @@ export function StickyAddToCart({
         const entry = entries[0];
         setVisible(!entry.isIntersecting);
       },
-      { threshold: 0, rootMargin: "0px 0px -20px 0px" }
+      { threshold: 0, rootMargin: "0px 0px -96px 0px" }
     );
     observerRef.current.observe(el);
     return () => {
@@ -67,7 +68,7 @@ export function StickyAddToCart({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-30 md:hidden transition-transform duration-300"
+      className="fixed left-0 right-0 z-30 md:hidden transition-transform duration-300"
       style={{
         background: "rgba(255,255,255,0.97)",
         backdropFilter: "blur(12px)",
@@ -78,12 +79,14 @@ export function StickyAddToCart({
         // Safari from routing touches to a translated-off-screen element.
         visibility: visible ? "visible" : "hidden",
         pointerEvents: visible ? "auto" : "none",
+        bottom: stickyOffset,
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
       aria-hidden={!visible}
     >
       <div
         className="flex items-center gap-2.5 px-3 py-2.5"
-        style={{ paddingBottom: "calc(0.625rem + env(safe-area-inset-bottom, 0px))" }}
+        style={{ paddingBottom: "0.625rem" }}
       >
         {img ? (
           <img
@@ -105,6 +108,7 @@ export function StickyAddToCart({
           <button
             onClick={() => onChangeQuantity(Math.max(1, quantity - 1))}
             aria-label="Decrease quantity"
+            type="button"
             className="w-8 h-10 flex items-center justify-center text-gray-500 active:bg-gray-100"
           >
             <Minus className="w-3.5 h-3.5" />
@@ -113,6 +117,7 @@ export function StickyAddToCart({
           <button
             onClick={() => onChangeQuantity(Math.min(quantity + 1, product.stock))}
             aria-label="Increase quantity"
+            type="button"
             className="w-8 h-10 flex items-center justify-center text-gray-500 active:bg-gray-100"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -130,6 +135,7 @@ export function StickyAddToCart({
             boxShadow: "0 4px 16px rgba(232,93,4,0.3)",
           }}
           aria-label="Add to cart"
+          type="button"
         >
           {added ? (
             <>

@@ -4,7 +4,7 @@ import { Link, useLocation } from "wouter";
 import { Zap, Clock, Shield, Truck, Star, ChevronRight } from "lucide-react";
 import { useListProducts } from "@workspace/api-client-react";
 import { useSiteSettings } from "@/context/SiteSettingsContext";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, resolveImageUrl } from "@/lib/utils";
 import { trackViewContent } from "@/lib/tracking";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -64,7 +64,7 @@ function ProductCard({ product }: { product: any }) {
   const isLowStock = product.stock > 0 && product.stock <= 5;
 
   return (
-    <Link href={`/product/${product.id}`}>
+    <Link href={`/product/${product.slug || product.id}`}>
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -72,8 +72,12 @@ function ProductCard({ product }: { product: any }) {
       >
         <div className="relative overflow-hidden aspect-square bg-gray-50">
           <img
-            src={product.imageUrl || product.images?.[0] || "/images/product-placeholder.svg"}
+            src={resolveImageUrl(product.imageUrl || product.images?.[0])}
             alt={product.name}
+            width={640}
+            height={640}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover"
             onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/product-placeholder.svg"; }}
           />
@@ -97,10 +101,6 @@ function ProductCard({ product }: { product: any }) {
         </div>
 
         <div className="p-5">
-          <div className="flex items-center gap-1 mb-1.5">
-            {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
-            <span className="text-xs text-gray-400 ml-1">({20 + (product.id % 60)} reviews)</span>
-          </div>
           <h3 className="font-bold text-gray-900 mb-3 leading-tight">{product.name}</h3>
 
           <div className="flex items-center gap-2 mb-4">
@@ -205,7 +205,7 @@ export default function SalePage() {
           >
             <span className="flex items-center gap-1.5"><Shield className="w-4 h-4" /> 100% Secure</span>
             <span className="flex items-center gap-1.5"><Truck className="w-4 h-4" /> Free over ৳{freeShippingThreshold}</span>
-            <span className="flex items-center gap-1.5"><Star className="w-4 h-4" /> 5,000+ Happy Customers</span>
+            <span className="flex items-center gap-1.5"><Star className="w-4 h-4" /> Custom design support</span>
           </motion.div>
 
           <motion.div
@@ -239,7 +239,7 @@ export default function SalePage() {
           </div>
         )}
 
-        <p className="text-xs text-gray-400 text-center mt-8">Free shipping above ৳{freeShippingThreshold} • Nationwide delivery • COD available</p>
+        <p className="text-xs text-gray-400 text-center mt-8">Free shipping above ৳{freeShippingThreshold} • Nationwide delivery • 25% advance, rest on delivery</p>
       </div>
 
       <div className="bg-white border-t border-gray-100 py-8 px-4">

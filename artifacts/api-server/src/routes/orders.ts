@@ -23,11 +23,26 @@ const OrderItemSchema = z.object({
   name:         z.string().max(300).optional(),
   size:         z.string().max(50).optional().nullable(),
   color:        z.string().max(50).optional().nullable(),
+  variantId:    z.string().max(80).optional().nullable(),
+  variantName:  z.string().max(120).optional().nullable(),
+  customizationFee: z.number().nonnegative().optional(),
   customNote:   z.string().max(10000).optional().nullable(),
   // customImages may contain base64 data-URLs (for studio mockup preview) which
   // are far longer than a plain URL — no per-item length cap here; we strip
   // data-URLs before DB storage below.
   customImages: z.array(z.string()).max(20).optional().nullable(),
+  // Studio originals are uploaded to object storage before checkout. Keep
+  // their paths and metadata in the validated order payload so the server can
+  // move them from the staging prefix into the order prefix.
+  originalAssetUrls: z.array(z.string()).max(20).optional().nullable(),
+  originalAssets: z.array(z.object({
+    objectPath: z.string().max(500),
+    filename: z.string().max(300),
+    mime: z.string().max(150),
+    bytes: z.number().nonnegative(),
+    width: z.number().nonnegative(),
+    height: z.number().nonnegative(),
+  })).max(20).optional().nullable(),
   price:        z.number().nonnegative().optional(),
   // No length cap — imageUrl may be a data-URL (base64 mockup preview) which can be 50–200 KB.
   // Data-URLs are stripped server-side before DB storage; only object-storage paths are kept.
@@ -52,6 +67,8 @@ const OrderCreateSchema = z.object({
   utmCampaign:   z.string().max(100).optional().nullable(),
 });
 
+const SUPPORTED_PAYMENT_METHODS = ["bkash", "nagad", "upay", "bank", "card", "cod"] as const;
+
 const orderStorageService = new ObjectStorageService();
 
 class StockOutError extends Error {
@@ -74,6 +91,39 @@ class ProductMissingError extends Error {
 
 const router: IRouter = Router();
 
+function normalizeContactEmail(value: unknown): string {
+  return String(value ?? "").trim().toLowerCase();
+}
+
+function normalizeBangladeshPhone(value: unknown): string {
+  const digits = String(value ?? "").replace(/\D/g, "");
+  return digits.startsWith("880") ? `0${digits.slice(3)}` : digits;
+}
+
+function isValidBangladeshPhone(value: string): boolean {
+  return /^01[3-9]\d{8}$/.test(value);
+}
+
+function normalizePaymentProofPath(value: unknown): string | null {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  try {
+    const parsed = new URL(raw, "http://payment-proof.local");
+    const pathname = parsed.pathname;
+    // Payment evidence may only point at a private object path issued by our
+    // storage API, never at an arbitrary external URL.
+    if (
+      !/^\/api\/storage\/objects\/[A-Za-z0-9._~!$&'()*+,;=:@/-]+$/.test(pathname) ||
+      pathname.includes("..") ||
+      parsed.search ||
+      parsed.hash
+    ) return null;
+    return pathname;
+  } catch {
+    return null;
+  }
+}
+
 async function migrateOrdersTable() {
   try {
     await db.execute(sql`
@@ -86,7 +136,8 @@ async function migrateOrdersTable() {
     logger.warn({ err }, "migrateOrdersTable failed; UTM columns may be missing");
   }
 }
-migrateOrdersTable();
+// Delay migration until DB failover probe settles so we run against the correct DB
+import("@workspace/db").then(({ dbReady }) => dbReady).then(() => migrateOrdersTable()).catch(() => {});
 
 async function sendMetaCAPIEvent(event: {
   eventName: string;
@@ -121,7 +172,7 @@ async function sendMetaCAPIEvent(event: {
         event_time: Math.floor(Date.now() / 1000),
         event_id: event.orderId,
         action_source: "website",
-        event_source_url: event.sourceUrl || `${process.env.API_PUBLIC_URL || "https://trynexshop.com"}/checkout`,
+        event_source_url: event.sourceUrl || `${process.env.API_PUBLIC_URL || "https://trynext.pages.dev"}/checkout`,
         user_data: {
           em: hashedEmail ? [hashedEmail] : undefined,
           ph: hashedPhone ? [hashedPhone] : undefined,
@@ -136,14 +187,21 @@ async function sendMetaCAPIEvent(event: {
       }],
     };
 
-    await fetch(
-      `https://graph.facebook.com/v20.0/${pixelId}/events?access_token=${capiToken}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    );
+    const capiController = new AbortController();
+    const capiTimeout = setTimeout(() => capiController.abort(), 5000);
+    try {
+      await fetch(
+        `https://graph.facebook.com/v20.0/${pixelId}/events?access_token=${capiToken}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: capiController.signal,
+        }
+      );
+    } finally {
+      clearTimeout(capiTimeout);
+    }
   } catch (err) {
     logger.error({ err }, "Meta CAPI event failed (non-blocking)");
   }
@@ -159,7 +217,10 @@ async function sendTelegramNotification(orderData: any) {
     .map((i: any) => `  • ${i.productName || i.name} x${i.quantity}`)
     .join("\n");
   const moreItems = (orderData.items || []).length > 5 ? `\n  + ${(orderData.items || []).length - 5} more` : "";
-  const advance = Math.ceil((orderData.total || 0) * 0.15);
+  const total = Number(orderData.total) || 0;
+  const isFullPayment = String(orderData.notes ?? "").includes("Payment plan: full payment");
+  const amountDueNow = isFullPayment ? total : Math.ceil(total * 0.25);
+  const remaining = Math.max(0, total - amountDueNow);
 
   const message = [
     `🛍️ <b>NEW ORDER #${orderData.orderNumber}</b>`,
@@ -173,9 +234,10 @@ async function sendTelegramNotification(orderData: any) {
     `🛒 <b>Items:</b>`,
     itemsList + moreItems,
     ``,
-    `💰 <b>Total:</b> ৳${orderData.total}`,
+    `💰 <b>Total:</b> ৳${total}`,
     `💳 <b>Payment:</b> ${(orderData.paymentMethod || 'COD').toUpperCase()}`,
-    `🏷️ <b>Advance (15%):</b> ৳${advance}`,
+    `🏷️ <b>${isFullPayment ? "Due now (full payment)" : "Advance (25%)"}:</b> ৳${amountDueNow}`,
+    !isFullPayment ? `🏷️ <b>Remaining on delivery:</b> ৳${remaining}` : '',
     orderData.promoCode ? `🎟️ <b>Promo:</b> ${orderData.promoCode} (-৳${orderData.promoDiscount})` : '',
     orderData.notes ? `📝 <b>Notes:</b> ${orderData.notes}` : '',
     ``,
@@ -223,7 +285,10 @@ async function sendWhatsAppNotification(orderData: any) {
     .map((i: any) => `${i.productName} x${i.quantity}`)
     .join(", ");
 
-  const advance = Math.ceil(orderData.total * 0.15);
+  const total = Number(orderData.total) || 0;
+  const isFullPayment = String(orderData.notes ?? "").includes("Payment plan: full payment");
+  const amountDueNow = isFullPayment ? total : Math.ceil(total * 0.25);
+  const remaining = Math.max(0, total - amountDueNow);
   const message = [
     `🛒 *NEW ORDER!* #${orderData.orderNumber}`,
     `━━━━━━━━━━━━━━━`,
@@ -234,9 +299,10 @@ async function sendWhatsAppNotification(orderData: any) {
     `🏠 *Address:* ${orderData.shippingAddress}`,
     `━━━━━━━━━━━━━━━`,
     `🛍️ *Items:* ${itemsList}`,
-    `💰 *Total:* ৳${orderData.total}`,
+    `💰 *Total:* ৳${total}`,
     `💳 *Payment:* ${orderData.paymentMethod?.toUpperCase()}`,
-    `🏷️ *Advance (15%):* ৳${advance}`,
+    `🏷️ *${isFullPayment ? "Due now (full payment)" : "Advance (25%)"}:* ৳${amountDueNow}`,
+    !isFullPayment ? `🏷️ *Remaining on delivery:* ৳${remaining}` : '',
     orderData.promoCode ? `🎟️ *Promo:* ${orderData.promoCode} (-৳${orderData.promoDiscount})` : '',
     orderData.notes ? `📝 *Notes:* ${orderData.notes}` : '',
     `━━━━━━━━━━━━━━━`,
@@ -536,17 +602,32 @@ router.get("/orders/:id", requireAdmin, async (req, res) => {
   }
 });
 
-async function sendAutoConfirmationMessage(orderId: number, orderNumber: string, customerName: string) {
+async function sendAutoConfirmationMessage(order: {
+  id: number;
+  orderNumber: string;
+  customerName: string;
+  total: number;
+  paymentMethod?: string | null;
+  notes?: string | null;
+}) {
   try {
-    const firstName = customerName.split(" ")[0] || customerName;
-    const message = `🎉 ধন্যবাদ ${firstName}! আপনার অর্ডার #${orderNumber} সফলভাবে কনফার্ম হয়েছে।\n\nআমরা শীঘ্রই আপনার অর্ডার প্রসেস করা শুরু করব। যেকোনো প্রশ্ন বা আপডেটের জন্য এখানে মেসেজ করুন। 🙏\n\n────────────────────\nThank you ${firstName}! Your order #${orderNumber} has been confirmed. We will start processing it shortly. Feel free to message us here for any queries. 🛍️`;
+    const firstName = order.customerName.split(" ")[0] || order.customerName;
+    const total = Number(order.total) || 0;
+    const isFullPayment = String(order.notes ?? "").includes("Payment plan: full payment");
+    const dueNow = isFullPayment ? total : Math.ceil(total * 0.25);
+    const remaining = Math.max(0, total - dueNow);
+    const method = String(order.paymentMethod || "cod").toUpperCase();
+    const paymentSummary = isFullPayment
+      ? `${method}: full payment ৳${dueNow.toLocaleString("en-BD")}`
+      : `${method}: 25% advance ৳${dueNow.toLocaleString("en-BD")}, remaining ৳${remaining.toLocaleString("en-BD")} on delivery`;
+    const message = `🎉 ধন্যবাদ ${firstName}! আপনার অর্ডার #${order.orderNumber} সফলভাবে গ্রহণ করা হয়েছে।\n\nপেমেন্ট: ${paymentSummary}\nমোট: ৳${total.toLocaleString("en-BD")}\n\nআমরা শীঘ্রই আপনার অর্ডার প্রসেস করা শুরু করব। যেকোনো প্রশ্ন বা আপডেটের জন্য এখানে মেসেজ করুন। 🙏\n\n────────────────────\nThank you ${firstName}! Trynext Lifestyle received order #${order.orderNumber}.\nPayment: ${paymentSummary}\nOrder total: ৳${total.toLocaleString("en-BD")}\nWe will start processing it shortly. Feel free to message us here for any queries. 🛍️`;
     await db.execute(
       sql`INSERT INTO order_messages (order_id, sender_type, sender_name, message, read_by_admin)
-          VALUES (${orderId}, 'admin', 'TryNex Team', ${message}, true)
+          VALUES (${order.id}, 'admin', 'Trynext Lifestyle Team', ${message}, true)
           ON CONFLICT DO NOTHING`
     );
   } catch (err) {
-    logger.warn({ err, orderId }, "sendAutoConfirmationMessage: failed to insert");
+    logger.warn({ err, orderId: order.id }, "sendAutoConfirmationMessage: failed to insert");
   }
 }
 
@@ -575,8 +656,12 @@ router.post("/orders", async (req, res) => {
     const shippingAddress: string = body.shippingAddress;
     const shippingCity: string | null | undefined = body.shippingCity;
     const shippingDistrict: string | null | undefined = body.shippingDistrict;
-    // Default payment method to COD so missing/empty values don't block orders
-    const paymentMethod: string = body.paymentMethod || "cod";
+    const paymentMethod: string = body.paymentMethod || "";
+    const normalizedPaymentMethod = paymentMethod.trim().toLowerCase();
+    if (!(SUPPORTED_PAYMENT_METHODS as readonly string[]).includes(normalizedPaymentMethod)) {
+      res.status(400).json({ error: 'validation_error', message: 'Select a supported payment method: bKash, Nagad, uPay, bank transfer, card on delivery, or cash on delivery.' });
+      return;
+    }
     const { items, notes, promoCode, utmSource, utmMedium, utmCampaign } = body;
     const customerEmailLower = customerEmail ? customerEmail.toLowerCase().trim() : null;
 
@@ -600,8 +685,10 @@ router.post("/orders", async (req, res) => {
 
     // Fetch studio prices from server-side settings (never trust client price)
     // Defaults must match buildSettings() in settings.ts
-    let studioTshirtPrice = 1099;
-    let studioMugPrice = 799;
+    // Custom Design Studio prices are business rules, not client-controlled values:
+    // short-sleeve T-shirt ৳450 + ৳99 customization; general mug ৳449 + ৳99.
+    let studioTshirtPrice = 549;
+    let studioMugPrice = 548;
     let studioHoodiePrice = 1699;
     let studioLongsleevePrice = 1299;
     let studioCapPrice = 699;
@@ -609,8 +696,10 @@ router.post("/orders", async (req, res) => {
     try {
       const allSettings = await db.select().from(settingsTable);
       const settingsMap = Object.fromEntries(allSettings.map((s: any) => [s.key, s.value]));
-      if (settingsMap["studioTshirtPrice"] != null) studioTshirtPrice = parseFloat(settingsMap["studioTshirtPrice"]) || 1099;
-      if (settingsMap["studioMugPrice"] != null) studioMugPrice = parseFloat(settingsMap["studioMugPrice"]) || 799;
+      // Do not apply legacy studioTshirtPrice/studioMugPrice settings here;
+      // those values predate the current published base-plus-customization rules.
+      // Other product studio prices remain admin-configurable below.
+
       if (settingsMap["studioHoodiePrice"] != null) studioHoodiePrice = parseFloat(settingsMap["studioHoodiePrice"]) || 1699;
       if (settingsMap["studioLongsleevePrice"] != null) studioLongsleevePrice = parseFloat(settingsMap["studioLongsleevePrice"]) || 1299;
       if (settingsMap["studioCapPrice"] != null) studioCapPrice = parseFloat(settingsMap["studioCapPrice"]) || 699;
@@ -619,21 +708,14 @@ router.post("/orders", async (req, res) => {
       logger.warn({ err, route: "POST /orders" }, "Failed to load studio prices from settings; using defaults");
     }
 
-    const productIds = catalogItems.map((i: any) => Number(i.productId));
+    const productIds = [...new Set(catalogItems.map((i: any) => Number(i.productId)))];
 
-    const products = await Promise.all(
-      productIds.map(async (id: number) => {
-        const [p] = await db.select().from(productsTable).where(eq(productsTable.id, id));
-        return p;
-      })
-    );
+    // Single batched query for all product IDs (replaces N individual selects)
+    const products = productIds.length > 0
+      ? await db.select().from(productsTable).where(inArray(productsTable.id, productIds))
+      : [];
 
-    // `products` may contain `undefined` slots for deleted product IDs — filter
-     // those out before building the map, otherwise `p.id` throws and the
-     // request 500s instead of returning a structured `product_missing` error.
-    const productMap = Object.fromEntries(
-      products.filter((p): p is NonNullable<typeof p> => !!p).map(p => [p.id, p])
-    );
+    const productMap = Object.fromEntries(products.map(p => [p.id, p]));
 
     const missingProduct = catalogItems.find((item: any) => !productMap[item.productId]);
     if (missingProduct) {
@@ -646,13 +728,34 @@ router.post("/orders", async (req, res) => {
       return;
     }
 
-    // Strip base64 data-URLs from customImages before DB storage.
-    // Data-URLs are used only for in-browser preview (cart/3D viewer) and must
-    // not be persisted — original uploads are already in object storage via
-    // originalAssetUrls. Keeping only real paths (/ or http) keeps the DB lean.
-    function sanitizeCustomImages(imgs: string[] | null | undefined): string[] {
+    // Persist customer-uploaded design images instead of dropping base64 data URLs.
+    // The old implementation kept only non-data URLs, which made custom photos
+    // disappear permanently from admin order details after checkout. Data URLs
+    // are converted to private object-storage paths; existing object paths are
+    // normalized to the API's renderable `/api/storage/objects/...` form.
+    function renderableObjectPath(value: string): string {
+      if (value.startsWith("/objects/")) return `/api/storage${value}`;
+      return value;
+    }
+
+    async function persistCustomImages(imgs: string[] | null | undefined): Promise<string[]> {
       if (!Array.isArray(imgs)) return [];
-      return imgs.filter(s => typeof s === "string" && !s.startsWith("data:"));
+      const saved: string[] = [];
+      for (const value of imgs) {
+        if (typeof value !== "string" || !value.trim()) continue;
+        if (value.startsWith("data:image/")) {
+          try {
+            const stored = await orderStorageService.saveMockupImage(value);
+            if (stored) saved.push(stored);
+            else logger.warn("persistCustomImages: rejected invalid or oversized data URL");
+          } catch (err) {
+            logger.warn({ err }, "persistCustomImages: failed to persist customer image");
+          }
+          continue;
+        }
+        saved.push(renderableObjectPath(value));
+      }
+      return saved;
     }
 
     // Convert a URL to a storable path: real object-storage paths are kept as-is;
@@ -682,28 +785,59 @@ router.post("/orders", async (req, res) => {
       })
     );
 
-    const catalogOrderItems = catalogItems.map((item: any) => {
+    const catalogCustomImages = await Promise.all(
+      catalogItems.map((item: any) => persistCustomImages(item.customImages))
+    );
+
+    const catalogOrderItems = catalogItems.map((item: any, idx: number) => {
       const product = productMap[item.productId];
-      const price = product.discountPrice ? parseFloat(product.discountPrice) : parseFloat(product.price);
+      const selectedVariant = Array.isArray(product.variants)
+        ? product.variants.find((v: any) => v?.id === item.variantId && v.active !== false)
+        : null;
+      if (item.variantId && !selectedVariant) {
+        throw new Error("VARIANT_INVALID");
+      }
+      const requestedQty = Math.max(1, Math.floor(Number(item.quantity)));
+      if (selectedVariant && Number(selectedVariant.stock) < requestedQty) {
+        throw new StockOutError(`${product.name} — ${selectedVariant.name}`, Number(selectedVariant.stock), requestedQty);
+      }
+      const basePrice = selectedVariant ? Number(selectedVariant.price) : (product.discountPrice ? parseFloat(product.discountPrice) : parseFloat(product.price));
+      const hasCustomization = Boolean(item.customNote || (Array.isArray(item.customImages) && item.customImages.length > 0));
+      const price = basePrice + (hasCustomization && selectedVariant ? Number(selectedVariant.customizationFee || 0) : 0);
       return {
         productId: item.productId,
         productName: product.name,
         productImage: product.imageUrl,
-        quantity: Math.max(1, Math.floor(Number(item.quantity))),
+        quantity: requestedQty,
         size: item.size,
         color: item.color,
+        variantId: item.variantId,
+        variantName: selectedVariant?.name ?? item.variantName,
         price,
         customNote: item.customNote,
-        customImages: sanitizeCustomImages(item.customImages),
+        customImages: catalogCustomImages[idx],
         imageUrl: sanitizeImageUrlSync(item.imageUrl),
         isStudio: false,
       };
     });
 
+    const studioCustomImages = await Promise.all(
+      studioItems.map((item: any) => persistCustomImages(item.customImages))
+    );
+
     // Studio items: price is derived server-side from settings; client price is ignored
     const studioOrderItems = studioItems.map((item: any, idx: number) => {
       let note: any = {};
       try { note = JSON.parse(item.customNote ?? "{}"); } catch (err) { logger.warn({ err }, "Failed to parse customNote"); }
+      // The cart keeps originals as top-level fields to avoid bloating the
+      // compact customNote. Merge them back before moveStudioOriginals()
+      // relocates the files into this order's durable storage prefix.
+      if (Array.isArray(item.originalAssets) && item.originalAssets.length > 0) {
+        note.originalAssets = item.originalAssets;
+      }
+      if (Array.isArray(item.originalAssetUrls) && item.originalAssetUrls.length > 0 && !Array.isArray(note.originalAssetUrls)) {
+        note.originalAssetUrls = item.originalAssetUrls;
+      }
       // Determine product type from the studio note to apply the correct price
       const productType = (note.product ?? "").toLowerCase();
       let serverPrice: number;
@@ -731,8 +865,8 @@ router.post("/orders", async (req, res) => {
         size: item.size,
         color: item.color,
         price: serverPrice,
-        customNote: item.customNote,
-        customImages: sanitizeCustomImages(item.customImages),
+        customNote: JSON.stringify(note),
+        customImages: studioCustomImages[idx],
         imageUrl: savedImageUrl,
         isStudio: true,
       };
@@ -893,16 +1027,28 @@ router.post("/orders", async (req, res) => {
           continue;
         }
 
-        const [prod] = await tx.select({ stock: productsTable.stock }).from(productsTable).where(eq(productsTable.id, item.productId));
+        const [prod] = await tx.select({ stock: productsTable.stock, variants: productsTable.variants }).from(productsTable).where(eq(productsTable.id, item.productId));
         if (!prod) {
           throw new ProductMissingError(item.productName);
         }
         if (prod.stock < item.quantity) {
           throw new StockOutError(item.productName, prod.stock, item.quantity);
         }
-        await tx.execute(
-          sql`UPDATE products SET stock = stock - ${item.quantity} WHERE id = ${item.productId}`
-        );
+        const variantId = (item as any).variantId as string | null | undefined;
+        let nextVariants: any[] | undefined;
+        if (variantId) {
+          const variants = Array.isArray(prod.variants) ? [...(prod.variants as any[])] : [];
+          const index = variants.findIndex((v: any) => v?.id === variantId && v.active !== false);
+          if (index < 0 || Number(variants[index].stock) < item.quantity) {
+            throw new StockOutError(`${item.productName} — selected variant`, index < 0 ? 0 : Number(variants[index].stock || 0), item.quantity);
+          }
+          nextVariants = variants;
+          nextVariants[index] = { ...variants[index], stock: Number(variants[index].stock) - item.quantity };
+        }
+        await tx.update(productsTable).set({
+          stock: sql`${productsTable.stock} - ${item.quantity}`,
+          ...(nextVariants ? { variants: nextVariants } : {}),
+        }).where(eq(productsTable.id, item.productId));
       }
 
       let validatedPromoCode: string | null = null;
@@ -915,6 +1061,27 @@ router.post("/orders", async (req, res) => {
         if (virtual) {
           if (virtual.minOrderAmount && subtotal < virtual.minOrderAmount) {
             throw new Error("PROMO_INVALID");
+          }
+          // Virtual spin codes are not stored in promoCodesTable, so enforce
+          // one redeemed spin reward per customer identity from order history.
+          // This prevents creating multiple guest sessions to reuse rewards.
+          const priorSpinUse = await tx
+            .select({ id: ordersTable.id })
+            .from(ordersTable)
+            .where(and(
+              or(
+                ilike(ordersTable.promoCode, "SPIN%"),
+                eq(ordersTable.promoCode, "FREEDELIV"),
+                eq(ordersTable.promoCode, "SUPERDEAL"),
+              ),
+              or(
+                eq(ordersTable.customerPhone, customerPhone),
+                ...(customerEmailLower ? [eq(ordersTable.customerEmail, customerEmailLower)] : []),
+              ),
+            ))
+            .limit(1);
+          if (priorSpinUse.length > 0) {
+            throw new Error("PROMO_ALREADY_USED");
           }
           const { discount, freeShipping } = calcVirtualDiscount(virtual, subtotal, shippingCost);
           validatedPromoCode = virtual.code;
@@ -993,7 +1160,7 @@ router.post("/orders", async (req, res) => {
         shippingAddress,
         shippingCity: shippingCity ?? null,
         shippingDistrict: shippingDistrict ?? null,
-        paymentMethod,
+           paymentMethod: normalizedPaymentMethod,
         items: orderItems,
         subtotal: subtotal.toString(),
         shippingCost: shippingCost.toString(),
@@ -1012,7 +1179,14 @@ router.post("/orders", async (req, res) => {
     sendWhatsAppNotification(mapped).catch((err) => logger.warn({ err }, "WhatsApp notification failed (fire-and-forget)"));
     sendTelegramNotification(mapped).catch((err) => logger.warn({ err }, "Telegram notification failed (fire-and-forget)"));
     sendOrderConfirmationEmail(mapped).catch((err) => logger.warn({ err }, "Order confirmation email failed (fire-and-forget)"));
-    sendAutoConfirmationMessage(order.id, order.orderNumber, customerName).catch((err) => logger.warn({ err }, "Auto confirmation message failed (fire-and-forget)"));
+    sendAutoConfirmationMessage({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      customerName,
+      total: Number(mapped.total),
+      paymentMethod: mapped.paymentMethod,
+      notes: mapped.notes,
+    }).catch((err) => logger.warn({ err }, "Auto confirmation message failed (fire-and-forget)"));
     checkLowStock().catch((err) => logger.warn({ err }, "checkLowStock failed (fire-and-forget)"));
     checkRevenueMilestone().catch((err) => logger.warn({ err }, "checkRevenueMilestone failed (fire-and-forget)"));
     sendMetaCAPIEvent({
@@ -1217,7 +1391,7 @@ const updateOrderStatusHandler = async (req: Request, res: Response) => {
     sendTelegramStatusUpdate(mapped, status).catch((err) => logger.warn({ err }, "Telegram status update failed (fire-and-forget)"));
     sendStatusUpdateEmail(mapped, status).catch((err) => logger.warn({ err }, "Status update email failed (fire-and-forget)"));
 
-    if (order.customerId) {
+    if (order.customerId && beforeSnap?.status !== status) {
       const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
       createCustomerNotification(
         order.customerId,
@@ -1243,8 +1417,9 @@ const updatePaymentStatusHandler = async (req: Request, res: Response) => {
       return;
     }
     const { paymentStatus } = req.body;
-    if (!paymentStatus) {
-      res.status(400).json({ error: "validation_error", message: "paymentStatus is required" });
+    const allowedPaymentStatuses = new Set(["pending", "not_paid", "submitted", "verified", "paid", "wrong", "refunded"]);
+    if (typeof paymentStatus !== "string" || !allowedPaymentStatuses.has(paymentStatus)) {
+      res.status(400).json({ error: "validation_error", message: "paymentStatus must be pending, not_paid, submitted, verified, paid, wrong, or refunded" });
       return;
     }
     const [beforeSnap] = await db.select().from(ordersTable).where(eq(ordersTable.id, id));
@@ -1259,7 +1434,7 @@ const updatePaymentStatusHandler = async (req: Request, res: Response) => {
 
     sendTelegramPaymentStatusUpdate(mappedPayment, paymentStatus).catch((err) => logger.warn({ err }, "Telegram payment status update failed (fire-and-forget)"));
 
-    if (order.customerId) {
+    if (order.customerId && beforeSnap?.paymentStatus !== paymentStatus) {
       const pStatusLabel = paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1);
       createCustomerNotification(
         order.customerId,
@@ -1284,12 +1459,105 @@ router.put("/orders/:id/payment-info", async (req, res) => {
       res.status(400).json({ error: "validation_error", message: "Invalid order id" });
       return;
     }
-    const rawLastFour = String(req.body?.lastFourDigits ?? "").replace(/\D/g, "").slice(0, 8);
+    const [existingOrder] = await db.select().from(ordersTable).where(eq(ordersTable.id, id));
+    if (!existingOrder) {
+      res.status(404).json({ error: "not_found", message: "Order not found" });
+      return;
+    }
+
+    const suppliedEmail = normalizeContactEmail(req.body?.customerEmail);
+    const suppliedPhone = normalizeBangladeshPhone(req.body?.customerPhone);
+    const customerToken = extractCustomerToken(req);
+    const customer = customerToken ? verifyCustomerToken(customerToken) : null;
+    const tokenAuthorized = Boolean(
+      customer && (
+        (existingOrder.customerId != null && String(existingOrder.customerId) === String(customer.id)) ||
+        (normalizeContactEmail(existingOrder.customerEmail) &&
+          normalizeContactEmail(existingOrder.customerEmail) === normalizeContactEmail(customer.email))
+      ),
+    );
+    const contactAuthorized = Boolean(
+      (suppliedEmail && normalizeContactEmail(existingOrder.customerEmail) === suppliedEmail) ||
+      (suppliedPhone && normalizeBangladeshPhone(existingOrder.customerPhone) === suppliedPhone),
+    );
+    if (!tokenAuthorized && !contactAuthorized) {
+      res.status(403).json({
+        error: "forbidden",
+        message: "Order contact verification is required before submitting payment evidence.",
+      });
+      return;
+    }
+
+    const rawPaymentMethod = String(req.body?.paymentMethod ?? existingOrder.paymentMethod ?? "").trim().toLowerCase();
+    if (req.body?.paymentMethod && rawPaymentMethod !== String(existingOrder.paymentMethod ?? "").toLowerCase()) {
+      res.status(400).json({ error: "validation_error", message: "Payment method does not match this order." });
+      return;
+    }
+    const rawLastFour = String(req.body?.lastFourDigits ?? "").replace(/\D/g, "").slice(0, 4);
+    const submittedPaymentProof = String(req.body?.paymentProofUrl ?? "").trim().slice(0, 1000);
+    if (submittedPaymentProof && !normalizePaymentProofPath(submittedPaymentProof)) {
+      res.status(400).json({
+        error: "validation_error",
+        message: "Payment proof must be an uploaded Trynext storage object.",
+      });
+      return;
+    }
+    const rawPaymentProofUrl = normalizePaymentProofPath(submittedPaymentProof) ?? "";
+    const rawSenderName = String(req.body?.senderName ?? "").replace(/[^a-zA-Z0-9.\- ]/gi, "").slice(0, 100);
+    const rawBankReference = String(req.body?.bankReference ?? "").replace(/[^a-zA-Z0-9\-]/gi, "").slice(0, 100);
+    const rawSenderNumber = normalizeBangladeshPhone(req.body?.senderNumber);
     const rawPromo = String(req.body?.promoCode ?? "").replace(/[^A-Z0-9_\-]/gi, "").toUpperCase().slice(0, 50);
-    const notes = [
+    const walletMethod = ["bkash", "nagad", "upay"].includes(rawPaymentMethod);
+
+    if (walletMethod) {
+      if (rawLastFour.length !== 4) {
+        res.status(400).json({ error: "validation_error", message: "Enter the last 4 digits of your sending wallet number." });
+        return;
+      }
+      if (rawSenderNumber && !isValidBangladeshPhone(rawSenderNumber)) {
+        res.status(400).json({ error: "validation_error", message: "Enter a valid Bangladesh mobile number used to send the payment." });
+        return;
+      }
+    }
+    if (rawPaymentMethod === "bank") {
+      if (rawSenderName.trim().length < 2) {
+        res.status(400).json({ error: "validation_error", message: "Enter the sender name used for the bank transfer." });
+        return;
+      }
+      if (rawBankReference.trim().length < 4) {
+        res.status(400).json({ error: "validation_error", message: "Enter the bank transfer reference number." });
+        return;
+      }
+    }
+
+    const evidence = [
+      rawPaymentMethod ? `Wallet/payment method: ${rawPaymentMethod}` : null,
       rawLastFour ? `Payment last 4 digits: ${rawLastFour}` : null,
+      rawPaymentProofUrl ? `Payment proof: ${rawPaymentProofUrl}` : null,
+      rawSenderName ? `Sender name: ${rawSenderName}` : null,
+      rawBankReference ? `Bank reference: ${rawBankReference}` : null,
       rawPromo ? `Promo code: ${rawPromo}` : null,
     ].filter(Boolean).join(" | ");
+    const evidencePrefixes = [
+      "Wallet/payment method:",
+      "Payment last 4 digits:",
+      "Payment proof:",
+      "Sender name:",
+      "Bank reference:",
+      "Promo code:",
+    ];
+    const existingNotes = String(existingOrder.notes ?? "")
+      .split(" | ")
+      .filter((part) => !evidencePrefixes.some((prefix) => part.startsWith(prefix)));
+    const notes = [...existingNotes, evidence].filter(Boolean).join(" | ");
+
+    // A retry after a successful request must be safe: return the current order
+    // rather than appending a second copy of the same evidence or creating a
+    // second notification.
+    if (existingOrder.paymentStatus === "submitted" && String(existingOrder.notes ?? "") === notes) {
+      res.json(mapOrder(existingOrder));
+      return;
+    }
 
     const [order] = await db.update(ordersTable)
       .set({ paymentStatus: "submitted", ...(notes ? { notes } : {}), updatedAt: new Date() })
@@ -1300,6 +1568,15 @@ router.put("/orders/:id/payment-info", async (req, res) => {
       return;
     }
     res.json(mapOrder(order));
+    if (order.customerId && existingOrder.paymentStatus !== "submitted") {
+      createCustomerNotification(
+        order.customerId,
+        `Payment Submitted: #${order.orderNumber}`,
+        `${rawPaymentProofUrl ? "We received your payment details and screenshot" : "We received your payment details"} for order #${order.orderNumber}. Our team will verify them shortly. Tap to view details.`,
+        "payment_status",
+        `/account?order=${order.orderNumber}`
+      ).catch((err) => logger.warn({ err }, "Failed to create payment-submitted notification (fire-and-forget)"));
+    }
   } catch (err) {
     req.log.error({ err }, "Failed to update payment info");
     res.status(500).json({ error: "internal_error", message: "Failed to update payment info" });

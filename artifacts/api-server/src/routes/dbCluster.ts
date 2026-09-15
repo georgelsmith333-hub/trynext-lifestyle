@@ -29,8 +29,9 @@ export interface DbNodeStatus {
   status: "ok" | "error" | "timeout" | "unconfigured";
   latencyMs: number | null;
   isActive: boolean;
+  schemaStatus: "transactional" | "catalog" | "incomplete" | "unknown";
   error?: string;
-}
+};
 
 interface ClusterResponse {
   checkedAt: string;
@@ -44,65 +45,68 @@ interface ClusterResponse {
 
 const NODE_DEFS = [
   {
-    id: "replit_primary",
-    label: "Replit Primary",
-    role: "Local dev database (auto-provisioned)",
-    envKey: "DATABASE_URL",
+    id: "neon_main",
+    label: "Neon Main",
+    role: "Primary candidate — data-aware selection",
+    envKey: "DATABASE_URL_MAIN",
     inFailoverChain: true,
     failoverPriority: 1,
   },
   {
-    id: "neon_main",
-    label: "Neon Main",
-    role: "Production primary — ep-proud-hill",
-    envKey: "DATABASE_URL_MAIN",
+    id: "neon_failover",
+    label: "Neon Failover",
+    role: "Second candidate — Neon failover",
+    envKey: "DATABASE_FAILOVER",
     inFailoverChain: true,
     failoverPriority: 2,
   },
   {
-    id: "neon_secondary",
-    label: "Neon Secondary",
-    role: "Overflow fallback — ep-small-cake",
-    envKey: "DATABASE_URL_TRYNEX_DB",
+    id: "neon_analytics",
+    label: "Analytics DB",
+    role: "Full historical mirror candidate",
+    envKey: "DATABASE_ANALYTICS",
     inFailoverChain: true,
     failoverPriority: 3,
   },
   {
-    id: "neon_failover",
-    label: "Neon Failover",
-    role: "Last-resort failover — ep-crimson-dawn",
-    envKey: "DATABASE_FAILOVER",
+    id: "neon_secondary",
+    label: "Neon Secondary",
+    role: "Secondary candidate",
+    envKey: "DATABASE_URL_TRYNEXT_DB",
     inFailoverChain: true,
     failoverPriority: 4,
   },
   {
     id: "neon_products",
     label: "Products DB",
-    role: "Dedicated products/catalogue shard — ep-crimson-mud",
+    role: "Historical/catalogue candidate",
     envKey: "DATABASE_PRODUCTS",
     inFailoverChain: false,
     failoverPriority: null,
   },
   {
-    id: "neon_analytics",
-    label: "Analytics DB",
-    role: "Analytics & events shard — ep-cool-mountain",
-    envKey: "DATABASE_ANALYTICS",
-    inFailoverChain: false,
-    failoverPriority: null,
+    id: "replit_primary",
+    label: "Replit Primary",
+    role: "Local development last resort",
+    envKey: "DATABASE_URL",
+    inFailoverChain: true,
+    failoverPriority: 5,
   },
 ] as const;
 
 /* ── Helper: extract safe host label from a connection string ────────────────── */
 function maskUrl(url: string): string {
   try {
-    // REDACTED_SECRET  →  HOST
     const after = url.split("@")[1] ?? "";
     const host = after.split("/")[0].split("?")[0];
     return host || "unknown";
   } catch {
     return "unknown";
   }
+}
+
+function connectionKey(url: string): string {
+  return (url.split("@")[1] ?? url).split("?")[0];
 }
 
 /* ── Probe a single database ─────────────────────────────────────────────────── */
@@ -123,11 +127,12 @@ async function probeNode(
       status: "unconfigured",
       latencyMs: null,
       isActive: false,
+      schemaStatus: "unknown",
     };
   }
 
   const host = maskUrl(url);
-  const isActive = maskUrl(activeUrl) === host;
+  const isActive = connectionKey(activeUrl) === connectionKey(url);
 
   const testPool = new Pool({
     connectionString: url,
@@ -140,8 +145,22 @@ async function probeNode(
   try {
     const client = await testPool.connect();
     await client.query("SELECT 1");
+    const schemaResult = await client.query(`
+      SELECT
+        EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'products') AS products,
+        EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'orders') AS orders
+    `);
     client.release();
+    const schemaRow = schemaResult.rows[0] ?? {};
+    const schemaStatus: DbNodeStatus["schemaStatus"] = schemaRow.products && schemaRow.orders
+      ? "transactional"
+      : schemaRow.products
+      ? "catalog"
+      : "incomplete";
     const latencyMs = Date.now() - start;
+    const schemaError = def.inFailoverChain && schemaStatus !== "transactional"
+      ? `Missing transactional schema (${schemaStatus})`
+      : undefined;
 
     return {
       id: def.id,
@@ -150,10 +169,12 @@ async function probeNode(
       host,
       inFailoverChain: def.inFailoverChain,
       failoverPriority: def.failoverPriority,
-      status: "ok",
+      status: schemaError ? "error" : "ok",
       latencyMs,
       isActive,
-    };
+      schemaStatus,
+      ...(schemaError ? { error: schemaError } : {}),
+      };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     const isTimeout =
@@ -169,6 +190,7 @@ async function probeNode(
       status: isTimeout ? "timeout" : "error",
       latencyMs: null,
       isActive,
+      schemaStatus: "unknown",
       error: msg.slice(0, 120),
     };
   } finally {

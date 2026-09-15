@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import { getApiUrl, formatPrice, getAuthHeaders } from "@/lib/utils";
-import { Tag, Plus, Trash2, ToggleLeft, ToggleRight, RefreshCw, Copy, Check, AlertCircle, Clock, Infinity } from "lucide-react";
+import { Tag, Plus, Trash2, ToggleLeft, ToggleRight, RefreshCw, Copy, Check, AlertCircle, Clock, Infinity, Percent, CalendarClock } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface PromoCode {
@@ -49,8 +50,10 @@ export default function AdminPromoCodes() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState(empty);
   const [copied, setCopied] = useState<string | null>(null);
+  const [deleteCodeConfirm, setDeleteCodeConfirm] = useState<{ id: number; code: string } | null>(null);
+  const [formError, setFormError] = useState("");
 
-  const { data, isLoading, refetch } = useQuery<{ promoCodes: PromoCode[] }>({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery<{ promoCodes: PromoCode[] }>({
     queryKey: ["/api/promo-codes"],
     queryFn: async () => {
       const res = await fetch(getApiUrl("/api/promo-codes"), { headers: authHeaders() });
@@ -117,16 +120,31 @@ export default function AdminPromoCodes() {
   const handleCreate = async () => {
     const code = form.code.trim().toUpperCase();
     const discountValue = parseFloat(form.discountValue);
-    if (!code || isNaN(discountValue) || discountValue <= 0) {
-      toast({ title: "Fill in code and discount value", variant: "destructive" });
+    const minOrderAmount = form.minOrderAmount ? parseFloat(form.minOrderAmount) : 0;
+    const maxUses = form.maxUses ? parseInt(form.maxUses, 10) : 0;
+    if (!code) {
+      setFormError("Enter a promo code.");
       return;
     }
+    if (!/^[A-Z0-9-]+$/.test(code)) {
+      setFormError("Use only letters, numbers, and hyphens.");
+      return;
+    }
+    if (isNaN(discountValue) || discountValue <= 0 || (form.discountType === "percentage" && discountValue > 100)) {
+      setFormError(form.discountType === "percentage" ? "Percentage must be between 1 and 100." : "Enter a fixed discount greater than 0.");
+      return;
+    }
+    if (isNaN(minOrderAmount) || minOrderAmount < 0 || isNaN(maxUses) || maxUses < 0) {
+      setFormError("Minimum order and maximum uses cannot be negative.");
+      return;
+    }
+    setFormError("");
     await createCode({
       code,
       discountType: form.discountType,
       discountValue,
-      minOrderAmount: form.minOrderAmount ? parseFloat(form.minOrderAmount) : 0,
-      maxUses: form.maxUses ? parseInt(form.maxUses) : 0,
+      minOrderAmount,
+      maxUses,
       expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
     });
   };
@@ -155,9 +173,10 @@ export default function AdminPromoCodes() {
         <div className="flex gap-2">
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:border-orange-300 hover:text-orange-600 transition-all"
+             disabled={isFetching}
+             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:border-orange-300 hover:text-orange-600 transition-all disabled:opacity-50"
           >
-            <RefreshCw className="w-4 h-4" /> Refresh
+             <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} /> Refresh
           </button>
           <button
             onClick={() => setShowCreate(v => !v)}
@@ -259,11 +278,19 @@ export default function AdminPromoCodes() {
               {creating ? "Creating…" : "Create Code"}
             </button>
           </div>
+           {formError && <p className="mt-4 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-bold text-red-700" role="alert">{formError}</p>}
         </div>
       )}
 
       {isLoading ? (
         <div className="flex items-center justify-center h-48 text-gray-400 text-sm">Loading…</div>
+       ) : isError ? (
+         <div className="bg-red-50 rounded-2xl border border-red-100 shadow-sm p-12 text-center">
+           <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
+           <h3 className="text-base font-black text-red-900 mb-1">Promo codes could not be loaded</h3>
+           <p className="text-sm text-red-700">Refresh the list to try again.</p>
+           <button type="button" onClick={() => refetch()} className="mt-4 px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700">Try again</button>
+         </div>
       ) : codes.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: "#fff7ed" }}>
@@ -274,6 +301,18 @@ export default function AdminPromoCodes() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 border-b border-gray-100 bg-gray-50/70">
+             {[
+               { label: "Active now", value: codes.filter(c => c.active && !isExpired(c) && !isMaxedOut(c)).length, icon: Check, className: "text-green-600 bg-green-50" },
+               { label: "Uses recorded", value: codes.reduce((sum, c) => sum + c.usedCount, 0), icon: Percent, className: "text-blue-600 bg-blue-50" },
+               { label: "Expiring / ended", value: codes.filter(c => isExpired(c) || isMaxedOut(c)).length, icon: CalendarClock, className: "text-amber-600 bg-amber-50" },
+             ].map((stat) => (
+               <div key={stat.label} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-3">
+                 <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${stat.className}`}><stat.icon className="w-4 h-4" /></div>
+                 <div><p className="text-lg font-black text-gray-900">{stat.value}</p><p className="text-[11px] font-bold text-gray-400">{stat.label}</p></div>
+               </div>
+             ))}
+           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead>
@@ -365,9 +404,7 @@ export default function AdminPromoCodes() {
                           </button>
                           <button
                             title="Delete"
-                            onClick={() => {
-                              if (confirm(`Delete promo code "${code.code}"?`)) deleteCode(code.id);
-                            }}
+                            onClick={() => setDeleteCodeConfirm({ id: code.id, code: code.code })}
                             className="p-2 rounded-lg hover:bg-red-50 transition-colors text-gray-300 hover:text-red-500"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -385,6 +422,15 @@ export default function AdminPromoCodes() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteCodeConfirm}
+        title="Delete Promo Code"
+        description={`Delete promo code "${deleteCodeConfirm?.code ?? ""}"? This cannot be undone.`}
+        confirmText="Delete"
+        onConfirm={() => { if (deleteCodeConfirm) { deleteCode(deleteCodeConfirm.id); setDeleteCodeConfirm(null); } }}
+        onCancel={() => setDeleteCodeConfirm(null)}
+      />
     </AdminLayout>
   );
 }

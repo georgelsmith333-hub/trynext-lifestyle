@@ -106,8 +106,8 @@ export class AppErrorBoundary extends Component<Props, State> {
           </button>
         </div>
         <p className="text-xs text-gray-400 mt-6 max-w-xs">
-          If this keeps happening, please contact support at{" "}
-          <a className="font-bold text-orange-600 hover:underline" href="https://wa.me/8801903426915">WhatsApp</a>.
+          If this keeps happening, visit the{" "}
+          <a className="font-bold text-orange-600 hover:underline" href="/contact">support center</a>.
         </p>
       </div>
     );

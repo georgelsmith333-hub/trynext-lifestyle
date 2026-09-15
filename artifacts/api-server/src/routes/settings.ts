@@ -12,7 +12,7 @@ const router: IRouter = Router();
 // /api/settings is called on EVERY page load (Navbar, Footer, SiteSettingsContext,
 // plus SEOHead on every route). Redis survives Render restarts; the in-process
 // fallback inside redis.ts covers the case where Redis isn't configured.
-const SETTINGS_CACHE_KEY = "trynex:settings:public";
+const SETTINGS_CACHE_KEY = "trynext:settings:public";
 const SETTINGS_TTL_S = 30;
 
 async function invalidatePublicSettingsCache() {
@@ -27,6 +27,9 @@ const SETTINGS_KEYS = [
   "announcementBar", "freeShippingThreshold",
   "bkashNumber", "nagadNumber", "rocketNumber", "upayNumber",
   "whatsappNumber", "shippingCost",
+  // Bank / card payment details (admin-configured, shown in checkout)
+  "bankName", "bankAccountName", "bankAccountNumber", "bankBranch", "bankRoutingNumber",
+  "cardPaymentNote", "codEnabled",
   "googleAnalyticsId", "facebookPixelId", "googleAdsId",
   "siteIcon", "facebookAppId", "googleClientId", "googleSiteVerification",
   "promoBannerTitle", "promoBannerSubtitle", "promoBannerDiscount", "promoBannerCTA", "promoBannerEnabled",
@@ -37,6 +40,9 @@ const SETTINGS_KEYS = [
   "studioLongsleeveColors", "studioLongsleevePrice",
   "studioCapColors", "studioCapPrice",
   "studioWaterbottleColors", "studioWaterbottlePrice",
+  "studioTshirtCustomizationFee", "studioHoodieCustomizationFee",
+  "studioLongsleeveCustomizationFee", "studioCapCustomizationFee",
+  "studioMugCustomizationFee", "studioWaterbottleCustomizationFee",
   // Visual Designer keys (Task #7)
   "heroImageUrl", "heroGradient", "heroCTAText", "heroCTALink",
   "primaryColor", "announcementColor",
@@ -69,6 +75,10 @@ const SETTINGS_KEYS = [
   // Blog categories (JSON array stored as string)
   "blogCategories",
   "homepage_layout",
+  // AI Developer system prompt — editable in DB, fallback to hardcoded server default
+  "aiSystemPrompt",
+  // Per-account preferences
+  "prodNoticeDismissed",
 ];
 
 // Trim-aware fallback: treats null, undefined, or empty/whitespace-only strings as "missing"
@@ -78,13 +88,22 @@ function fallback(value: string | null | undefined, def: string): string {
   return trimmed && trimmed.length > 0 ? trimmed : def;
 }
 
+function normalizeCustomerBrand(value: string | null | undefined): string {
+  return fallback(value, "Trynext Lifestyle").replace(/\bTrynext\b/gi, "Trynext");
+}
+
 async function buildSettings(map: Record<string, string | null>) {
   return {
-    siteName: fallback(map["siteName"], "TryNex Lifestyle"),
+    // Existing databases may still contain the previous visible spelling.
+    // Normalize it at the public boundary without changing technical keys,
+    // routes, storage names, or infrastructure identifiers.
+    siteName: normalizeCustomerBrand(map["siteName"]),
     tagline: fallback(map["tagline"], "You imagine, we craft."),
-    phone: map["phone"] ?? "+880 1700-000000",
-    email: map["email"] ?? "hello@trynex.com",
-    address: map["address"] ?? "Banani, Dhaka-1213, Bangladesh",
+    // Contact details are admin-owned. Empty values stay empty so customers
+    // never see invented phone numbers, email addresses, or locations.
+    phone: map["phone"] ?? "",
+    email: map["email"] ?? "",
+    address: map["address"] ?? "",
     facebookUrl: map["facebookUrl"] ?? "",
     instagramUrl: map["instagramUrl"] ?? "",
     youtubeUrl: map["youtubeUrl"] ?? "",
@@ -92,12 +111,22 @@ async function buildSettings(map: Record<string, string | null>) {
     heroSubtitle: map["heroSubtitle"] ?? "",
     announcementBar: map["announcementBar"] ?? "🚚 Free delivery on orders above ৳1,500!",
     freeShippingThreshold: parseFloat(map["freeShippingThreshold"] ?? "1500"),
-    bkashNumber: map["bkashNumber"] ?? "01712-345678",
-    nagadNumber: map["nagadNumber"] ?? "01811-234567",
-    rocketNumber: map["rocketNumber"] ?? "01611-234567",
-    upayNumber: map["upayNumber"] ?? "",
-    whatsappNumber: map["whatsappNumber"] ?? "01700-000000",
+    // Payment destinations are admin-owned. Empty means the method is hidden
+    // from checkout rather than exposing an invented or stale number.
+    bkashNumber: map["bkashNumber"]?.trim() || "",
+    nagadNumber: map["nagadNumber"]?.trim() || "",
+    rocketNumber: map["rocketNumber"] ?? "",
+    upayNumber: map["upayNumber"]?.trim() || "",
+    whatsappNumber: map["whatsappNumber"] ?? "",
     shippingCost: parseFloat(map["shippingCost"] ?? "100"),
+    // Bank / card payment details exposed publicly to the checkout flow.
+    bankName: map["bankName"] ?? "",
+    bankAccountName: map["bankAccountName"] ?? "",
+    bankAccountNumber: map["bankAccountNumber"] ?? "",
+    bankBranch: map["bankBranch"] ?? "",
+    bankRoutingNumber: map["bankRoutingNumber"] ?? "",
+    cardPaymentNote: map["cardPaymentNote"] ?? "Pay with card on delivery (POS machine available).",
+    codEnabled: (map["codEnabled"] ?? "true") !== "false",
     googleAnalyticsId: map["googleAnalyticsId"] ?? "",
     facebookPixelId: map["facebookPixelId"] ?? "",
     googleAdsId: map["googleAdsId"] ?? "",
@@ -121,12 +150,19 @@ async function buildSettings(map: Record<string, string | null>) {
     studioCapColors: map["studioCapColors"] ?? "",
     studioWaterbottleColors: map["studioWaterbottleColors"] ?? "",
     // Admin-configured prices for custom studio orders (BDT)
-    studioTshirtPrice: parseFloat(map["studioTshirtPrice"] ?? "1099"),
-    studioMugPrice: parseFloat(map["studioMugPrice"] ?? "799"),
+    // Published custom-design defaults: T-shirt ৳450 + ৳99; mug ৳449 + ৳99.
+    studioTshirtPrice: parseFloat(map["studioTshirtPrice"] ?? "450"),
+    studioMugPrice: parseFloat(map["studioMugPrice"] ?? "449"),
     studioHoodiePrice: parseFloat(map["studioHoodiePrice"] ?? "1699"),
     studioLongsleevePrice: parseFloat(map["studioLongsleevePrice"] ?? "1299"),
     studioCapPrice: parseFloat(map["studioCapPrice"] ?? "699"),
     studioWaterbottlePrice: parseFloat(map["studioWaterbottlePrice"] ?? "899"),
+    studioTshirtCustomizationFee: parseFloat(map["studioTshirtCustomizationFee"] ?? "99"),
+    studioHoodieCustomizationFee: parseFloat(map["studioHoodieCustomizationFee"] ?? "99"),
+    studioLongsleeveCustomizationFee: parseFloat(map["studioLongsleeveCustomizationFee"] ?? "99"),
+    studioCapCustomizationFee: parseFloat(map["studioCapCustomizationFee"] ?? "99"),
+    studioMugCustomizationFee: parseFloat(map["studioMugCustomizationFee"] ?? "99"),
+    studioWaterbottleCustomizationFee: parseFloat(map["studioWaterbottleCustomizationFee"] ?? "99"),
     // Visual Designer settings (Task #7)
     heroImageUrl: map["heroImageUrl"] ?? "",
     heroGradient: map["heroGradient"] ?? "",
@@ -135,7 +171,7 @@ async function buildSettings(map: Record<string, string | null>) {
     primaryColor: map["primaryColor"] ?? "#E85D04",
     announcementColor: map["announcementColor"] ?? "#E85D04",
     trustBadge1Title: map["trustBadge1Title"] ?? "100% Secure Payments",
-    trustBadge1Desc: map["trustBadge1Desc"] ?? "bKash, Nagad, Rocket & COD",
+    trustBadge1Desc: map["trustBadge1Desc"] ?? "bKash, Nagad & uPay — 25% advance",
     trustBadge2Title: map["trustBadge2Title"] ?? "Nationwide Delivery",
     trustBadge2Desc: map["trustBadge2Desc"] ?? "All 64 districts of Bangladesh",
     trustBadge3Title: map["trustBadge3Title"] ?? "Quality Guarantee",
@@ -179,18 +215,22 @@ async function buildSettings(map: Record<string, string | null>) {
     spinWheelResetAt: parseInt(map["spinWheelResetAt"] ?? "0", 10),
     spinWheelCooldownHours: parseInt(map["spinWheelCooldownHours"] ?? "24", 10),
     // SEO defaults (used as fallback when page has no override)
-    seoDefaultTitle: map["seoDefaultTitle"] ?? "TryNex Lifestyle — Custom Apparel & Gifts in Bangladesh",
-    seoDefaultDescription: map["seoDefaultDescription"] ?? "Design and order custom T-shirts, hoodies, mugs, caps, and gift hampers in Bangladesh. Premium quality, nationwide delivery, cash on delivery.",
-    seoDefaultKeywords: map["seoDefaultKeywords"] ?? "custom t-shirt bangladesh, personalized mug, gift hamper, custom hoodie, design studio, trynex",
+    seoDefaultTitle: map["seoDefaultTitle"] ?? "Trynext Lifestyle — Custom Apparel & Gifts in Bangladesh",
+    seoDefaultDescription: map["seoDefaultDescription"] ?? "Design and order custom T-shirts, hoodies, mugs, caps, and gift hampers in Bangladesh. Premium quality, nationwide delivery, pay just 25% in advance.",
+    seoDefaultKeywords: map["seoDefaultKeywords"] ?? "custom t-shirt bangladesh, personalized mug, gift hamper, custom hoodie, design studio, trynext",
     seoOgImage: map["seoOgImage"] ?? "",
     seoTwitterHandle: map["seoTwitterHandle"] ?? "",
     // Hero typewriter phrases — newline-separated string; blank means use frontend defaults
     heroTypewriterPhrases: map["heroTypewriterPhrases"] ?? "",
     homepage_layout: map["homepage_layout"] ?? "[]",
+    prodNoticeDismissed: map["prodNoticeDismissed"] ?? "0",
     // NOTE: removeBgApiKey is intentionally NOT included here — it is server-only secret
     // NOTE: metaCapiToken is intentionally NOT included — server-only
     // Safe boolean flag: tells admin UI whether the token is configured (no secret exposed)
     metaCapiTokenConfigured: !!(map["metaCapiToken"]?.trim()),
+    // AI Developer system prompt (editable from Admin → AI Developer settings panel)
+    // Fallback to empty string = use server-side DEVELOPER_SYSTEM_PROMPT constant
+    aiSystemPrompt: map["aiSystemPrompt"] ?? "",
   };
 }
 
