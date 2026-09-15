@@ -49,6 +49,7 @@ Thumbs.db
 .local/
 
 # Workspace-only materials
+.replit
 .agents/
 attached_assets/
 screenshots/
