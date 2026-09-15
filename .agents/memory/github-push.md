@@ -19,6 +19,26 @@ git push origin main
 
 The `x-access-token` username is the standard GitHub PAT username; the password field is the PAT value from the environment variable.
 
+## Large unrelated-history restores
+
+The legacy `trynex-lifestyle` GitHub URL may redirect to the canonical
+`trynext-lifestyle` repository. When the local checkout has no merge-base with
+the remote and contains a multi-gigabyte workspace history, a normal force push
+can fail after uploading the entire object database. Preserve the fetched remote
+tip in a backup branch, build a clean single-commit application tree from the
+remote tip, exclude generated masters/archives and workspace evidence, then
+force-with-lease the clean commit to `main`. Verify both refs and keep the
+excluded local source artifacts separately.
+
+**Why:** A local workspace can contain several gigabytes of PSD masters,
+attachments, caches, and evidence that are not deployable application inputs;
+replaying that history makes GitHub reject or time out the restore even when the
+runtime source itself is valid.
+
+**How to apply:** Compare the remote and local trees before pushing, create a
+named backup ref for the remote tip, use the canonical repository URL, and
+publish only the reviewed functional source/runtime tree.
+
 ## Why this works
 
 Replit's `replit-git-askpass` intercepts plain `https://TOKEN@github.com/...` URLs, but the `x-access-token:$TOKEN` form is treated as a normal username/password pair and passes through.
