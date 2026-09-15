@@ -64,6 +64,36 @@ mobile app, promotional experience, and brand-system artifact.
 
 ## Current open work
 
+### GitHub restore checkpoint (2026-09-16)
+
+```text
+Status: complete — verified functional application restore pushed
+Last completed: Preserved the previous remote main in
+  backup-before-local-restore-5c1b07d93, then published the verified local
+  application checkpoint to the canonical GitHub main as a clean restore commit.
+Stopped at: After restarting both managed workflows and confirming local API,
+  storefront, Design Studio, products, and GitHub ref smoke checks.
+Files/areas changed: GitHub main ref, the restore handoff, and the functional
+  source/runtime tree. The local-only dist-mockups masters/archives/packages,
+  attached_assets inputs, agent/tool caches, screenshots, audit evidence, and
+  verification reports were intentionally excluded from the GitHub restore tree
+  because they expanded the local tree to about 4.8 GB and are not runtime
+  application inputs.
+Remaining work: None for the functional source restore. Cloudflare provider
+  verification remains a separate task because the stored provider token was
+  previously rejected with HTTP 401.
+Blocker: None for GitHub restore or local operation. Redis is unavailable in the
+  local environment, but DB-backed API readiness is healthy and the documented
+  fallback is active.
+Next safe action: If the excluded editable masters or source inputs must be
+  published, place them in reviewed object storage or a separately approved
+  artifact release rather than force-pushing the multi-gigabyte workspace tree.
+Verification: GitHub main points to db5d13e2 and the backup branch points to the
+  prior remote main; local API liveness/readiness and products returned 200;
+  storefront and Design Studio returned 200; both workflows are running; and
+  git diff checks passed. No database, order, payment, or Cloudflare data changed.
+```
+
 ### Full Trynext rename local-validation checkpoint (2026-09-08)
 
 ```text
