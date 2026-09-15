@@ -74,7 +74,7 @@ function layout(bodyContent: string): string {
           <td style="background:${BRAND_LIGHT};padding:20px 32px;text-align:center;border-top:1px solid #FFE0CC;">
             <p style="margin:0 0 6px;font-size:13px;color:#64748b;">Questions? WhatsApp or call us at <b>${process.env.SUPPORT_PHONE ?? "01903426915"}</b></p>
             <p style="margin:0;font-size:12px;color:#94a3b8;">
-              <a href="https://trynext.pages.dev" style="color:${BRAND_ORANGE};text-decoration:none;">trynext.pages.dev</a>
+              <a href="https://trynext.shop" style="color:${BRAND_ORANGE};text-decoration:none;">trynext.shop</a>
               &nbsp;·&nbsp; Dhaka, Bangladesh
             </p>
           </td>
@@ -196,7 +196,7 @@ export async function sendOrderConfirmationEmail(order: OrderEmailData): Promise
 
     <!-- Track order CTA -->
     <div style="text-align:center;margin-top:28px;">
-      <a href="https://trynext.pages.dev/track?order=${order.orderNumber}&phone=${encodeURIComponent(order.customerPhone)}"
+      <a href="https://trynext.shop/track?order=${order.orderNumber}&phone=${encodeURIComponent(order.customerPhone)}"
          style="display:inline-block;background:linear-gradient(135deg,${BRAND_ORANGE},#FB8500);color:#fff;text-decoration:none;padding:13px 28px;border-radius:10px;font-size:14px;font-weight:700;">
         Track My Order →
       </a>
@@ -272,7 +272,7 @@ export async function sendStatusUpdateEmail(order: { orderNumber: string; custom
     </div>
 
     <div style="text-align:center;">
-      <a href="https://trynext.pages.dev/track?order=${order.orderNumber}&phone=${encodeURIComponent(order.customerPhone)}"
+      <a href="https://trynext.shop/track?order=${order.orderNumber}&phone=${encodeURIComponent(order.customerPhone)}"
          style="display:inline-block;background:linear-gradient(135deg,${BRAND_ORANGE},#FB8500);color:#fff;text-decoration:none;padding:13px 28px;border-radius:10px;font-size:14px;font-weight:700;">
         Track My Order →
       </a>

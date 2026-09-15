@@ -155,7 +155,7 @@ export default function AdminDashboard() {
           <div className="flex-1" style={{ color: "#92400e" }}>
             <span className="font-black">All changes here are live instantly.</span>{" "}
             Products, orders, blog posts, promo codes and settings you edit in this panel update on{" "}
-            <span className="font-semibold">trynext.pages.dev</span> in real time. No need to redeploy or restart after making changes.
+            <span className="font-semibold">trynext.shop</span> in real time. No need to redeploy or restart after making changes.
           </div>
           <button type="button" onClick={dismissProdNotice} className="mt-0.5 shrink-0 hover:opacity-70" style={{ color: "#d97706" }}>
             <X className="w-4 h-4" />
@@ -556,7 +556,7 @@ function SystemHealthWidget() {
             {actionLoading === "test-telegram" ? "Testing..." : "Test Telegram"}
           </button>
           <button
-            onClick={() => window.open('https://trynext.pages.dev', '_blank')}
+            onClick={() => window.open('https://trynext.shop', '_blank')}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-orange-50 text-orange-600 hover:bg-orange-100 border border-orange-100 transition-colors"
           >
             <Globe className="w-3.5 h-3.5" /> View Live Site

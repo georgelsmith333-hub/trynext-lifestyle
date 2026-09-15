@@ -49,7 +49,7 @@ const CORE_ENV_VAR_MATRIX: EnvVarSpec[] = [
   // JWT_SECRET is required: customerAuth.ts hard-throws at module load in production
   { name: "JWT_SECRET",       required: true,  description: "Customer JWT signing secret (must differ from ADMIN_JWT_SECRET)" },
   { name: "ADMIN_PASSWORD",   required: true,  description: "Initial admin password" },
-  { name: "ALLOWED_ORIGINS",  required: true,  description: "Comma-separated CORS allowlist (e.g. https://trynext.pages.dev)" },
+  { name: "ALLOWED_ORIGINS",  required: true,  description: "Comma-separated CORS allowlist (e.g. https://trynext.shop)" },
   { name: "PORT",             required: true,  description: "HTTP port for the API server" },
 ];
 
@@ -72,7 +72,7 @@ const STORAGE_ENV_VAR_MATRIX: Record<string, EnvVarSpec[]> = {
   ],
   local: [
     { name: "LOCAL_STORAGE_PATH",   required: false, description: "Local filesystem path for uploads (default: ./uploads)" },
-    { name: "API_BASE_URL",         required: false, description: "Public base URL of this API server, used for local upload URLs (e.g. https://trynext.pages.dev)" },
+    { name: "API_BASE_URL",         required: false, description: "Public base URL of this API server, used for local upload URLs (e.g. https://trynext.shop)" },
   ],
 };
 

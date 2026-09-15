@@ -21,9 +21,9 @@
    serving the unmodified SPA. No user is ever broken.
 ═══════════════════════════════════════════════════════════════════════════ */
 
-// Pages is the currently live origin. Switch this single constant to the
-// custom domain only after DNS, robots, sitemap, and SSL are all verified there.
-const SITE_URL = "https://trynext.pages.dev";
+// The verified custom domain is the canonical public origin. The Pages
+// hostname remains available as a compatibility URL, but must not win SEO.
+const SITE_URL = "https://trynext.shop";
 const DEFAULT_OG = `${SITE_URL}/opengraph.jpg`;
 const API_TIMEOUT_MS = 4000;
 

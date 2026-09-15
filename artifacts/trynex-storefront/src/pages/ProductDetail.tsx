@@ -696,7 +696,7 @@ export default function ProductDetail() {
               "priceCurrency": "BDT",
               "price": product.discountPrice || product.price,
               "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-              "url": `https://trynext.pages.dev/product/${product.slug || product.id}`,
+              "url": `https://trynext.shop/product/${product.slug || product.id}`,
               "itemCondition": "https://schema.org/NewCondition",
               "seller": { "@type": "Organization", "name": "Trynext Lifestyle" }
             },
@@ -716,9 +716,9 @@ export default function ProductDetail() {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
-              { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://trynext.pages.dev/products" },
-              { "@type": "ListItem", "position": 3, "name": product.name, "item": `https://trynext.pages.dev/product/${product.slug || product.id}` },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.shop/" },
+              { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://trynext.shop/products" },
+              { "@type": "ListItem", "position": 3, "name": product.name, "item": `https://trynext.shop/product/${product.slug || product.id}` },
             ],
           },
         ]}

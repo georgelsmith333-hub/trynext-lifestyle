@@ -263,8 +263,8 @@ export default function Blog() {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
-              { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://trynext.pages.dev/blog" },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.shop/" },
+              { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://trynext.shop/blog" },
             ],
           },
         ]}

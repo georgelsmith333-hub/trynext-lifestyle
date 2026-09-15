@@ -29,7 +29,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-xl font-black text-gray-900 mb-3">1. General</h2>
               <p className="text-sm text-gray-600 leading-relaxed">
-                These Terms of Service govern your use of the Trynext Lifestyle website (trynext.pages.dev) and all related services. By placing an order, you confirm that you are at least 18 years old (or have parental consent) and agree to be bound by these terms.
+                These Terms of Service govern your use of the Trynext Lifestyle website (trynext.shop) and all related services. By placing an order, you confirm that you are at least 18 years old (or have parental consent) and agree to be bound by these terms.
               </p>
             </section>
 

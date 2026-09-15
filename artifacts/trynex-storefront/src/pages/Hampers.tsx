@@ -56,8 +56,8 @@ export default function Hampers() {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
-              { "@type": "ListItem", "position": 2, "name": "Gift Hampers", "item": "https://trynext.pages.dev/hampers" },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.shop/" },
+              { "@type": "ListItem", "position": 2, "name": "Gift Hampers", "item": "https://trynext.shop/hampers" },
             ],
           },
           ...(hampers.length > 0 ? [{
@@ -67,7 +67,7 @@ export default function Hampers() {
             "itemListElement": hampers.slice(0, 20).map((h, i) => ({
               "@type": "ListItem",
               "position": i + 1,
-              "url": `https://trynext.pages.dev/hampers/${h.slug}`,
+              "url": `https://trynext.shop/hampers/${h.slug}`,
               "name": h.name,
             })),
           }] : []),

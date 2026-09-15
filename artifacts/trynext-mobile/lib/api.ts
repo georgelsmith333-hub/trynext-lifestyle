@@ -1,7 +1,7 @@
 // Production domain — always used as the ultimate fallback.
 // The old Render backend (trynex-api.onrender.com) was decommissioned;
-// all traffic now goes through the CF Pages / Vite proxy at the canonical Pages origin.
-const PROD_DOMAIN = "trynext.pages.dev";
+// all traffic now goes through the custom storefront domain's API proxy.
+const PROD_DOMAIN = "trynext.shop";
 const STALE_RENDER_DOMAIN = "trynex-api.onrender.com";
 
 const getBaseUrl = () => {

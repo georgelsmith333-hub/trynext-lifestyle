@@ -11,7 +11,7 @@
    Fire-and-forget — we never await this in request handlers.
 ═══════════════════════════════════════════════════════════════════════ */
 
-const SITEMAP_URL = "https://trynext.pages.dev/sitemap.xml";
+const SITEMAP_URL = "https://trynext.shop/sitemap.xml";
 
 const PING_URLS = [
   `https://www.google.com/ping?sitemap=${encodeURIComponent(SITEMAP_URL)}`,

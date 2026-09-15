@@ -6,7 +6,7 @@ import { QrCode } from "lucide-react";
 import { getZonePZ, MUG_PZ, MUG_SIDE_BACK_PZ, MUG_SIDE_PZ } from "@/pages/design-studio/mockups";
 
 export function QRCodePanel() {
-  const [url, setUrl] = useState("https://trynext.pages.dev");
+  const [url, setUrl] = useState("https://trynext.shop");
   const [size, setSize] = useState(120);
   const [color, setColor] = useState("#111111");
   const [bg, setBg] = useState("#ffffff");

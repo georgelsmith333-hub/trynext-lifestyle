@@ -344,7 +344,7 @@ async function cmdInvoice(orderNumber: string): Promise<string> {
       `💸 Balance Due:   ৳${due.toLocaleString()}`,
     ] : []),
     ``,
-    `🏪 Trynext Lifestyle | trynext.pages.dev`,
+    `🏪 Trynext Lifestyle | trynext.shop`,
     `📱 WhatsApp/Call: 01903426915`,
     ...(o.notes ? [``, `📝 Notes: ${o.notes}`] : []),
   ];

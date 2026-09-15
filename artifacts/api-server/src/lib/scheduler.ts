@@ -74,7 +74,7 @@ async function sendDailySummary(): Promise<void> {
       }
     }
 
-    lines.push(``, `🌐 trynext.pages.dev`);
+    lines.push(``, `🌐 trynext.shop`);
     await tgSend(lines.join("\n"));
     logger.info("[scheduler] Daily summary sent");
   } catch (err) {

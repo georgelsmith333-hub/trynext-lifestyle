@@ -9,7 +9,7 @@ const router: IRouter = Router();
 
 // SEO operations target the customer-facing storefront. Do not derive this
 // from API_PUBLIC_URL, which points at Render and produces invalid sitemap URLs.
-const SITE_URL = process.env.STOREFRONT_PUBLIC_URL || "https://trynext.pages.dev";
+const SITE_URL = process.env.STOREFRONT_PUBLIC_URL || "https://trynext.shop";
 const SITEMAP_URL = `${SITE_URL}/sitemap.xml`;
 
 async function getSetting(key: string): Promise<string | null> {

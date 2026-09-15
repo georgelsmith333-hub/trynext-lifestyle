@@ -156,7 +156,7 @@ export default function AdminFacebookGuide() {
               <ol className="list-decimal pl-5 space-y-2">
                 <li>In your Facebook App, go to <strong>Add Product → Facebook Login</strong></li>
                 <li>Set <strong>Valid OAuth Redirect URIs</strong> to your site URL:
-                  <CopyBlock text="https://trynext.pages.dev/login" />
+                  <CopyBlock text="https://trynext.shop/login" />
                 </li>
                 <li>Copy your <strong>App ID</strong></li>
                 <li>Add the Facebook SDK to your site's <code className="bg-gray-100 px-1.5 rounded">index.html</code>:
@@ -183,7 +183,7 @@ export default function AdminFacebookGuide() {
                 <li>Create a new project or select existing one</li>
                 <li>Go to <strong>Credentials → Create Credentials → OAuth 2.0 Client ID</strong></li>
                 <li>Set type to <strong>Web application</strong></li>
-                <li>Add <strong>Authorized JavaScript origins</strong>: <code className="bg-gray-100 px-1.5 rounded">https://trynext.pages.dev</code></li>
+                <li>Add <strong>Authorized JavaScript origins</strong>: <code className="bg-gray-100 px-1.5 rounded">https://trynext.shop</code></li>
                 <li>Copy the <strong>Client ID</strong></li>
                 <li>Set the env variable: <code className="bg-gray-100 px-1.5 rounded">VITE_GOOGLE_CLIENT_ID=your_client_id</code></li>
                 <li>Add Google Sign-In script to <code className="bg-gray-100 px-1.5 rounded">index.html</code>:

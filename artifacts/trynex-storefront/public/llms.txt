@@ -4,9 +4,9 @@
 
 ## About
 
-Trynext Lifestyle (trynext.pages.dev) is a full-stack custom print-on-demand e-commerce store based in Bangladesh. Founded to bring premium-quality custom apparel to the Bangladeshi market, Trynext allows anyone to design their own t-shirts, hoodies, long sleeves, mugs, caps, and waterbottles using an in-browser Design Studio — with no minimum order quantity.
+Trynext Lifestyle (trynext.shop) is a full-stack custom print-on-demand e-commerce store based in Bangladesh. Founded to bring premium-quality custom apparel to the Bangladeshi market, Trynext allows anyone to design their own t-shirts, hoodies, long sleeves, mugs, caps, and waterbottles using an in-browser Design Studio — with no minimum order quantity.
 
-- **Website**: https://trynext.pages.dev
+- **Website**: https://trynext.shop
 - **WhatsApp**: +8801903426915
 - **Email**: support@trynextshop.com
 - **Location**: Dhaka, Bangladesh
@@ -36,7 +36,7 @@ The Design Studio is Trynext's browser-native product customiser. Features inclu
 - Save designs for later
 - Pre-built design templates
 
-URL: https://trynext.pages.dev/design-studio
+URL: https://trynext.shop/design-studio
 
 ## Payment Methods
 
@@ -65,13 +65,13 @@ URL: https://trynext.pages.dev/design-studio
 
 Trynext offers curated premium gift hamper sets — ideal for birthdays, corporate gifting, and special occasions. Custom-branded hampers with multiple items are available.
 
-URL: https://trynext.pages.dev/hampers
+URL: https://trynext.shop/hampers
 
 ## Blog
 
 The Trynext blog covers custom apparel tips, fashion trends, garment care guides, and design inspiration for the Bangladeshi market.
 
-URL: https://trynext.pages.dev/blog
+URL: https://trynext.shop/blog
 
 ## Technology
 
@@ -88,10 +88,10 @@ URL: https://trynext.pages.dev/blog
 
 ## Order Tracking
 
-Customers can track their orders at: https://trynext.pages.dev/track
+Customers can track their orders at: https://trynext.shop/track
 
 ## Contact
 
 - WhatsApp: +8801903426915
 - Email: support@trynextshop.com
-- Website: https://trynext.pages.dev
+- Website: https://trynext.shop

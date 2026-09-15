@@ -136,16 +136,16 @@ export default function HamperDetail() {
               "price": price,
               "availability": "https://schema.org/InStock",
               "seller": { "@type": "Organization", "name": "Trynext Lifestyle" },
-              "url": `https://trynext.pages.dev/hampers/${hamper.slug}`,
+              "url": `https://trynext.shop/hampers/${hamper.slug}`,
             },
           },
           {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
-              { "@type": "ListItem", "position": 2, "name": "Gift Hampers", "item": "https://trynext.pages.dev/hampers" },
-              { "@type": "ListItem", "position": 3, "name": hamper.name, "item": `https://trynext.pages.dev/hampers/${hamper.slug}` },
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.shop/" },
+              { "@type": "ListItem", "position": 2, "name": "Gift Hampers", "item": "https://trynext.shop/hampers" },
+              { "@type": "ListItem", "position": 3, "name": hamper.name, "item": `https://trynext.shop/hampers/${hamper.slug}` },
             ],
           },
         ]}

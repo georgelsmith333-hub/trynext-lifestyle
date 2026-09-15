@@ -9,7 +9,7 @@ const router: IRouter = Router();
 // host. API_PUBLIC_URL is intentionally not used here because Render sets it
 // to a backend host. Use the explicit storefront variable when a custom domain
 // is fully connected; otherwise stay on the live Pages origin.
-const SITE_URL = process.env.STOREFRONT_PUBLIC_URL || "https://trynext.pages.dev";
+const SITE_URL = process.env.STOREFRONT_PUBLIC_URL || "https://trynext.shop";
 
 router.get("/sitemap.xml", async (_req, res) => {
   try {

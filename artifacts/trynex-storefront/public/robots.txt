@@ -22,4 +22,4 @@ User-agent: facebookexternalhit
 Allow: /
 
 # Sitemap location
-Sitemap: https://trynext.pages.dev/sitemap.xml
+Sitemap: https://trynext.shop/sitemap.xml

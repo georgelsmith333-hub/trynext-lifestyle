@@ -18,7 +18,7 @@ type BreadcrumbItem = {
   item: string;
 };
 
-const SITE_URL = "https://trynext.pages.dev";
+const SITE_URL = "https://trynext.shop";
 const DEFAULT_IMAGE = "/opengraph.jpg";
 
 export function SEOHead({

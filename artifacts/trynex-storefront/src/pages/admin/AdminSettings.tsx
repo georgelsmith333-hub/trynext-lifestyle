@@ -667,7 +667,7 @@ export default function AdminSettings() {
               Required for <strong>Google Sign-In</strong>. Get it from{" "}
               <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" className="text-orange-500 underline">console.cloud.google.com</a>{" "}
               → Create OAuth 2.0 Client ID → Web Application.
-              Add <strong>https://trynext.pages.dev</strong> as an Authorized JavaScript Origin.
+              Add <strong>https://trynext.shop</strong> as an Authorized JavaScript Origin.
             </p>
           </Field>
           <Field label="Facebook App ID" full>
@@ -676,7 +676,7 @@ export default function AdminSettings() {
               Required for <strong>Facebook Login</strong>. Get it from{" "}
               <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener noreferrer" className="text-orange-500 underline">developers.facebook.com</a>{" "}
               → Your App → Settings → Basic.
-              Add <strong>trynext.pages.dev</strong> as an App Domain.
+              Add <strong>trynext.shop</strong> as an App Domain.
             </p>
           </Field>
         </SectionCard>
@@ -685,7 +685,7 @@ export default function AdminSettings() {
         <SectionCard icon={Search} title="Google Search Console" iconColor="#4285F4">
           <Field label="Google Site Verification Code" full>
             <input {...register("googleSiteVerification")} className={inputClass} style={inputStyle} placeholder="abc123xyz..." />
-            <p className="text-xs text-gray-400 mt-1">Paste the content value from the Google Search Console verification meta tag. This allows Google to verify site ownership for trynext.pages.dev and enable indexing.</p>
+            <p className="text-xs text-gray-400 mt-1">Paste the content value from the Google Search Console verification meta tag. This allows Google to verify site ownership for trynext.shop and enable indexing.</p>
           </Field>
         </SectionCard>
 
@@ -888,7 +888,7 @@ export default function AdminSettings() {
             <p className="text-xs text-gray-400 mt-1">Comma-separated. Modern Google ignores these but Bing & Yandex still use them.</p>
           </Field>
           <Field label="Default Social Share Image (URL)" full>
-            <input {...register("seoOgImage")} className={inputClass} style={inputStyle} placeholder="https://trynext.pages.dev/og.jpg" />
+              <input {...register("seoOgImage")} className={inputClass} style={inputStyle} placeholder="https://trynext.shop/og.jpg" />
             <p className="text-xs text-gray-400 mt-1">Shown when someone shares your link on Facebook, WhatsApp, Twitter, LinkedIn. Recommended: 1200×630 PNG/JPG.</p>
           </Field>
           <Field label="Twitter / X Handle" full={false}>

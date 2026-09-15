@@ -306,7 +306,7 @@ export default function AdminSEO() {
               },
               {
                 step: 2,
-                title: "Select the trynext.pages.dev property",
+                title: "Select the trynext.shop property",
                 desc: "If it is not listed, click Add Property → Domain. Verify using DNS TXT record (best with Cloudflare) or HTML file method — see the verification guide card below.",
               },
               {
@@ -318,7 +318,7 @@ export default function AdminSEO() {
                 step: 4,
                 title: "Enter the sitemap URL and submit",
                 desc: 'In the "Add a new sitemap" box enter:',
-                code: "https://trynext.pages.dev/sitemap.xml",
+                code: "https://trynext.shop/sitemap.xml",
               },
               {
                 step: 5,
@@ -427,8 +427,8 @@ export default function AdminSEO() {
               { slug: "custom-mug-bangladesh",      keyword: "custom mug Bangladesh",       priority: "0.8", badge: null },
               { slug: "birthday-gift-bangladesh",   keyword: "birthday gift Bangladesh",    priority: "0.8", badge: null },
             ].map(({ slug, keyword, priority, badge }) => {
-              const liveUrl = `https://trynext.pages.dev/${slug}`;
-              const gscUrl  = `https://search.google.com/search-console/inspect?resource_id=https%3A%2F%2Ftrynext.pages.dev%2F&id=${encodeURIComponent(liveUrl)}`;
+              const liveUrl = `https://trynext.shop/${slug}`;
+              const gscUrl  = `https://search.google.com/search-console/inspect?resource_id=https%3A%2F%2Ftrynext.shop%2F&id=${encodeURIComponent(liveUrl)}`;
               return (
                 <div key={slug} className="flex items-center gap-3 px-6 py-3.5 hover:bg-orange-50/30 transition-colors group">
                   <Globe className="w-4 h-4 text-gray-300 shrink-0 group-hover:text-orange-400 transition-colors" />

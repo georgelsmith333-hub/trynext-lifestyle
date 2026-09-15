@@ -66,10 +66,14 @@ app.use(
 // `ALLOWED_ORIGINS` to be configured so a misconfigured deploy can't
 // silently fall back to a permissive policy.
 const DEFAULT_PROD_ORIGINS = [
+  "https://trynext.shop",
+  "https://www.trynext.shop",
   "https://trynext.pages.dev",
 ];
 
 const DEFAULT_DEV_ORIGINS = [
+  "https://trynext.shop",
+  "https://www.trynext.shop",
   "https://trynext.pages.dev",
   "http://localhost:5173",
   "http://localhost:8080",

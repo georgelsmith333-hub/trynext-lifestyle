@@ -399,7 +399,7 @@ export default function BlogPost() {
     </div>
   );
 
-  const pageUrl = `https://trynext.pages.dev/blog/${post.slug}`;
+  const pageUrl = `https://trynext.shop/blog/${post.slug}`;
 
   const faqEntries = extractFaqSchema(post.content, isHtmlContent);
 
@@ -419,7 +419,7 @@ export default function BlogPost() {
       "publisher": {
         "@type": "Organization",
         "name": "Trynext Lifestyle",
-        "logo": { "@type": "ImageObject", "url": "https://trynext.pages.dev/logo.png" },
+        "logo": { "@type": "ImageObject", "url": "https://trynext.shop/logo.png" },
       },
       "image": post.imageUrl || undefined,
       "url": pageUrl,
@@ -430,8 +430,8 @@ export default function BlogPost() {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.pages.dev/" },
-        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://trynext.pages.dev/blog" },
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trynext.shop/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://trynext.shop/blog" },
         { "@type": "ListItem", "position": 3, "name": post.title, "item": pageUrl },
       ],
     },
