@@ -47,3 +47,9 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Workspace-only materials
+.agents/
+attached_assets/
+screenshots/
+artifacts/*/.replit-artifact/artifact.edit.toml
