@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: trynex-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: trynex_test
+          POSTGRES_USER: trynex
+          POSTGRES_PASSWORD: trynex_test_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Get pnpm store
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace libraries
+        run: pnpm run typecheck:libs
+
+      - name: TypeScript check (active packages)
+        run: pnpm --filter @workspace/trynex-storefront run typecheck && pnpm --filter @workspace/api-server run typecheck
+
+      - name: Lint check (configured packages)
+        run: pnpm -r --if-present run lint
+
+      - name: Build active packages
+        run: pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/trynex-storefront run build
+        env:
+          DATABASE_URL: postgresql://trynex:trynex_test_pass@localhost:5432/trynex_test
+          CI: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-output
+          path: |
+            artifacts/*/dist/
+            artifacts/*/.next/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build-and-check
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit vulnerabilities
+        run: pnpm audit --audit-level=high --ignore GHSA-5p2g-fcmc-qvqq

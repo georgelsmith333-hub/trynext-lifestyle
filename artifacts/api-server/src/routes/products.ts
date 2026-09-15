@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Response } from "express";
 import { db, productsTable, categoriesTable } from "@workspace/db";
 import { eq, ilike, or, and, sql, desc, asc } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/adminAuth";
@@ -11,6 +11,29 @@ const router: IRouter = Router();
 // Cache simple (no-search) paginated product listings for 60 s.
 // Key encodes all filter dimensions so different queries don't collide.
 const PROD_TTL_S = 60;
+const PRODUCT_LIST_SELECT = {
+  id: productsTable.id,
+  name: productsTable.name,
+  slug: productsTable.slug,
+  price: productsTable.price,
+  discountPrice: productsTable.discountPrice,
+  categoryId: productsTable.categoryId,
+  imageUrl: productsTable.imageUrl,
+  sizes: productsTable.sizes,
+  colors: productsTable.colors,
+  stock: productsTable.stock,
+  featured: productsTable.featured,
+  rating: productsTable.rating,
+  reviewCount: productsTable.reviewCount,
+  customizable: productsTable.customizable,
+  tags: productsTable.tags,
+};
+
+function setProductCacheHeaders(res: Response, cached: boolean) {
+  res.set("Cache-Control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
+  res.set("X-Cache-Status", cached ? "HIT" : "MISS");
+}
+
 function productCacheKey(params: Record<string, string | undefined>): string | null {
   // Never cache search queries — they are unique per user input
   if (params.search) return null;
@@ -19,7 +42,7 @@ function productCacheKey(params: Record<string, string | undefined>): string | n
   const pg   = params.page ?? "1";
   const lim  = params.limit ?? "12";
   const srt  = params.sort ?? "newest";
-  return `trynex:products:${cat}:${feat}:${srt}:pg${pg}:lim${lim}`;
+  return `trynex:products:v2:${cat}:${feat}:${srt}:pg${pg}:lim${lim}`;
 }
 
 // Map sort param to Drizzle orderBy expression
@@ -48,7 +71,7 @@ async function invalidateProductCache(): Promise<void> {
       for (const srt of sorts)
         for (const pg of ["1", "2", "3", "4", "5"])
           for (const lim of ["12", "24", "48", "100"])
-            keys.push(`trynex:products:${cat}:${feat}:${srt}:pg${pg}:lim${lim}`);
+            keys.push(`trynex:products:v2:${cat}:${feat}:${srt}:pg${pg}:lim${lim}`);
   await Promise.allSettled(keys.map(k => redisCacheDel(k)));
 }
 
@@ -94,7 +117,7 @@ router.get("/products", async (req, res) => {
     if (cacheKey) {
       const cached = await redisCacheGet<Record<string, unknown>>(cacheKey);
       if (cached) {
-        res.set("X-Cache-Status", "HIT");
+        setProductCacheHeaders(res, true);
         res.json(cached);
         return;
       }
@@ -122,7 +145,7 @@ router.get("/products", async (req, res) => {
 
     const orderBy = buildProductOrder(sort as string | undefined);
     const [products, countResult] = await Promise.all([
-      db.select().from(productsTable).where(where).orderBy(...orderBy).limit(limitNum).offset(offset),
+      db.select(PRODUCT_LIST_SELECT).from(productsTable).where(where).orderBy(...orderBy).limit(limitNum).offset(offset),
       db.select({ count: sql<number>`count(*)` }).from(productsTable).where(where),
     ]);
 
@@ -144,7 +167,9 @@ router.get("/products", async (req, res) => {
 
     if (cacheKey) {
       await redisCacheSet(cacheKey, payload, PROD_TTL_S);
-      res.set("X-Cache-Status", "MISS");
+      setProductCacheHeaders(res, false);
+    } else {
+      res.set("Cache-Control", "private, max-age=10");
     }
     res.json(payload);
   } catch (err) {
@@ -157,11 +182,11 @@ router.get("/products", async (req, res) => {
 router.get("/products/featured", async (req, res) => {
   try {
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string || "12", 10)));
-    const cacheKey = `products:featured:${limit}`;
+    const cacheKey = `products:featured:v2:${limit}`;
     const cached = await redisCacheGet<Record<string, unknown>>(cacheKey);
-    if (cached) { res.set("X-Cache-Status", "HIT"); res.json(cached); return; }
+    if (cached) { setProductCacheHeaders(res, true); res.json(cached); return; }
 
-    const products = await db.select().from(productsTable)
+    const products = await db.select(PRODUCT_LIST_SELECT).from(productsTable)
       .where(eq(productsTable.featured, true))
       .orderBy(desc(productsTable.createdAt))
       .limit(limit);
@@ -176,7 +201,7 @@ router.get("/products/featured", async (req, res) => {
 
     const payload = { products: products.map(p => mapProduct(p, p.categoryId ? catMap[p.categoryId] : null)) };
     await redisCacheSet(cacheKey, payload, PROD_TTL_S);
-    res.set("X-Cache-Status", "MISS");
+    setProductCacheHeaders(res, false);
     res.json(payload);
   } catch (err) {
     req.log.error({ err }, "Failed to list featured products");

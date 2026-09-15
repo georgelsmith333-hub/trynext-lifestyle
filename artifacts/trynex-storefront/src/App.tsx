@@ -71,8 +71,6 @@ function lazyWithRetry<T extends ComponentType<any>>(
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
 
 const TrackOrder     = lazyWithRetry(() => import("./pages/TrackOrder"));
 const Blog           = lazyWithRetry(() => import("./pages/Blog"));
@@ -87,6 +85,8 @@ const Signup         = lazyWithRetry(() => import("./pages/Signup"));
 const Account        = lazyWithRetry(() => import("./pages/Account"));
 const NotFound       = lazyWithRetry(() => import("./pages/not-found"));
 const SeoGuide       = lazyWithRetry(() => import("./pages/SeoGuide").then(m => ({ default: m.SeoGuide })));
+const Cart           = lazyWithRetry(() => import("./pages/Cart"));
+const Checkout       = lazyWithRetry(() => import("./pages/Checkout"));
 
 const AdminLogin           = lazyWithRetry(() => import("./pages/admin/Login"));
 const AdminDashboard       = lazyWithRetry(() => import("./pages/admin/Dashboard"));

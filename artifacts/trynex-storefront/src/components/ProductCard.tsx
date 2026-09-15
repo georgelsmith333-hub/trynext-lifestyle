@@ -167,13 +167,11 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         staleTime: 60 * 1000,
       });
 
-      // Preload images so the gallery doesn't show a blank gray box.
-      const urls: string[] = [];
-      if (product.imageUrl) urls.push(resolveImageUrl(product.imageUrl));
-      const extra = (product as unknown as { images?: string[] | null }).images;
-      if (Array.isArray(extra)) urls.push(...extra.slice(0, 2));
-      urls.forEach(u => { try { const img = new Image(); img.src = u; } catch {} });
-    }, [queryClient, product.id, product.imageUrl, (product as any).images]);
+      // The list endpoint intentionally omits gallery images. The primary
+      // image is already in the browser's normal loading path; the detail
+      // page owns gallery loading so a large catalog never downloads hidden
+      // product photos during browsing.
+    }, [queryClient, product.id, product.imageUrl]);
 
     return (
       <>
@@ -236,9 +234,9 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                   alt={product.name}
                   width={400}
                   height={500}
-                  loading={index < 4 ? "eager" : "lazy"}
+                  loading={index < 2 ? "eager" : "lazy"}
                   decoding="async"
-                  fetchPriority={index === 0 ? "high" : "auto"}
+                  fetchPriority={index < 2 ? "high" : "auto"}
                   onLoad={() => setImgLoaded(true)}
                   onError={e => {
                     setImgLoaded(true);

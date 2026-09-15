@@ -54,6 +54,16 @@ function injectBuildMeta(html: string): string {
   );
 }
 
+function removeDeferredModulePreloads(html: string): string {
+  // Charts and 3D rendering are route-specific. Vite otherwise emits
+  // modulepreload hints for their shared vendor chunks on every first visit,
+  // competing with the storefront shell and product images.
+  return html.replace(
+    /\s*<link rel="modulepreload"[^>]+href="[^"]*\/assets\/vendor-(?:3d|charts)-[^"]+\.js"[^>]*>/gi,
+    "",
+  );
+}
+
 const cfDisableRocketLoader = {
   name: "trynex:disable-cf-rocket-loader",
   // Stamp the dev server response so dev iframes match production behaviour.
@@ -71,7 +81,7 @@ const cfDisableRocketLoader = {
       const fs = await import("node:fs/promises");
       const outFile = path.resolve(import.meta.dirname, "dist/index.html");
       const html = await fs.readFile(outFile, "utf8");
-      const patched = addCfAsyncFalse(injectBuildMeta(html));
+      const patched = removeDeferredModulePreloads(addCfAsyncFalse(injectBuildMeta(html)));
       if (patched !== html) await fs.writeFile(outFile, patched, "utf8");
       // NOTE: Do NOT write dist/404.html here. When 404.html coexists with the
       // "/* /index.html 200" rule in _redirects, Cloudflare Pages silently
