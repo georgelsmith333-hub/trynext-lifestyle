@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "TryNex Lifestyle",
-    "slug": "trynex-mobile",
+    "name": "TryNext Lifestyle",
+    "slug": "trynextlifestyle",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "trynex-mobile",
+    "scheme": "trynextlifestyle",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -15,14 +15,14 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.trynex.lifestyle"
+      "bundleIdentifier": "com.trynextlifestyle.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#F97316"
       },
-      "package": "com.trynex.lifestyle"
+      "package": "com.trynextlifestyle.app"
     },
     "web": {
       "favicon": "./assets/images/icon.png"
