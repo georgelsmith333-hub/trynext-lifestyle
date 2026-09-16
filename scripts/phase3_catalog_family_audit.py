@@ -1,7 +1,7 @@
 import json
 import urllib.request
 
-API = 'https://trynext.pages.dev'
+API = 'https://trynext.shop'
 def get(path):
     with urllib.request.urlopen(API + path, timeout=45) as response:
         return json.load(response)

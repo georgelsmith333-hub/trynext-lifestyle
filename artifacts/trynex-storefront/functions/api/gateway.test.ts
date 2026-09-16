@@ -5,7 +5,7 @@ type GatewayContext = Parameters<typeof onRequest>[0];
 
 function context(method: string, path: string, env: Record<string, string>, body?: string, extraHeaders?: HeadersInit): GatewayContext {
   return {
-    request: new Request(`https://trynext.pages.dev/api/${path}`, {
+    request: new Request(`https://trynext.shop/api/${path}`, {
       method,
       body: method === "GET" || method === "HEAD" ? undefined : body,
       headers: body ? { ...extraHeaders, "Content-Type": "application/json" } : extraHeaders,

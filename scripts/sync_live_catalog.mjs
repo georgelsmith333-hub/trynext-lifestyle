@@ -1,6 +1,6 @@
 import fs from "node:fs";
 
-const BASE = "https://trynext.pages.dev";
+const BASE = "https://trynext.shop";
 const seedPath = new URL("../artifacts/api-server/add-trendy-products.ts", import.meta.url);
 const source = fs.readFileSync(seedPath, "utf8");
 const arrayStart = source.indexOf("const products = [");

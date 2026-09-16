@@ -12,12 +12,12 @@ rm -rf "$OUT" && mkdir -p "$OUT"
 ) > "$OUT/repo.txt" 2>&1 & p1=$!
 (
   set -o pipefail
-  curl -L --max-time 45 -sS https://trynext.pages.dev/ -o "$OUT/live.html"
+  curl -L --max-time 45 -sS https://trynext.shop/ -o "$OUT/live.html"
   printf 'HTML_SMART_V4='; grep -o 'smart-v4' "$OUT/live.html" | wc -l
   printf 'HTML_LEGACY='; grep -oE 'source-kit-v3|smart-v3|/mockups/normalized/|normalized-cutouts' "$OUT/live.html" | wc -l
   bundle=$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' "$OUT/live.html" | head -1)
   echo "BUNDLE=$bundle"
-  curl -L --max-time 45 -sS "https://trynext.pages.dev${bundle}" -o "$OUT/live-bundle.js"
+  curl -L --max-time 45 -sS "https://trynext.shop${bundle}" -o "$OUT/live-bundle.js"
   printf 'BUNDLE_SMART_V4='; grep -o 'smart-v4' "$OUT/live-bundle.js" | wc -l
   printf 'BUNDLE_LEGACY='; grep -oE 'source-kit-v3|smart-v3|/mockups/normalized/|normalized-cutouts' "$OUT/live-bundle.js" | wc -l
 ) > "$OUT/live.txt" 2>&1 & p2=$!

@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const base = process.env.TRYNEXT_BASE_URL || 'https://trynext.pages.dev';
+const base = process.env.TRYNEXT_BASE_URL || 'https://trynext.shop';
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await context.newPage();

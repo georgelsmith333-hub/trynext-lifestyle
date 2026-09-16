@@ -4,7 +4,7 @@ import json
 import re
 import requests
 
-API = "https://trynext.pages.dev"
+API = "https://trynext.shop"
 
 def fetch_live():
     products = []

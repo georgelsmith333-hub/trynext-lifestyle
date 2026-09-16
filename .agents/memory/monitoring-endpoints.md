@@ -34,4 +34,4 @@ GitHub Actions workflow with:
 
 **Why:** External monitoring needs endpoints with stable response shapes that don't require auth tokens. Liveness is ultra-lightweight (no DB) so it won't cause false alerts during DB restarts; readiness actively verifies the critical dependency.
 
-**How to apply:** Point UptimeRobot (or similar) to `https://api.trynext.pages.dev/api/health/liveness` for 5-minute checks, and `https://api.trynext.pages.dev/api/health/readiness` for 30-second deployment health checks.
+**How to apply:** Point UptimeRobot (or similar) to `https://trynext.shop/api/health/liveness` for 5-minute checks, and `https://trynext.shop/api/health/readiness` for 30-second deployment health checks.

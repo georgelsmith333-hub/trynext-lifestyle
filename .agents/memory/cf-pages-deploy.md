@@ -6,7 +6,7 @@ description: How Trynext Lifestyle is deployed — CF Pages static frontend + AP
 # CF Pages Deployment
 
 ## Architecture
-- Static storefront: Cloudflare Pages (`trynext.pages.dev` / `trynext.pages.dev`)
+- Static storefront: Cloudflare Pages (`trynext.shop`, with the Pages hostname retained only as a compatibility origin)
 - API: CF Pages Function at `functions/api/[[path]].ts` proxies all `/api/*` to `API_URL`
 - GitHub repo: `georgelsmith333-hub/trynext-lifestyle` → CF Pages auto-builds on push
 
@@ -34,7 +34,7 @@ File: `functions/api/[[path]].ts` (at repo root — NOT inside artifacts/)
 3. Set `API_URL` in CF Pages env vars to point to working API host
 
 ## Verification caveat
-- The confirmed active Pages project/domain is `trynext.pages.dev`. The similarly named `trynext-lifestyle.pages.dev` served stale SPA HTML for several API paths and must not be used as deployment evidence.
+- The confirmed active public domain is `trynext.shop`. The Pages hostname is an implementation/compatibility origin; verify production behavior through the custom domain.
 - After workspace reconciliation removed managed artifact registration, a minimal `Start application` workflow can run the API and storefront together locally, but it does not restore artifact registry metadata.
 
 **Why:** User wants zero-cost, Replit-independent hosting. CF Pages = free tier with global CDN.

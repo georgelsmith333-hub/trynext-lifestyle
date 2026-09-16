@@ -4,7 +4,7 @@
 - [Generated mockup source kits](generated-mockup-source-kit.md) — keep editable PSD bundles outside public runtime; retain photo fallback until visual review approves generated assets.
 - [T-shirt color photo mockups](tshirt-color-photos.md) — navy (#1e3a5f) and red (#dc2626) t-shirts use real AI-generated photos via colorPhotos map in BASE_BY_CATEGORY; GarmentSVG sets useColorPhoto flag; composer skips multiply-tint when isColorPhoto:true.
 - [GLB models missing — use PhotoMockupMesh](glb-models.md) — tshirt/hoodie/longsleeve/cap GLBs absent; all replaced with photo-billboard approach; all useGLTF.preload calls commented out.
-- [CF Pages deployment](cf-pages-deploy.md) — static frontend on CF Pages (trynext.pages.dev); API proxied via functions/api/[[path]].ts; set API_URL env var in CF Pages.
+- [CF Pages deployment](cf-pages-deploy.md) — static frontend on CF Pages (trynext.shop); API proxied via functions/api/[[path]].ts; set API_URL env var in CF Pages.
 - [Waterbottle cutout file](waterbottle-cutout.md) — use white-waterbottle-front-cutout.png (228KB, proper transparency); NOT white-waterbottle-cutout.png (206KB = same as front photo, no alpha).
 - [DB schema](db-schema.md) — full schema in lib/db/src/schema/index.ts; Drizzle ORM + Neon; admin sessions table (not JWT); DATABASE_URL_MAIN preferred over DATABASE_URL.
 - [PhotoMockupMesh color fix](photo-mockup-color.md) — do NOT use adjustGarmentColor for photo planes; near-white (lum>0.88) must return "#ffffff" not "#D2CFC9" or white garments look grey in 3D.
@@ -39,7 +39,7 @@
 - [Monitoring endpoints](monitoring-endpoints.md) — /api/health/liveness and /api/health/readiness for K8s/external monitoring; cpu/memory metrics added to system health; GitHub Actions CI/CD for build+lint+typecheck.
 - [WhatsApp/phone number dynamic](whatsapp-settings-dynamic.md) — all customer-facing WA links read from siteSettings; never hardcode 8801903426915 in JSX.
 - [Vite proxy port](vite-proxy-port.md) — storefront vite.config.ts proxies /api/* to API_PORT env var, default was 5001 (wrong); correct default is 8082 (API server port). Root cause of "no products" in dev.
-- [Mobile Render domain fallback](mobile-render-fallback.md) — .env.production had stale trynex-api.onrender.com; lib/api.ts getBaseUrl() + _layout.tsx setBaseUrl() now detect and replace that domain with trynext.pages.dev automatically.
+- [Mobile Render domain fallback](mobile-render-fallback.md) — .env.production had stale trynex-api.onrender.com; lib/api.ts getBaseUrl() + _layout.tsx setBaseUrl() now detect and replace that domain with trynext.shop automatically.
 - [DB auto-failover re-probe](db-auto-reprobe.md) — periodic 60s re-probe walks the full chain and switches to the first healthy DB; products/analytics added as failover candidates.
 - [Security: untracked secret files](secrets-untracked.md) — `.replit` and `attached_assets/Pasted-*.txt` removed from git index so credentials cannot be committed again.
 - [Dependency audit remediation](dependency-audit-remediation.md) — workspace advisories need lockfile ownership analysis, coordinated direct upgrades, generated-client regeneration, and full-suite verification.

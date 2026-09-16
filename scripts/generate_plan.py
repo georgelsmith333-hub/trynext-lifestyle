@@ -362,7 +362,7 @@ def build_pdf(output_path="Trynext_DesignStudio_MasterPlan.pdf"):
         Spacer(1, 10),
         Paragraph("Comprehensive Architecture · Advanced Features · Implementation Roadmap", s["cover_sub"]),
         Spacer(1, 6),
-        Paragraph("trynext.pages.dev  ·  Version 2.0  ·  July 2026", s["cover_sub"]),
+        Paragraph("trynext.shop  ·  Version 2.0  ·  July 2026", s["cover_sub"]),
     ]]
     cover_table = Table([[c] for c in cover_data[0]], colWidths=[164*mm])
     cover_table.setStyle(TableStyle([
@@ -382,7 +382,7 @@ def build_pdf(output_path="Trynext_DesignStudio_MasterPlan.pdf"):
         [Spacer(1, 6)],
         [Paragraph("Comprehensive Architecture  ·  Advanced Features  ·  Implementation Roadmap  ·  All-in-One Command Guide", ParagraphStyle("ct3", fontName="Helvetica", fontSize=10, textColor=HexColor("#9CA3AF"), alignment=TA_CENTER, leading=15))],
         [Spacer(1, 4)],
-        [Paragraph("trynext.pages.dev  ·  Version 2.0  ·  July 2026", ParagraphStyle("ct4", fontName="Helvetica", fontSize=9, textColor=HexColor("#6B7280"), alignment=TA_CENTER))],
+        [Paragraph("trynext.shop  ·  Version 2.0  ·  July 2026", ParagraphStyle("ct4", fontName="Helvetica", fontSize=9, textColor=HexColor("#6B7280"), alignment=TA_CENTER))],
     ], colWidths=[164*mm]))
     story[-1].setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, -1), BRAND_BLACK),
@@ -1170,7 +1170,7 @@ def build_pdf(output_path="Trynext_DesignStudio_MasterPlan.pdf"):
     story.append(Spacer(1, 12))
     story.append(hr(BRAND_ORANGE, 2))
     story.append(Paragraph(
-        "Trynext Lifestyle  ·  trynext.pages.dev  ·  Design Studio Master Plan v2.0  ·  July 2026",
+        "Trynext Lifestyle  ·  trynext.shop  ·  Design Studio Master Plan v2.0  ·  July 2026",
         ParagraphStyle("footer", fontName="Helvetica", fontSize=8, textColor=MID_GRAY, alignment=TA_CENTER)
     ))
 

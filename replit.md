@@ -1,6 +1,6 @@
 # Trynext Lifestyle
 
-Trynext Lifestyle (trynext.pages.dev) is a print-on-demand e-commerce storefront for Bangladesh — custom T-shirts, hoodies, mugs, and caps — with a browser-based Design Studio, an admin back office, and a companion mobile app.
+Trynext Lifestyle (trynext.shop) is a print-on-demand e-commerce storefront for Bangladesh — custom T-shirts, hoodies, mugs, and caps — with a browser-based Design Studio, an admin back office, and a companion mobile app.
 
 ## Mandatory Agent handoff
 
@@ -90,7 +90,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 - Editing `artifacts/api-server/src/**` requires a manual rebuild (`node ./build.mjs`) + workflow restart — there is no dev-mode source watcher.
 - Secure GitHub delivery works with the `x-access-token:$GITHUB_TOKEN` HTTPS form; fetch/merge the published main first and keep credential-bearing attachments out of the outgoing history so GitHub push protection does not reject the release.
-- The live `trynext.pages.dev` site is a client-rendered SPA (no SSR/prerendering) — Googlebot renders JS and indexes it, but non-JS crawlers (some social-share bots) only ever see the generic homepage meta tags baked into `index.html`, not per-page `SEOHead` content.
+- The live `trynext.shop` site is a client-rendered SPA (no SSR/prerendering) — Googlebot renders JS and indexes it, but non-JS crawlers (some social-share bots) only ever see the generic homepage meta tags baked into `index.html`, not per-page `SEOHead` content.
 
 ## Pointers
 

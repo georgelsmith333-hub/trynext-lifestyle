@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const BASE = "https://trynext.pages.dev";
+const BASE = "https://trynext.shop";
 const repoRoot = path.resolve(new URL("..", import.meta.url).pathname);
 const seedPath = path.join(repoRoot, "artifacts/api-server/add-trendy-products.ts");
 const assetRoot = path.join(repoRoot, "artifacts/trynex-storefront/public");
