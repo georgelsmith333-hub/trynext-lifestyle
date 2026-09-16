@@ -1373,3 +1373,39 @@ Verification: Storefront typecheck passed; storefront tests passed (19 files,
   route loaded at mobile size without browser-console errors; and no order,
   payment, production data, or deployment state changed.
 ```
+
+## Final publication and verification checkpoint (2026-09-17)
+
+```text
+Status: complete — verified source published and live site updated
+Last completed: Rebuilt and validated the temporary 188-surface Smart Object
+  staging release, added portable real PSD/PSB parser fixtures, published the
+  verified commit to GitHub main, and confirmed the Cloudflare Pages site
+  updated from the pushed source.
+Stopped at: After local workflow, test, build, GitHub Actions, live-domain,
+  optimized-image, sitemap, API-health, and public runtime-manifest checks.
+Files/areas changed: artifacts/api-server/src/lib/psdMasterParser.test.ts and
+  its two real parser fixtures under artifacts/api-server/src/lib/fixtures/psd/.
+  The rebuilt editable 188-surface source kit remains outside the public
+  runtime and was not committed or exposed to the storefront.
+Remaining work: Perform the deferred authenticated browser interaction review
+  for Checkout, Account/messages, admin operations, and representative Design
+  Studio upload/cart/export flows across desktop and mobile.
+Blocker: The Cloudflare API token is active but cannot read this Pages account
+  and returns 403 for the project endpoint. This did not block the rollout:
+  GitHub push triggered successful CI and active-app verification, and the
+  public site served the new optimized asset afterward. Local Redis remains an
+  optional-cache degradation; database-backed API readiness is healthy.
+Next safe action: Complete the authenticated browser review without creating
+  orders or payment records, then record per-flow visual acceptance.
+Verification: Smart Object release gate passed structurally-verified for
+  188/188 surfaces; native ag-psd inspection found 188/188 1024x1024 documents,
+  one embedded Smart Object each, and non-empty embedded payloads. Full
+  workspace typecheck passed; API tests passed (10 files/36 tests); storefront
+  tests passed (19 files/69 tests); storefront production build passed; mobile
+  typecheck passed; both managed workflows restarted cleanly. GitHub CI and
+  Active app verification succeeded for the published commit. Live checks:
+  homepage 200, optimized WebP 200 image/webp, accepted 188-surface runtime
+  manifest, API health 200, sitemap 200. The local screenshot rendered the
+  homepage with no browser-console errors.
+```

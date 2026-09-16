@@ -28,10 +28,15 @@ File: `functions/api/[[path]].ts` (at repo root — NOT inside artifacts/)
 2. A free host (Render/Railway) running `@workspace/api-server`
 3. Future: full Cloudflare Worker implementation of all routes
 
-## What still needs to happen
-1. User provides fresh GitHub PAT (repo scope) → push to `georgelsmith333-hub/trynext-lifestyle`
-2. User provides fresh CF API token → set CF Pages env vars (DATABASE_URL_MAIN, ADMIN_PASSWORD, JWT_SECRET, UPSTASH tokens, R2 keys)
-3. Set `API_URL` in CF Pages env vars to point to working API host
+## Current operational note
+- GitHub main publishing works with the configured repository token, and a push to
+  `main` triggers the repository checks and the Cloudflare Pages build path.
+- The configured Cloudflare token can verify as active but currently returns
+  `403` for this Pages account/project API read; do not treat that as evidence
+  that the live site failed when the public-domain checks are healthy.
+- The live custom domain is the authority for rollout verification: check the
+  homepage, API health, optimized static assets, sitemap, and accepted runtime
+  manifest after each publish.
 
 ## Verification caveat
 - The confirmed active public domain is `trynext.shop`. The Pages hostname is an implementation/compatibility origin; verify production behavior through the custom domain.
