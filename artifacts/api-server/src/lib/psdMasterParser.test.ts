@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { parsePsdMaster } from "./psdMasterParser";
 
-const fixtureRoot = new URL("../../../../dist-mockups/staging/smart-v10-v3/masters/", import.meta.url);
+const fixtureRoot = new URL("./fixtures/psd/", import.meta.url);
 
 describe("PSD/PSB master parser", () => {
   it("parses a real PSD and extracts the embedded Smart Object", () => {
