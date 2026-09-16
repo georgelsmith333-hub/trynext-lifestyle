@@ -4,12 +4,13 @@ import { eq } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/adminAuth";
 import { logger } from "../lib/logger";
 import { logActivity, getAdminId } from "../lib/activityLog";
+import { getStorefrontUrl } from "../lib/storefrontUrl";
 
 const router: IRouter = Router();
 
 // SEO operations target the customer-facing storefront. Do not derive this
 // from API_PUBLIC_URL, which points at Render and produces invalid sitemap URLs.
-const SITE_URL = process.env.STOREFRONT_PUBLIC_URL || "https://trynext.shop";
+const SITE_URL = getStorefrontUrl();
 const SITEMAP_URL = `${SITE_URL}/sitemap.xml`;
 
 async function getSetting(key: string): Promise<string | null> {
