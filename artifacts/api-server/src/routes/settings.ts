@@ -89,7 +89,9 @@ function fallback(value: string | null | undefined, def: string): string {
 }
 
 function normalizeCustomerBrand(value: string | null | undefined): string {
-  return fallback(value, "Trynext Lifestyle").replace(/\bTrynext\b/gi, "Trynext");
+  return fallback(value, "Trynext Lifestyle")
+    .replace(/\bTryNex\b/gi, "Trynext")
+    .replace(/\bTrynext\b/gi, "Trynext");
 }
 
 async function buildSettings(map: Record<string, string | null>) {

@@ -135,8 +135,8 @@ export default function KeywordLanding({ params }: { params: { slug: string } })
     url: SITE_URL,
     ...(settings.phone ? { telephone: settings.phone } : {}),
     ...(settings.email ? { email: settings.email } : {}),
-    image: `${SITE_URL}/og-image.jpg`,
-    logo: `${SITE_URL}/trynext-logo.png`,
+    image: `${SITE_URL}/opengraph.jpg`,
+    logo: `${SITE_URL}/apple-touch-icon.png`,
     priceRange: "৳৳",
     openingHoursSpecification: {
       "@type": "OpeningHoursSpecification",

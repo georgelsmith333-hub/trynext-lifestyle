@@ -30,6 +30,8 @@ import {
   resolveOrigins,
 } from "../gateway-config";
 
+const CANONICAL_STOREFRONT_URL = "https://trynext.shop";
+
 interface GatewayEnv {
   API_URL?: string;
   API_ORIGIN?: string;
@@ -87,6 +89,29 @@ function corsHeaders(origin: string): Headers {
 
 function makeTargetUrl(origin: string, path: string, search: string): URL {
   return new URL(`/api/${path}${search}`, `${origin}/`);
+}
+
+function shouldRetryReadResponse(response: Response): boolean {
+  if (RETRYABLE_STATUSES.has(response.status)) return true;
+  return response.status === 404
+    && response.headers.get("x-render-routing")?.toLowerCase() === "no-server";
+}
+
+async function canonicalizeSitemapResponse(
+  response: Response,
+  path: string,
+): Promise<{ body: BodyInit | null; changed: boolean }> {
+  const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+  if (path !== "sitemap.xml" || !response.ok || !contentType.includes("xml")) {
+    return { body: response.body, changed: false };
+  }
+
+  const body = await response.text();
+  const canonicalBody = body.replace(
+    /https:\/\/[a-z0-9-]+\.pages\.dev/gi,
+    CANONICAL_STOREFRONT_URL,
+  );
+  return { body: canonicalBody, changed: canonicalBody !== body };
 }
 
 /** Reset in-memory routing state; exported for tests only. */
@@ -196,7 +221,7 @@ export const onRequest: PagesFunction<GatewayEnv> = async (context) => {
         signal: AbortSignal.timeout(Math.min(REQUEST_TIMEOUT_MS, remainingReadBudget)),
       });
       lastStatus = response.status;
-      if (routeKind === "read" && RETRYABLE_STATUSES.has(response.status)) {
+      if (routeKind === "read" && shouldRetryReadResponse(response)) {
         lastError = `Origin ${apiOrigin} returned ${response.status}`;
         markFailure(apiOrigin);
         continue;
@@ -207,6 +232,11 @@ export const onRequest: PagesFunction<GatewayEnv> = async (context) => {
       responseCors.forEach((value, key) => responseHeaders.set(key, value));
       responseHeaders.set("X-Trynext-Origin", new URL(apiOrigin).host);
       responseHeaders.set("X-Trynext-Route", routeKind);
+      const canonicalizedSitemap = await canonicalizeSitemapResponse(response, path);
+      if (canonicalizedSitemap.changed) {
+        responseHeaders.delete("content-length");
+        responseHeaders.set("X-Trynext-Sitemap-Canonical", CANONICAL_STOREFRONT_URL);
+      }
       if (safeRead && response.ok) {
         responseHeaders.set("Cache-Control", "public, max-age=10, s-maxage=30, stale-while-revalidate=60");
       } else if (!safeRead || primaryOnlyRead) {
@@ -216,7 +246,7 @@ export const onRequest: PagesFunction<GatewayEnv> = async (context) => {
       if (cacheable && edgeCache && response.ok) {
         responseHeaders.set("X-Trynext-Edge-Cache", "MISS");
       }
-      const output = new Response(response.body, {
+      const output = new Response(canonicalizedSitemap.body, {
         status: response.status,
         statusText: response.statusText,
         headers: responseHeaders,

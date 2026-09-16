@@ -44,6 +44,29 @@ describe("four-render multi-route Pages gateway", () => {
     expect(response.headers.get("X-Trynext-Route")).toBe("read");
   });
 
+  it("fails over when Render reports that a read origin has no server", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response("no server", {
+        status: 404,
+        headers: { "x-render-routing": "no-server" },
+      }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ source: "primary" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await onRequest(context("GET", "products", {
+      API_PRIMARY_ORIGIN: "https://render-main.example",
+      API_READ_ORIGINS: "https://render-standby.example",
+    }));
+
+    expect(response.status).toBe(200);
+    expect((await response.json()).source).toBe("primary");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect((fetchMock.mock.calls[1][0] as Request).url).toContain("render-main.example");
+  });
+
   it("rotates read origins round-robin to split read load", async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true }), {
       status: 200,
@@ -79,6 +102,29 @@ describe("four-render multi-route Pages gateway", () => {
     expect((fetchMock.mock.calls[0][0] as Request).url).toContain("render-main.example");
     expect(response.headers.get("X-Trynext-Origin")).toBe("render-main.example");
     expect(response.headers.get("X-Trynext-Route")).toBe("write");
+  });
+
+  it("canonicalizes stale Pages-host URLs in the sitemap response", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(new Response(
+      "<?xml version=\"1.0\"?><urlset><loc>https://trynext-shop.pages.dev/products</loc></urlset>",
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/xml",
+          "Content-Length": "91",
+        },
+      },
+    ));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await onRequest(context("GET", "sitemap.xml", {
+      API_PRIMARY_ORIGIN: "https://render-main.example",
+    }));
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain("https://trynext.shop/products");
+    expect(response.headers.get("X-Trynext-Sitemap-Canonical")).toBe("https://trynext.shop");
+    expect(response.headers.get("content-length")).toBeNull();
   });
 
   it("routes writes to the PRIMARY only and never replays to a read origin", async () => {

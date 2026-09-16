@@ -681,7 +681,7 @@ export default function Home() {
             "name": settings.siteName || "Trynext Lifestyle",
             "alternateName": "Trynext",
             "url": "https://trynext.shop",
-            "logo": "https://trynext.shop/favicon.svg",
+            "logo": "https://trynext.shop/apple-touch-icon.png",
             "image": "https://trynext.shop/opengraph.jpg",
             "description": "Bangladesh's #1 premium custom apparel brand. Custom T-shirts, Hoodies, Mugs & Caps with fast nationwide delivery.",
             ...(settings.phone ? { "telephone": settings.phone } : {}),
@@ -729,7 +729,7 @@ export default function Home() {
             "@type": "Organization",
              "name": settings.siteName || "Trynext Lifestyle",
             "url": "https://trynext.shop",
-            "logo": { "@type": "ImageObject", "url": "https://trynext.shop/favicon.svg", "width": 512, "height": 512 },
+            "logo": { "@type": "ImageObject", "url": "https://trynext.shop/apple-touch-icon.png", "width": 180, "height": 180 },
              ...(settings.phone ? { "contactPoint": { "@type": "ContactPoint", "telephone": settings.phone, "contactType": "sales", "areaServed": "BD" } } : {}),
           },
           {

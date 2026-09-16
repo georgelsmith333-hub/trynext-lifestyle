@@ -112,7 +112,7 @@ export function resolveOrigins(env: Record<string, string | undefined>): Resolve
   const readsFromEnv = splitUrls(env.API_READ_ORIGINS);
   const configuredReads = [...PRODUCTION_ORIGINS.reads, ...PRODUCTION_ORIGINS.primary];
   const reads = readsFromEnv.length > 0
-    ? readsFromEnv
+    ? [...readsFromEnv, ...primary]
     : configuredReads.length > 0
       ? configuredReads
       : legacy;
