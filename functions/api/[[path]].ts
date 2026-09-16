@@ -97,6 +97,16 @@ function shouldRetryReadResponse(response: Response): boolean {
     && response.headers.get("x-render-routing")?.toLowerCase() === "no-server";
 }
 
+function publicReadCacheControl(path: string): string {
+  // Catalog reads are safe to serve stale while a suspended Render instance
+  // wakes. Mutations bump the API-side generation and the short browser TTL
+  // keeps admin/catalog changes visible quickly.
+  if (path === "products" || path.startsWith("products/") || path === "categories") {
+    return "public, max-age=15, s-maxage=60, stale-while-revalidate=300";
+  }
+  return "public, max-age=10, s-maxage=30, stale-while-revalidate=60";
+}
+
 async function canonicalizeSitemapResponse(
   response: Response,
   path: string,
@@ -238,7 +248,7 @@ export const onRequest: PagesFunction<GatewayEnv> = async (context) => {
         responseHeaders.set("X-Trynext-Sitemap-Canonical", CANONICAL_STOREFRONT_URL);
       }
       if (safeRead && response.ok) {
-        responseHeaders.set("Cache-Control", "public, max-age=10, s-maxage=30, stale-while-revalidate=60");
+        responseHeaders.set("Cache-Control", publicReadCacheControl(path));
       } else if (!safeRead || primaryOnlyRead) {
         responseHeaders.set("Cache-Control", "private, no-store");
       }

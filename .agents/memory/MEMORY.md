@@ -70,3 +70,4 @@
 - [PSD/PSB master ingestion](psd-psb-master-ingestion.md) — parse private uploaded bytes server-side; never trust client checksums or expose editable masters to the browser
 - [Full-canvas Smart Object compositor](full-canvas-smart-compositor.md) — compose base, artwork, shading, and protected details on one full canvas; protected stays last
 - [Print-area selection](print-area-selection.md) — selected images use a fixed active-face print mask with non-destructive transform handles
+- [Product image performance](product-image-performance.md) — static catalog PNG masters need generated WebP browsing variants; keep the rewrite narrowly scoped

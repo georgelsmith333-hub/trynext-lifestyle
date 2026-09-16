@@ -410,6 +410,7 @@ export const useTrynexListProducts = (
     limit?: number;
     search?: string;
     page?: number;
+    includeTotal?: boolean;
   },
   opts?: { query?: Partial<UseQueryOptions> } | ReqOpts,
 ) => {
@@ -419,6 +420,7 @@ export const useTrynexListProducts = (
   if (params?.limit) searchParams.set("limit", String(params.limit));
   if (params?.search) searchParams.set("search", params.search);
   if (params?.page) searchParams.set("page", String(params.page));
+  if (params?.includeTotal !== undefined) searchParams.set("includeTotal", String(params.includeTotal));
   const qs = searchParams.toString();
   const url = `/api/products${qs ? `?${qs}` : ""}`;
   type ProductsResponse = { products: Product[]; total?: number; page?: number; limit?: number; totalPages?: number };

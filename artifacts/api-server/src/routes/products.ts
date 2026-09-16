@@ -84,6 +84,7 @@ const router: IRouter = Router();
 const PROD_TTL_S = 60;
 const PRODUCT_CACHE_VERSION_KEY = "trynext:products:version";
 const PRODUCT_VERSION_TTL_S = 24 * 60 * 60;
+const localProductCache = new Map<string, { payload: Record<string, unknown>; expiresAt: number }>();
 
 async function getProductCacheVersion(): Promise<string> {
   return (await redisCacheGet<string>(PRODUCT_CACHE_VERSION_KEY)) ?? "1";
@@ -98,8 +99,21 @@ async function productCacheKey(params: Record<string, string | undefined>): Prom
   const pg   = params.page ?? "1";
   const lim  = params.limit ?? "12";
   const srt  = params.sort ?? "newest";
+  const total = params.includeTotal ?? "true";
   const version = await getProductCacheVersion();
-  return `trynext:products:${version}:${cat}:${feat}:${custom}:${srt}:pg${pg}:lim${lim}`;
+  return `trynext:products:${version}:${cat}:${feat}:${custom}:${srt}:pg${pg}:lim${lim}:total${total}`;
+}
+
+function localProductCacheKey(params: Record<string, string | undefined>): string {
+  return JSON.stringify([
+    params.categoryId ?? "all",
+    params.featured ?? "false",
+    params.customizable ?? "false",
+    params.sort ?? "newest",
+    params.page ?? "1",
+    params.limit ?? "12",
+    params.includeTotal ?? "true",
+  ]);
 }
 
 // Map sort param to Drizzle orderBy expression
@@ -118,6 +132,7 @@ function buildProductOrder(sort: string | undefined) {
 
 // Invalidate all product list cache entries when any product is mutated.
 async function invalidateProductCache(): Promise<void> {
+  localProductCache.clear();
   // Old generation keys expire naturally; the version write is replicated to
   // every configured backend and also updates the process-local fallback.
   await redisCacheSet(PRODUCT_CACHE_VERSION_KEY, String(Date.now()), PRODUCT_VERSION_TTL_S);
@@ -153,13 +168,40 @@ function mapProduct(p: any, categoryName?: string | null) {
 router.get("/products", async (req, res) => {
   try {
     const { categoryId: rawCategoryId, category, search, featured, customizable, page = "1", limit = "12", sort } = req.query;
+    const includeTotal = req.query.includeTotal !== "false";
     // Accept both the canonical API name and the storefront-friendly alias.
     const categoryId = rawCategoryId ?? category;
     const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
     const limitNum = Math.min(100, Math.max(1, parseInt(limit as string, 10) || 12));
     const offset = (pageNum - 1) * limitNum;
 
-    // Check cache for non-search requests
+    // Check the local cache before consulting Redis. This keeps repeat visits
+    // on a warm API instance below a database/Redis round trip.
+    const localKey = !search
+      ? localProductCacheKey({
+          categoryId: (rawCategoryId ?? category) as string | undefined,
+          featured: featured as string | undefined,
+          customizable: customizable as string | undefined,
+          page: page as string,
+          limit: limit as string,
+          sort: sort as string | undefined,
+          includeTotal: String(includeTotal),
+        })
+      : null;
+    if (localKey) {
+      const local = localProductCache.get(localKey);
+      if (local && local.expiresAt > Date.now()) {
+        res.set({
+          "X-Cache-Status": "LOCAL-HIT",
+          "Cache-Control": "public, max-age=15, s-maxage=60, stale-while-revalidate=300",
+        });
+        res.json(local.payload);
+        return;
+      }
+      if (local) localProductCache.delete(localKey);
+    }
+
+    // Check the shared cache for non-search requests.
     const cacheKey = await productCacheKey({
       categoryId: categoryId as string | undefined,
       search: search as string | undefined,
@@ -168,11 +210,16 @@ router.get("/products", async (req, res) => {
       page: page as string,
       limit: limit as string,
       sort: sort as string | undefined,
+      includeTotal: String(includeTotal),
     });
     if (cacheKey) {
       const cached = await redisCacheGet<Record<string, unknown>>(cacheKey);
       if (cached) {
-        res.set("X-Cache-Status", "HIT");
+        if (localKey) localProductCache.set(localKey, { payload: cached, expiresAt: Date.now() + PROD_TTL_S * 1000 });
+        res.set({
+          "X-Cache-Status": "HIT",
+          "Cache-Control": "public, max-age=15, s-maxage=60, stale-while-revalidate=300",
+        });
         res.json(cached);
         return;
       }
@@ -212,12 +259,13 @@ router.get("/products", async (req, res) => {
     const where = conditions.length > 0 ? and(...conditions) : undefined;
 
     const orderBy = buildProductOrder(sort as string | undefined);
-    const [products, countResult] = await Promise.all([
-      db.select().from(productsTable).where(where).orderBy(...orderBy).limit(limitNum).offset(offset),
-      db.select({ count: sql<number>`count(*)` }).from(productsTable).where(where),
-    ]);
+    const productsQuery = db.select().from(productsTable).where(where).orderBy(...orderBy).limit(limitNum).offset(offset);
+    const countQuery = includeTotal
+      ? db.select({ count: sql<number>`count(*)` }).from(productsTable).where(where)
+      : null;
+    const [products, countResult] = await Promise.all([productsQuery, countQuery]);
 
-    const total = Number(countResult[0]?.count ?? 0);
+    const total = Number(countResult?.[0]?.count ?? 0);
 
     const categoryIds = [...new Set(products.map(p => p.categoryId).filter(Boolean))];
     const categories = categoryIds.length > 0
@@ -227,16 +275,17 @@ router.get("/products", async (req, res) => {
 
     const payload = {
       products: products.map(p => mapProduct(p, p.categoryId ? catMap[p.categoryId] : null)),
-      total,
+      ...(includeTotal ? { total, totalPages: Math.ceil(total / limitNum) } : {}),
       page: pageNum,
       limit: limitNum,
-      totalPages: Math.ceil(total / limitNum),
     };
 
     if (cacheKey) {
       await redisCacheSet(cacheKey, payload, PROD_TTL_S);
+      if (localKey) localProductCache.set(localKey, { payload, expiresAt: Date.now() + PROD_TTL_S * 1000 });
       res.set("X-Cache-Status", "MISS");
     }
+    if (!search) res.set("Cache-Control", "public, max-age=15, s-maxage=60, stale-while-revalidate=300");
     res.json(payload);
   } catch (err) {
     req.log.error({ err }, "Failed to list products");

@@ -618,7 +618,7 @@ export default function Home() {
   // The home page only displays 20 curated cards. Keep the initial payload
   // bounded so a mobile visitor does not download the full catalogue merely
   // to choose those cards client-side.
-  const { data: productsData, isLoading, isError, refetch } = useListProducts({ limit: 24 });
+  const { data: productsData, isLoading, isError, refetch } = useListProducts({ limit: 24, includeTotal: false });
   const { data: testimonialsData } = useGetTestimonials();
   const publicStats = usePublicStats();
   const [spinWheelOpen, setSpinWheelOpen] = useState(false);
@@ -845,7 +845,7 @@ export default function Home() {
             <ErrorBoundary section="featured products">
               <div className="product-grid-responsive">
                 {featuredProducts.map((product, i) => (
-                  <ProductCard key={product.id} product={product} index={i} eagerImage={false} />
+                  <ProductCard key={product.id} product={product} index={i} eagerImage={i === 0} />
                 ))}
               </div>
               <div className="flex justify-center mt-10">

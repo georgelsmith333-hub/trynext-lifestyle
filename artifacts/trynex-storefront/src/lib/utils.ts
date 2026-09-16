@@ -80,6 +80,12 @@ export function resolveImageUrl(url: string | null | undefined): string {
   // Uploads need the API base URL prepended — check before the generic "/" guard
   if (value.startsWith("/uploads/")) return `${getApiBaseUrl()}${value}`;
   if (value.startsWith("uploads/")) return `${getApiBaseUrl()}/${value}`;
+  // Catalog artwork is stored as large PNG masters for editing. Serve the
+  // generated WebP thumbnail for storefront cards and galleries instead.
+  // Keep the original URL as the fallback when an older record has no variant.
+  if (/^\/assets\/products\/[^/]+\.png$/i.test(value)) {
+    return value.replace(/\.png$/i, ".webp").replace("/assets/products/", "/assets/products/optimized/");
+  }
   if (value.startsWith("/")) return value;
   if (value.startsWith("public/")) return `/${value.slice("public/".length)}`;
   if (value.startsWith("mockups/")) return `/${value}`;

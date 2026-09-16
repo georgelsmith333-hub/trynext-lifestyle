@@ -64,6 +64,38 @@ mobile app, promotional experience, and brand-system artifact.
 
 ## Current open work
 
+### Storefront performance checkpoint (2026-09-16)
+
+```text
+Status: ready for review — local performance release verified
+Last completed: Reduced home catalog work to a bounded no-count request, added a
+process-local product cache, extended safe catalog edge caching with stale-while-
+revalidate, prioritized the first home product image, and generated 90 small WebP
+product thumbnails from the large PNG masters.
+Stopped at: After rebuilding/restarting both managed workflows, measuring cold and
+warm API responses, checking thumbnail responses, running the storefront tests,
+and capturing a clean desktop preview.
+Files/areas changed: API product list route and client hook, storefront image URL
+resolution and home product loading, Cloudflare Pages API cache headers, and
+public/assets/products/optimized/*.webp.
+Remaining work: Publish the verified source and optimized assets only after a
+valid GitHub remote credential/repository URL is available. Cloudflare provider
+verification remains separate and was not mutated.
+Blocker: This checkout has no configured git origin; the newly available GitHub
+credential returned repository-not-found when tested against the historical
+repository path. Do not force-push or guess a repository URL.
+Next safe action: Confirm the canonical GitHub repository through secure workspace
+integration/configuration, then fetch main, merge normally, run the release checks,
+and publish through the connected Pages workflow.
+Verification: API and storefront typechecks passed; storefront production build
+passed; API build passed; all 19 storefront test files and 69 tests passed; 33 of
+36 API tests passed, with the 3 failures limited to absent excluded PSD/PSB fixture
+files; API products returned 200 with includeTotal=false in about 0.55s cold and
+about 0.003s from the local cache; generated WebP thumbnails returned 200 at
+35–80KB; both workflows are running; desktop preview rendered without browser
+console errors; git diff checks passed.
+```
+
 ### GitHub restore checkpoint (2026-09-16)
 
 ```text
