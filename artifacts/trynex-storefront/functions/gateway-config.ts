@@ -57,6 +57,7 @@ export const PRIMARY_ONLY_READ_PREFIXES = [
   "/health/readiness",
   "/healthz",
   "/readyz",
+  "/sitemap.xml",
 ];
 
 export interface OriginRoles {

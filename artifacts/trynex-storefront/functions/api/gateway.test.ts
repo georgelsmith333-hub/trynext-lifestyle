@@ -62,13 +62,11 @@ describe("four-render multi-route Pages gateway", () => {
     expect((fetchMock.mock.calls[1][0] as Request).url).toContain("render-read-2.example");
   });
 
-  it("treats sitemap.xml as a safe public read (SEO fix) and fails it over", async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(new Response("primary unavailable", { status: 503 }))
-      .mockResolvedValueOnce(new Response("<?xml version=\"1.0\"?><urlset/>", {
-        status: 200,
-        headers: { "Content-Type": "application/xml" },
-      }));
+  it("pins sitemap.xml to the primary origin so SEO cannot see standby drift", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(new Response("<?xml version=\"1.0\"?><urlset/>", {
+      status: 200,
+      headers: { "Content-Type": "application/xml" },
+    }));
     vi.stubGlobal("fetch", fetchMock);
 
     const response = await onRequest(context("GET", "sitemap.xml", {
@@ -77,9 +75,10 @@ describe("four-render multi-route Pages gateway", () => {
     }));
 
     expect(response.status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(response.headers.get("X-Trynext-Origin")).toBe("render-read-2.example");
-    expect(response.headers.get("X-Trynext-Route")).toBe("read");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect((fetchMock.mock.calls[0][0] as Request).url).toContain("render-main.example");
+    expect(response.headers.get("X-Trynext-Origin")).toBe("render-main.example");
+    expect(response.headers.get("X-Trynext-Route")).toBe("write");
   });
 
   it("routes writes to the PRIMARY only and never replays to a read origin", async () => {
