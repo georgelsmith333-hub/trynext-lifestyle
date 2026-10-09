@@ -1,0 +1,27 @@
+# Release reports
+
+## 2026-10-10 — release health check
+
+**Verdict: NOT READY.** Source: `origin/main` at `3ce13d7fb3b45b40e9d820cfc99515bd7744bc1f` (2026-09-16); no deployment identity proven. GitHub shows no open PRs. Referenced PR numbers do not match supplied descriptions: #40 is performance, #37 is Water Bottle metadata, #36 is Water Bottle assets. Local focused tests passed: storefront 4 files/21 tests; API objectStorage + products 2 files/11 tests. Public GET: products/categories 200; mockups 200 but exceeded 12s; health/readiness 404; service-worker path returns SPA HTML; pages.dev DNS unresolved. Prior Studio API-fallback 502 remains an unresolved baseline, not newly reproduced; deployment identity/logs unavailable, so no live smoke test was attempted. T7/T9/T8 proof incomplete; 188 manifest entries are candidates; keep mockup/water-bottle gates fail-closed; Ads remain unverified/inactive. No production/provider/data changes or checkout occurred.
+
+**Next:** obtain read-only Cloudflare deployment identity and sanitized matching Render logs; classify/fix the fallback 502 locally with regressions. Full evidence, limitations, and sequenced plan: `RELEASE_HEALTH_CHECK_2026-10-10.md`. Not pushed or merged.
+
+
+### 2026-10-10 00:46 follow-up correction
+
+Canonical `/api/health/liveness`, `/api/health/readiness`, `/api/health/storage` all returned 200; readiness reports DB/catalog true, and storage reports R2 reachable (URL signing only, not an actual PUT). Earlier `/api/health` and `/api/ready` 404s were wrong paths. `/sw.js` is 200 JavaScript; `/service-worker.js` is an HTML fallback. Apex/www HTML is byte-identical (17,204 bytes, SHA-256 `0ae78895bd41152e1bee9b3805a656b5842a1e95586bcfdc89232cab944f4089`). Public mockups API yielded 186 rows, while local manifest has 188 candidates; acceptance remains unproven. Full local tests passed: storefront 19/69, API 10/36; workspace typecheck, API build and storefront build passed (large chunk warning). Code review found T7 status route lacks allowed-transition/restock safeguards and test coverage; current storage code lacks the described checksum/fallback implementation. See `claude/reports.md` for the consolidated evidence and plan.
+
+### Final verification addendum — 2026-10-10 01:05 GMT+6
+
+PR #37 is merged (`ddc68bf5d89f56f59453fd482d1cd666fc8d00e0`), Water Bottle stale metadata fix; its app-verification, CI/build, security and Pages checks succeeded. It does not contain the requested upload/T7 fixes. Full current local tests pass: storefront 19 files/69 tests; API 10 files/36 tests; workspace typecheck and both builds pass (storefront large-chunk warning). `pnpm run validate:mockups` passes 188 surfaces/1,128 runtime roles structurally; it is not visual Photopea approval. Staging matrix validator blocked by absent `dist-mockups/staging/smart-v10/manifest.json`. The commonly cited 69/69 is storefront test count, not mockup validation. See `claude/reports.md` for the complete, corrected evidence and queue.
+
+
+### 2026-10-10 02:14 — complete source/production reconciliation
+
+**NOT READY.** Public storefront and core API GETs respond; exact Pages source identity is not established. `origin/main` remains `3ce13d7fb3b45b40e9d820cfc99515bd7744bc1f`; no open PRs/remote Claude branches. PR #37 is Water Bottle metadata; #40 is performance; neither is the supplied upload/T7 work. Local docs-only HEAD `984f092` is ahead by one and not on remote.
+
+**Important mockup correction:** live role manifest GET is accepted, 188 rows, **94 accepted / 94 candidate** (caps 16; hoodie 20/30; long sleeves 20/30; mugs 20/10; T-shirts 16/24; water bottle 2 accepted). Current main manifest differs: aggregate accepted but 188 candidate rows. Its validator is structural (188 surfaces / 1,128 roles), not Photopea proof. Source render gate checks aggregate acceptance/count but not row status; resolver approves when role assets exist. Enforce candidate rows per-surface; keep candidates and Water Bottle custom ordering closed until saved visual/hash evidence and separate approval. Missing staging matrix file remains.
+
+Live current GET: 70 public products across core families + Custom Orders, 7 categories, `/api/mockups` 186, canonical health/readiness/storage/auth 200; readiness DB/catalog true, primary, `backupSyncEnabled=false`; R2 reachable proves health/signing, not a PUT. `/sw.js` and `/manifest.json` are configured endpoints; browser registration/caching unverified. `trynext.pages.dev` does not resolve. Live HTML build stamps/assets differ from local origin/main build; exact deployment identity and matching sanitized Render log are unavailable.
+
+Code blockers: Studio cookie-auth mutations omit required X-Requested-With on upload prep, remove-bg, AI reference and server-render calls; R2/S3 checksum `WHEN_REQUIRED` missing; no bound expiring grant or real R2/S3 API fallback; error handling not safe 502/redacted/timeout-complete; Add-to-Cart alert is truthful but ephemeral/non-retryable. T7 direct status and AI/undo writes bypass transition graph; cancellation restock/audit not atomic/exactly-once and no route tests. T9 complete transform persistence matrix absent. T8 dry-run doc absent; only additive key-column patch found, no unique-index/replay design. Ads, phone, admin export/activity, matched Render and saved visual proof remain unverified. Detailed next-work plan in `claude/reports.md`; no production/data/provider/schema/checkout/ad changes.

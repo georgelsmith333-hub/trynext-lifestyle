@@ -1409,3 +1409,68 @@ Verification: Smart Object release gate passed structurally-verified for
   manifest, API health 200, sitemap 200. The local screenshot rendered the
   homepage with no browser-console errors.
 ```
+
+
+## Release health-check checkpoint (2026-10-10 GMT+6)
+```text
+Status: NOT READY — production Add-to-Cart and deployment identity are not verified.
+Source: origin/main 3ce13d7fb3b45b40e9d820cfc99515bd7744bc1f (2026-09-16).
+GitHub: zero open PRs. PR #40 is non-Home bundle performance, #37 is Water Bottle metadata, #36 is Water Bottle assets; they do not match the supplied docs/storage descriptions.
+Local tests: storefront 4 files/21 tests passed; API objectStorage + products 2 files/11 tests passed. No full CI run.
+Public GET: products 200, categories 200; mockups 200 but client timed out after 12s; health/readiness 404; service-worker path returned SPA HTML; pages.dev DNS unresolved.
+Prior live Studio fallback 502 remains unresolved baseline; not repeated because deployed bundle identity could not be proven. No sanitized Render logs, admin export/log, or real phone available.
+T7: not verified (no order transition/restock test files located). T9 pending: current switch applies supplied transforms and history, but no per-product transform cache/full required matrix. T8: migration dry-run doc absent; not run. Manifest: 188 entries marked candidate; no promotion; water-bottle ordering stays blocked.
+Next: first obtain read-only Pages deployment identity and sanitized matching Render failure evidence; classify/fix code locally with regressions. Then T9, then prepare but do not execute T8, then collect device/catalog/Render/Activity Log/deployment/Photopea evidence.
+Restrictions preserved: no provider/config/data/schema/catalog/stock/order/payment/message changes, no checkout, no ads spend or activation. Local documentation only; not pushed or merged.
+Detailed exact evidence: RELEASE_HEALTH_CHECK_2026-10-10.md.
+```
+
+
+## Health-check follow-up (2026-10-10 00:46 GMT+6)
+```text
+Correction: canonical `/api/health/liveness`, `/api/health/readiness`, and `/api/health/storage` each return 200. Readiness shows DB/catalog true; storage reports R2 signing reachable, not successful object PUT. Earlier 404 probes `/api/health` and `/api/ready` used noncanonical paths. `/sw.js` returns JS 200; `/service-worker.js` returns SPA HTML. Apex/www homepages match exactly (SHA-256 0ae78895bd41152e1bee9b3805a656b5842a1e95586bcfdc89232cab944f4089). Public mockups endpoint is 186 rows; local manifest is 188 candidates; not equivalent proof.
+Verification: storefront 19 files/69 tests; API 10 files/36 tests; workspace typecheck passed; API and storefront builds passed, though storefront has >500kB chunk warnings.
+Code review: T7 status handler lacks requested transition validation and transactional restock; no T7 tests. Current source lacks requested upload fallback grant route/checksum WHEN_REQUIRED options. Actual live Add-to-Cart remains untested; storage health is not proof of PUT. Deployment ID, matching Render logs, real phone, admin data and Photopea evidence unavailable.
+Next: maintain not-ready gate; get read-only deployed bundle and sanitized matching storage failure evidence. No production changes. Consolidated updated evidence in `claude/reports.md`.
+```
+
+## Final follow-up and publication preparation (2026-10-10 01:05 GMT+6)
+```text
+PR #37 is merged: Water Bottle stale metadata fix, merge commit ddc68bf5d89f56f59453fd482d1cd666fc8d00e0. Active app verification, CI/build, security scan and Pages check succeeded. It is unrelated to upload fallback/T7.
+Full current local verification: storefront 19 files/69 tests passed; API 10 files/36 tests passed; workspace typecheck passed; API and storefront builds passed (large-chunk warning).
+Mockups: `pnpm run validate:mockups` passed 188 surfaces/1,128 runtime roles, status accepted (structural/runtime checksum only; no visual approval). `pnpm run mockups:validate-matrix` blocked because dist-mockups/staging/smart-v10/manifest.json is absent. 69/69 means storefront tests, not mockup validations.
+Public: canonical liveness/readiness/storage 200 (storage reports URL-signing reachable, not PUT); `/sw.js` JavaScript 200; `/service-worker.js` HTML; apex/www same HTML hash. Public mockups route has 186 rows; not directly comparable to the 188-surface matrix.
+No deploy identity or matching Render log; no live Studio cart test. T7 current status handler lacks requested transition validation; no related tests. T9 not implemented. T8 dry-run doc absent and SQL not run. No customer/provider/production changes, checkout, ad spend or mockup promotion.
+Next safe action: keep NOT READY; first acquire read-only deployed bundle + sanitized matching storage failure evidence. Full exact report and instructions in claude/reports.md, claude/CLAUDE_NEEDS.md and claude/MANUS_AI_TODO_TASKS.md.
+```
+
+## Documentation publication status (2026-10-10 01:06 GMT+6)
+```text
+Local docs commit: 329bbbb — docs: consolidate release health evidence and Claude queue.
+Push failed: GitHub returned HTTP 403 permission denied for georgelsmith333-hub/trynex-lifestyle.git. Commit is local only; remote main unchanged. No retry/bypass attempted. Once authorized repository write access is restored, push this existing commit normally. Full release gates remain NOT READY as recorded in claude/reports.md.
+```
+
+## Fresh Claude activity check and next queue (2026-10-10 01:39 GMT+6)
+```text
+Remote main remains 3ce13d7 (2026-09-16). No new Claude/Anthropic commit, no open PR, no remote Claude-named branch. PR #51/#52/#53/#57 are closed unmerged; #54/#55/#56 are older Aug 28–29 merges. Do not treat closed PRs as merged or blindly cherry-pick them.
+Next local work: (1) T7 allowed-transition + transactional exactly-once pre-shipped restock/audit implementation and route tests; (2) T9 product-scoped transform restoration with full cross-product/face/color/mug/print-zone/history tests; (3) mocked storage/Add-to-Cart route tests, then production log correlation/live smoke only after authorized deployment identity; (4) reconstruct missing Smart Mockup staging inputs and rerun structural validators without visual approval; (5) write T8 migration dry-run plan only, no SQL. Then full tests/typecheck/build, update report/handoff. Keep ads, live writes, checkout, provider changes, Water Bottle ordering and visual promotion fail-closed.
+Local documentation commit was fd5fcd6 before this update; this session's `claude/reports.md` update will be amended into the same local docs commit. Earlier push got HTTP 403; no retry. Full ordered instructions in claude/reports.md.
+```
+
+
+## Comprehensive release reconciliation — 2026-10-10 02:14 GMT+6
+```text
+Verdict: NOT READY; no release gate opened. `origin/main` remains 3ce13d7fb3b45b40e9d820cfc99515bd7744bc1f. No open PR/remote Claude branch. #37 merged as Water Bottle stale-metadata fix; #40 merged as non-Home performance work; neither is the supplied upload/T7 work. Local docs-only HEAD was 984f092, ahead of remote by one.
+
+Live/public: root, products, categories, mockups, canonical health/readiness/storage/auth, sitemap, robots, /sw.js, /manifest.json returned 200. Catalog 70 products / 7 categories; API mockups 186. Readiness DB/catalog true, primary, backupSyncEnabled=false; storage R2 reachable means signing/health only, not a PUT. `trynext.pages.dev` DNS unresolved. /sw.js + /manifest.json are intended routes; actual browser registration/cache remains unverified. Public 30/30 baseline not re-run.
+
+Smart Mockups: live GET `/mockups/psd-master-v10/runtime-roles/manifest.json`: status accepted, 188 rows, 94 accepted/94 candidate. Family: cap 16 accepted; hoodie 20/30; longsleeve 20/30; mug 20/10; tshirt 16/24; waterbottle 2 accepted. `origin/main` copy instead has 188 row candidates (aggregate accepted); local structural validator passes 188/1,128 and is not visual approval. Server renderer checks aggregate status/count only; resolver approves if role files exist, not per-row candidate status. No saved Photopea/Photoshop hash review proof found. Keep candidate rows and Water Bottle ordering blocked pending evidence/separate approval. Matrix validator blocked by missing `dist-mockups/staging/smart-v10/manifest.json`.
+
+Production bundle identity is unverified and current live HTML stamps/assets differ from local build of origin/main. No Cloudflare deployment record or matching sanitized Render log. Do not repeat the known live 502 path until identity/log evidence exists.
+
+Code blockers: Studio upload-prep/remove-bg/AI reference/server-render requests omit X-Requested-With though cookie-auth mutations are gated; storage lacks WHEN_REQUIRED checksum config, bound expiring grant/real R2/S3 API fallback, safe 502/redacted timeout behavior; Add-to-Cart error is truthful toast but ephemeral/no retry. T7 direct writers in orders.ts + aiExecute.ts/undo bypass graph; no transactional exactly-once cancellation restock/audit tests (create-time stock reservation itself is transactional). T8 dry-run absent; dbBackupSync only has additive key-column DDL without partial unique/use. T9 per-product transform cache/full matrix absent.
+
+Next: 1) local CSRF/storage/cart regression/fix + obtain read-only bundle/Render evidence (no provider changes, no live upload until identity known); 2) T7 all writers/atomic restock tests; 3) per-surface mockup gating + reconcile manifests/visual proof; 4) T9 complete matrix; 5) T8 doc only/no SQL; 6) authorized phone/admin/catalog/Activity/Render/Photopea/Ads status. No checkout/orders/payments/messages/data/schema/provider changes, no mockup promotion, no ad activation/spend.
+
+Existing full test/typecheck/build results are recorded in claude/reports.md; the 69 count is storefront tests, not mockup validation. The known GitHub write attempt previously returned HTTP 403; documentation remains local-only unless authorized write access is restored. No retry/bypass.
+```
