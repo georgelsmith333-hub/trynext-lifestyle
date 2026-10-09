@@ -109,3 +109,38 @@ The prior publication paragraph's `329bbbb` was the first, pre-amend commit hash
 6. Then gather real-phone, admin/export, deployment/log, visual-review and campaign evidence through authorized read-only access; only after deployment identity is known, conduct at most one harmless Studio upload/cart test, verify count 1, remove the item and stop before checkout.
 
 **Restrictions preserved:** no order/payment/customer-message/checkout, no provider or database/config changes, no catalog/stock edits, no mockup promotion, no real-device simulation represented as phone acceptance, no ad activation/spend. The known prior GitHub push returned HTTP 403; this documentation update is local-only unless authorized repository write access is restored. No retry/bypass was attempted.
+
+## 2026-10-10 05:55 GMT+6 — Manus handoff for Claude
+
+### Manus report
+
+- Current pushed `main` is `d667751e`; the latest commit is documentation-only.
+- There are no open PRs, no remote Claude/Manus implementation branch, and no new Claude-authored code commit.
+- Hosted Active App and CI checks passed. Fresh local validation passed: workspace typecheck; storefront 19 files/69 tests; API 10 files/36 tests; API and storefront builds; mockup validation 188 surfaces/1,128 runtime roles; and `git diff --check`.
+- S1, S2, and S3 remain **unreported**, not passed. No matching live deployment, Render, real-device, Photopea, or production-write evidence was available.
+- Manus will begin safe local T7 work after mapping order status writers and stock/audit paths. T8 remains documentation-only; mockup promotion, Water Bottle ordering, campaigns, and all production mutations remain blocked.
+- Detailed evidence: `claude/evidence/MANUS_REPORT_2026-10-10.md`.
+
+This is a documentation handoff only. It does not approve a release, merge a PR, deploy, or change production data.
+
+## 2026-10-10 05:59 GMT+6 — consolidated Manus report (sole source)
+
+### Status
+
+The latest pushed repository state was audited without reopening historical work. Current `main` is `d667751e` (`docs: consolidate release health evidence and Claude queue`), the latest commit is documentation-only, there are no open pull requests, and no remote Claude/Manus implementation branch or new Claude-authored implementation commit was found. The release verdict remains **NOT READY** and all release gates remain closed.
+
+### S1/S2/S3 evidence status
+
+S1, S2, and S3 are **not reported as passed**. No matching live deployment evidence, sanitized Render evidence, real-device evidence, Photopea evidence, or production-write evidence was available during this audit. This section is a status record, not production approval.
+
+### Verified repository and CI evidence
+
+The working tree was clean before this documentation update. The latest hosted Active App verification and CI build-and-check both passed. Fresh local validation on the exact current `main` passed workspace typecheck; storefront tests (19 files, 69 tests); API tests (10 files, 36 tests); API production build; storefront production build; the mockup validator (188 surfaces and 1,128 runtime roles); and `git diff --check`. The storefront build still reports large-chunk warnings, including DesignStudioV2 at approximately 515 kB and ProductViewer3D at approximately 963 kB; these are warnings, not failures.
+
+### Pending work and boundaries
+
+T7 order-transition and exactly-once pre-shipment restock safeguards remain pending. T9 product-scoped Design Studio transform persistence remains pending. Storage/Studio upload fallback and matching sanitized Render evidence remain pending. T8 remains documentation-only; no SQL or schema change is authorized. Smart Mockup visual approval and Water Bottle ordering remain fail-closed. No production deployment, database, customer, order, wallet, reward, campaign, OAuth, provider, schema, catalog, stock, or payment data was changed.
+
+### Next safe action
+
+Manus will begin narrow local T7 implementation only after mapping all order status writers and existing stock/audit paths, with focused tests first. External deployment identity, sanitized Render logs, and authorized live Studio evidence remain owner-controlled blockers. No merge, deployment, live write, provider change, mockup promotion, campaign activation, checkout, or customer-data mutation is implied.
